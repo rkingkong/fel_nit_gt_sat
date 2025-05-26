@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Invoice Form View Extension -->
+    <record id="view_move_form_fel" model="ir.ui.view">
+        <field name="name">account.move.form.fel</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="send_to_fel" 
+                        string="Send to FEL" 
+                        type="object" 
+                        class="oe_stat_button"
+                        icon="fa-send"
+                        attrs="{'invisible': ['|', ('state', '!=', 'posted'), ('move_type', 'not in', ['out_invoice', 'out_refund'])]}">
+                </button>
+                
+                <button name="view_fel_document" 
+                        string="FEL Document" 
+                        type="object" 
+                        class="oe_stat_button"
+                        icon="fa-file-text"
+                        attrs="{'invisible': [('fel_document_id', '=', False)]}">
+                </button>
+            </xpath>
+            
+            <xpath expr="//field[@name='ref']" position="after">
+                <field name="fel_document_id" readonly="1"/>
+                <field name="fel_uuid" readonly="1"/>
+                <field name="fel_document_type_id"/>
+                <field name="fel_status" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>
