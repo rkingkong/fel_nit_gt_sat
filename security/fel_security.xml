@@ -6,6 +6,7 @@
         <record id="group_fel_manager" model="res.groups">
             <field name="name">FEL Manager</field>
             <field name="category_id" ref="base.module_category_accounting"/>
+            <field name="comment">Full access to FEL configuration and management</field>
             <field name="implied_ids" eval="[(4, ref('account.group_account_manager'))]"/>
         </record>
         
@@ -13,7 +14,53 @@
         <record id="group_fel_user" model="res.groups">
             <field name="name">FEL User</field>
             <field name="category_id" ref="base.module_category_accounting"/>
+            <field name="comment">Can use FEL features and generate documents</field>
             <field name="implied_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        </record>
+        
+        <!-- FEL Restaurant User Group -->
+        <record id="group_fel_restaurant_user" model="res.groups">
+            <field name="name">FEL Restaurant User</field>
+            <field name="category_id" ref="base.module_category_point_of_sale"/>
+            <field name="comment">Can use FEL features in restaurant POS</field>
+            <field name="implied_ids" eval="[(4, ref('point_of_sale.group_pos_user'))]"/>
+        </record>
+        
+        <!-- FEL NIT Verifier Group -->
+        <record id="group_fel_nit_verifier" model="res.groups">
+            <field name="name">FEL NIT Verifier</field>
+            <field name="category_id" ref="base.module_category_sales"/>
+            <field name="comment">Can verify customer NITs with SAT</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Record Rules for Multi-Company -->
+        <record id="fel_config_company_rule" model="ir.rule">
+            <field name="name">FEL Configuration: multi-company</field>
+            <field name="model_id" ref="model_fel_config"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        
+        <record id="fel_document_company_rule" model="ir.rule">
+            <field name="name">FEL Document: multi-company</field>
+            <field name="model_id" ref="model_fel_document"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        
+        <!-- Data Protection Rules -->
+        <record id="fel_document_user_rule" model="ir.rule">
+            <field name="name">FEL Document: User Access</field>
+            <field name="model_id" ref="model_fel_document"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_fel_user'))]"/>
+        </record>
+        
+        <!-- Restaurant POS specific rule -->
+        <record id="fel_document_pos_rule" model="ir.rule">
+            <field name="name">FEL Document: POS User Access</field>
+            <field name="model_id" ref="model_fel_document"/>
+            <field name="domain_force">['|', ('pos_order_id', '!=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_fel_restaurant_user'))]"/>
         </record>
         
     </data>
