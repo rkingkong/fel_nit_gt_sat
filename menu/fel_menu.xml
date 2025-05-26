@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Main FEL Menu -->
+    <menuitem id="menu_fel_main" 
+              name="FEL Guatemala" 
+              sequence="15"
+              groups="group_fel_user"/>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_fel_config" 
+              name="Configuration" 
+              parent="menu_fel_main" 
+              sequence="10"
+              groups="group_fel_manager"/>
+    
+    <menuitem id="menu_fel_config_main" 
+              name="FEL Configuration" 
+              parent="menu_fel_config" 
+              action="action_fel_config" 
+              sequence="10"/>
+    
+    <menuitem id="menu_fel_providers" 
+              name="Certification Providers" 
+              parent="menu_fel_config" 
+              action="action_fel_certification_provider" 
+              sequence="20"/>
+    
+    <menuitem id="menu_fel_document_types" 
+              name="Document Types" 
+              parent="menu_fel_config" 
+              action="action_fel_document_type" 
+              sequence="30"/>
+    
+    <!-- Documents Menu -->
+    <menuitem id="menu_fel_documents" 
+              name="FEL Documents" 
+              parent="menu_fel_main" 
+              action="action_fel_document" 
+              sequence="20"/>
+    
+    <!-- Tools Menu -->
+    <menuitem id="menu_fel_tools" 
+              name="Tools" 
+              parent="menu_fel_main" 
+              sequence="30"/>
+    
+    <menuitem id="menu_fel_nit_verification" 
+              name="NIT Verification" 
+              parent="menu_fel_tools" 
+              action="action_fel_nit_verification_wizard" 
+              sequence="10"/>
+    
+</odoo>
