@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Partner Form View Extension -->
+    <record id="view_partner_form_fel" model="ir.ui.view">
+        <field name="name">res.partner.form.fel</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="nit_gt"/>
+                <field name="dpi_gt"/>
+                <field name="tax_regime_gt"/>
+            </xpath>
+            
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="verify_nit_with_sat" 
+                        string="Verify NIT" 
+                        type="object" 
+                        class="oe_stat_button"
+                        icon="fa-check-circle"
+                        attrs="{'invisible': [('nit_gt', '=', False)]}">
+                </button>
+            </xpath>
+            
+            <xpath expr="//field[@name='category_id']" position="after">
+                <group string="FEL Information" attrs="{'invisible': [('nit_gt', '=', False)]}">
+                    <field name="is_fel_verified" readonly="1"/>
+                    <field name="fel_verification_date" readonly="1"/>
+                    <field name="fel_verification_result" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>
