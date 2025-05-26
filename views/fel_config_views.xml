@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- FEL Configuration Form View -->
+    <record id="view_fel_config_form" model="ir.ui.view">
+        <field name="name">fel.config.form</field>
+        <field name="model">fel.config</field>
+        <field name="arch" type="xml">
+            <form string="FEL Configuration">
+                <header>
+                    <button name="test_connection" string="Test Connection" type="object" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="company_id" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Basic Information">
+                            <field name="provider_id"/>
+                            <field name="nit"/>
+                            <field name="tax_regime"/>
+                            <field name="environment"/>
+                            <field name="is_active"/>
+                        </group>
+                        
+                        <group string="API Configuration">
+                            <field name="api_url"/>
+                            <field name="api_username"/>
+                            <field name="api_password" password="True"/>
+                            <field name="api_token" password="True"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Certificate">
+                        <field name="certificate_file"/>
+                        <field name="certificate_password" password="True"/>
+                    </group>
+                    
+                    <group>
+                        <group string="Statistics">
+                            <field name="monthly_dte_count" readonly="1"/>
+                            <field name="monthly_dte_limit"/>
+                            <field name="last_sync" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- FEL Configuration Tree View -->
+    <record id="view_fel_config_tree" model="ir.ui.view">
+        <field name="name">fel.config.tree</field>
+        <field name="model">fel.config</field>
+        <field name="arch" type="xml">
+            <tree string="FEL Configurations">
+                <field name="company_id"/>
+                <field name="provider_id"/>
+                <field name="nit"/>
+                <field name="environment"/>
+                <field name="is_active"/>
+                <field name="last_sync"/>
+            </tree>
+        </field>
+    </record>
+    
+</odoo>
