@@ -1,185 +1,201 @@
-# __manifest__.py
-{
-    'name': 'FEL Guatemala - Factura Electrónica en Línea',
-    'version': '17.0.1.0.0',
-    'category': 'Accounting/Localizations',
-    'summary': 'Guatemala Electronic Invoice (FEL) Integration with SAT',
-    'description': """
-        Guatemala Electronic Invoice (FEL) Integration
-        ==============================================
-        
-        This module provides:
-        * NIT verification with SAT
-        * Electronic invoice generation (FEL)
-        * Integration with certified providers (INFILE, etc.)
-        * Support for all Guatemala tax document types
-        * Automatic XML generation and validation
-        * Digital signature and transmission to SAT
-        
-        Supported Document Types:
-        * FACT - Factura
-        * FCAM - Factura Cambiaria  
-        * FPEQ - Factura Pequeño Contribuyente
-        * FCAP - Factura Cambiaria Pequeño Contribuyente
-        * FESP - Factura Especial
-        * NABN - Nota de Abono
-        * RDON - Recibo por Donación
-        * RECI - Recibo
-        * NDEB - Nota de Débito
-        * NCRE - Nota de Crédito
-    """,
-    'author': 'Kesiyos Restaurant Systems',
-    'website': 'https://github.com/rkingkong/factura_electronica_gt',
-    'license': 'LGPL-3',
-    'depends': [
-        'base',
-        'account',
-        'sale',
-        'purchase',
-        'stock',
-        'point_of_sale',
-        'l10n_gt',  # Guatemala localization
-    ],
-    'data': [
-        'security/ir.model.access.csv',
-        'security/fel_security.xml',
-        'data/fel_document_types.xml',
-        'data/fel_config_data.xml',
-        'views/fel_config_views.xml',
-        'views/fel_document_views.xml',
-        'views/res_partner_views.xml',
-        'views/account_move_views.xml',
-        'views/pos_order_views.xml',
-        'wizard/fel_nit_verification_views.xml',
-        'wizard/fel_document_send_views.xml',
-        'reports/fel_invoice_report.xml',
-        'menu/fel_menu.xml',
-    ],
-    'demo': [
-        'demo/fel_demo_data.xml',
-    ],
-    'qweb': [
-        'static/src/xml/fel_pos_templates.xml',
-    ],
-    'external_dependencies': {
-        'python': [
-            'requests',
-            'xmltodict',
-            'lxml',
-            'cryptography',
-            'suds-community',
-        ],
-    },
-    'installable': True,
-    'auto_install': False,
-    'application': True,
-    'post_init_hook': 'post_init_hook',
-}
+# -*- coding: utf-8 -*-
 
-# models/__init__.py
-from . import fel_config
-from . import fel_document_type
-from . import fel_document
-from . import fel_certification_provider
-from . import res_partner
-from . import account_move
-from . import pos_order
-from . import fel_nit_verification
-
-# models/fel_config.py
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-import requests
 import logging
 
 _logger = logging.getLogger(__name__)
 
-class FelConfiguration(models.Model):
-    _name = 'fel.config'
-    _description = 'FEL Configuration'
-    _rec_name = 'company_id'
-
-    company_id = fields.Many2one(
-        'res.company', 
-        string='Company', 
+class FelDocumentType(models.Model):
+    _name = 'fel.document.type'
+    _description = 'FEL Document Type'
+    _rec_name = 'name'
+    _order = 'sequence, name'
+    
+    # Basic Information
+    name = fields.Char(
+        string='Document Name', 
         required=True,
-        default=lambda self: self.env.company
+        help='Full name of the document type (e.g., Factura, Nota de Crédito)'
     )
     
-    # Provider Configuration
-    provider_id = fields.Many2one(
-        'fel.certification.provider',
-        string='Certification Provider',
-        required=True
-    )
-    
-    # NIT and Tax Information
-    nit = fields.Char(
-        string='NIT',
+    code = fields.Char(
+        string='SAT Code', 
         required=True,
-        help='Número de Identificación Tributaria'
+        help='Official SAT code for this document type (e.g., FACT, NCRE, FPEQ)'
     )
     
-    tax_regime = fields.Selection([
-        ('general', 'Régimen General'),
-        ('pequeno', 'Pequeño Contribuyente'),
-        ('especial', 'Régimen Especial'),
-    ], string='Tax Regime', required=True, default='general')
+    description = fields.Text(
+        string='Description',
+        help='Detailed description of when to use this document type'
+    )
     
-    # Environment Configuration
-    environment = fields.Selection([
-        ('test', 'Test Environment'),
-        ('production', 'Production'),
-    ], string='Environment', required=True, default='test')
+    sequence = fields.Integer(
+        string='Sequence',
+        default=10,
+        help='Order of display in lists'
+    )
     
-    # API Configuration
-    api_url = fields.Char(string='API URL', required=True)
-    api_username = fields.Char(string='API Username')
-    api_password = fields.Char(string='API Password')
-    api_token = fields.Char(string='API Token')
+    # Document Type Classification
+    is_invoice = fields.Boolean(
+        string='Is Invoice',
+        help='Check if this document type is an invoice'
+    )
     
-    # Certificate Configuration
-    certificate_file = fields.Binary(string='Certificate File')
-    certificate_password = fields.Char(string='Certificate Password')
+    is_credit_note = fields.Boolean(
+        string='Is Credit Note',
+        help='Check if this document type is a credit note'
+    )
+    
+    is_debit_note = fields.Boolean(
+        string='Is Debit Note',
+        help='Check if this document type is a debit note'
+    )
+    
+    is_receipt = fields.Boolean(
+        string='Is Receipt',
+        help='Check if this document type is a receipt'
+    )
+    
+    is_donation_receipt = fields.Boolean(
+        string='Is Donation Receipt',
+        help='Check if this document type is for donations'
+    )
+    
+    # Tax Regime Compatibility (from INFILE proposal)
+    available_for_general = fields.Boolean(
+        string='Available for General Regime',
+        default=True,
+        help='Can be used by companies in Régimen General'
+    )
+    
+    available_for_pequeno = fields.Boolean(
+        string='Available for Pequeño Contribuyente',
+        default=True,
+        help='Can be used by Pequeño Contribuyente companies'
+    )
+    
+    available_for_especial = fields.Boolean(
+        string='Available for Special Regime',
+        default=True,
+        help='Can be used by companies in Régimen Especial'
+    )
+    
+    # Technical Configuration
+    xml_template = fields.Text(
+        string='XML Template',
+        help='XML template for generating documents of this type'
+    )
+    
+    requires_reference_document = fields.Boolean(
+        string='Requires Reference Document',
+        help='Check if this document type requires a reference to another document (e.g., credit notes)'
+    )
+    
+    allows_negative_amounts = fields.Boolean(
+        string='Allows Negative Amounts',
+        help='Check if this document type can have negative line amounts'
+    )
     
     # Status
-    is_active = fields.Boolean(string='Active', default=True)
-    last_sync = fields.Datetime(string='Last Synchronization')
+    is_active = fields.Boolean(
+        string='Active',
+        default=True,
+        help='Whether this document type is currently available for use'
+    )
     
-    # Monthly Statistics
-    monthly_dte_count = fields.Integer(string='Monthly DTE Count', readonly=True)
-    monthly_dte_limit = fields.Integer(string='Monthly DTE Limit', default=1200)
+    # Related Models
+    fel_document_ids = fields.One2many(
+        'fel.document',
+        'document_type_id',
+        string='FEL Documents',
+        help='Documents generated with this type'
+    )
+    
+    # Computed Fields
+    document_count = fields.Integer(
+        string='Document Count',
+        compute='_compute_document_count',
+        help='Number of documents created with this type'
+    )
+    
+    @api.depends('fel_document_ids')
+    def _compute_document_count(self):
+        """Compute the number of documents for each type"""
+        for record in self:
+            record.document_count = len(record.fel_document_ids)
     
     @api.model
-    def get_active_config(self, company_id=None):
-        """Get active FEL configuration for company"""
+    def get_document_type_by_code(self, code):
+        """Get document type by SAT code"""
+        return self.search([('code', '=', code), ('is_active', '=', True)], limit=1)
+    
+    @api.model
+    def get_invoice_types(self):
+        """Get all invoice document types"""
+        return self.search([('is_invoice', '=', True), ('is_active', '=', True)])
+    
+    @api.model
+    def get_credit_note_types(self):
+        """Get all credit note document types"""
+        return self.search([('is_credit_note', '=', True), ('is_active', '=', True)])
+    
+    @api.model
+    def get_debit_note_types(self):
+        """Get all debit note document types"""
+        return self.search([('is_debit_note', '=', True), ('is_active', '=', True)])
+    
+    def get_available_for_regime(self, tax_regime):
+        """Get document types available for a specific tax regime"""
         domain = [('is_active', '=', True)]
-        if company_id:
-            domain.append(('company_id', '=', company_id))
+        
+        if tax_regime == 'general':
+            domain.append(('available_for_general', '=', True))
+        elif tax_regime == 'pequeno':
+            domain.append(('available_for_pequeno', '=', True))
+        elif tax_regime == 'especial':
+            domain.append(('available_for_especial', '=', True))
+        
+        return self.search(domain)
+    
+    def get_default_invoice_type_for_regime(self, tax_regime):
+        """Get the default invoice type for a tax regime"""
+        if tax_regime == 'pequeno':
+            return self.get_document_type_by_code('FPEQ')
+        elif tax_regime == 'especial':
+            return self.get_document_type_by_code('FESP')
         else:
-            domain.append(('company_id', '=', self.env.company.id))
+            return self.get_document_type_by_code('FACT')
+    
+    @api.constrains('code')
+    def _check_unique_code(self):
+        """Ensure document type codes are unique"""
+        for record in self:
+            if self.search_count([('code', '=', record.code), ('id', '!=', record.id)]) > 0:
+                raise ValidationError(_('Document type code must be unique. Code "%s" already exists.') % record.code)
+    
+    @api.constrains('is_invoice', 'is_credit_note', 'is_debit_note', 'is_receipt')
+    def _check_document_type_classification(self):
+        """Ensure only one document type classification is selected"""
+        for record in self:
+            classifications = [
+                record.is_invoice,
+                record.is_credit_note, 
+                record.is_debit_note,
+                record.is_receipt
+            ]
             
-        config = self.search(domain, limit=1)
-        if not config:
-            raise ValidationError(_('No active FEL configuration found for this company.'))
-        return config
+            if sum(classifications) != 1:
+                raise ValidationError(_('Each document type must have exactly one classification (Invoice, Credit Note, Debit Note, or Receipt).'))
     
-    def test_connection(self):
-        """Test connection to FEL provider"""
-        try:
-            # Implementation depends on provider
-            if self.provider_id.code == 'infile':
-                return self._test_infile_connection()
-            else:
-                return self._test_generic_connection()
-        except Exception as e:
-            raise ValidationError(_('Connection test failed: %s') % str(e))
-    
-    def _test_infile_connection(self):
-        """Test INFILE connection"""
-        # Implement INFILE specific connection test
-        pass
-    
-    def _test_generic_connection(self):
-        """Test generic provider connection"""
-        pass
+    def action_view_documents(self):
+        """Action to view all documents of this type"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('FEL Documents - %s') % self.name,
+            'res_model': 'fel.document',
+            'view_mode': 'tree,form',
+            'domain': [('document_type_id', '=', self.id)],
+            'context': {'default_document_type_id': self.id},
+        }
