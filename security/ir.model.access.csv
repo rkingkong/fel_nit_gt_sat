@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_fel_config_manager,fel.config manager,model_fel_config,account.group_account_manager,1,1,1,1
+access_fel_config_user,fel.config user,model_fel_config,account.group_account_user,1,0,0,0
+access_fel_document_type_manager,fel.document.type manager,model_fel_document_type,account.group_account_manager,1,1,1,1
+access_fel_document_type_user,fel.document.type user,model_fel_document_type,account.group_account_user,1,0,0,0
+access_fel_document_manager,fel.document manager,model_fel_document,account.group_account_manager,1,1,1,1
+access_fel_document_user,fel.document user,model_fel_document,account.group_account_user,1,1,1,0
+access_fel_certification_provider_manager,fel.certification.provider manager,model_fel_certification_provider,account.group_account_manager,1,1,1,1
+access_fel_certification_provider_user,fel.certification.provider user,model_fel_certification_provider,account.group_account_user,1,0,0,0
