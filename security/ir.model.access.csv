@@ -1,9 +1,21 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_fel_config_manager,fel.config manager,model_fel_config,account.group_account_manager,1,1,1,1
 access_fel_config_user,fel.config user,model_fel_config,account.group_account_user,1,0,0,0
+access_fel_config_invoice_user,fel.config invoice user,model_fel_config,account.group_account_invoice,1,0,0,0
 access_fel_document_type_manager,fel.document.type manager,model_fel_document_type,account.group_account_manager,1,1,1,1
 access_fel_document_type_user,fel.document.type user,model_fel_document_type,account.group_account_user,1,0,0,0
+access_fel_document_type_invoice_user,fel.document.type invoice user,model_fel_document_type,account.group_account_invoice,1,0,0,0
+access_fel_document_type_pos_user,fel.document.type pos user,model_fel_document_type,point_of_sale.group_pos_user,1,0,0,0
 access_fel_document_manager,fel.document manager,model_fel_document,account.group_account_manager,1,1,1,1
 access_fel_document_user,fel.document user,model_fel_document,account.group_account_user,1,1,1,0
+access_fel_document_invoice_user,fel.document invoice user,model_fel_document,account.group_account_invoice,1,1,1,0
+access_fel_document_pos_user,fel.document pos user,model_fel_document,point_of_sale.group_pos_user,1,1,1,0
+access_fel_document_pos_manager,fel.document pos manager,model_fel_document,point_of_sale.group_pos_manager,1,1,1,1
 access_fel_certification_provider_manager,fel.certification.provider manager,model_fel_certification_provider,account.group_account_manager,1,1,1,1
 access_fel_certification_provider_user,fel.certification.provider user,model_fel_certification_provider,account.group_account_user,1,0,0,0
+access_fel_certification_provider_invoice_user,fel.certification.provider invoice user,model_fel_certification_provider,account.group_account_invoice,1,0,0,0
+access_fel_nit_verification_service_manager,fel.nit.verification.service manager,model_fel_nit_verification_service,account.group_account_manager,1,1,1,1
+access_fel_nit_verification_service_user,fel.nit.verification.service user,model_fel_nit_verification_service,account.group_account_user,1,1,1,0
+access_fel_nit_verification_service_invoice_user,fel.nit.verification.service invoice user,model_fel_nit_verification_service,account.group_account_invoice,1,1,1,0
+access_fel_nit_verification_service_pos_user,fel.nit.verification.service pos user,model_fel_nit_verification_service,point_of_sale.group_pos_user,1,1,1,0
+access_fel_nit_verification_service_sales_user,fel.nit.verification.service sales user,model_fel_nit_verification_service,sales_team.group_sale_salesman,1,1,1,0
