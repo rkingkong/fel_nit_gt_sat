@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Bulk FEL Document Send Wizard -->
+    <record id="view_fel_document_send_wizard_form" model="ir.ui.view">
+        <field name="name">fel.document.send.wizard.form</field>
+        <field name="model">fel.document.send.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Send Documents to FEL">
+                <header>
+                    <button name="action_send_documents" string="Send to FEL" type="object" 
+                            class="btn-primary"/>
+                    <button name="action_validate_documents" string="Validate Only" type="object" 
+                            class="btn-secondary"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_title">
+                        <h1>📤 Send Documents to FEL</h1>
+                        <h3>Bulk send multiple documents to Guatemala SAT</h3>
+                    </div>
+                    
+                    <group>
+                        <group string="Selection Summary">
+                            <field name="total_documents" readonly="1"/>
+                            <field name="valid_documents" readonly="1"/>
+                            <field name="invalid_documents" readonly="1"/>
+                            <field name="estimated_cost" readonly="1" widget="monetary"/>
+                        </group>
+                        
+                        <group string="Processing Options">
+                            <field name="send_mode" widget="radio"/>
+                            <field name="ignore_errors"/>
+                            <field name="auto_retry"/>
+                            <field name="notify_completion"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Document List -->
+                    <notebook>
+                        <page string="Documents to Send" name="documents">
+                            <field name="document_line_ids" nolabel="1">
+                                <tree string="Documents" create="false" delete="false">
+                                    <field name="document_id"/>
+                                    <field name="document_type"/>
+                                    <field name="partner_name"/>
+                                    <field name="amount_total" widget="monetary"/>
+                                    <field name="can_send" widget="boolean"/>
+                                    <field name="validation_message"/>
+                                    <field name="selected" widget="boolean"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                        <page string="Validation Results" name="validation" 
+                              attrs="{'invisible': [('validation_complete', '=', False)]}">
+                            <group>
+                                <group string="Validation Summary">
+                                    <field name="validation_complete" readonly="1" invisible="1"/>
+                                    <field name="documents_ready" readonly="1"/>
+                                    <field name="documents_with_errors" readonly="1"/>
+                                </group>
+                            </group>
+                            
+                            <field name="validation_results" readonly="1" widget="html"/>
+                        </page>
+                        
+                        <page string="Processing Status" name="status" 
+                              attrs="{'invisible': [('processing_started', '=', False)]}">
+                            <group>
+                                <group string="Progress">
+                                    <field name="processing_started" readonly="1" invisible="1"/>
+                                    <field name="documents_processed" readonly="1"/>
+                                    <field name="documents_successful" readonly="1"/>
+                                    <field name="documents_failed" readonly="1"/>
+                                    <field name="processing_progress" readonly="1" widget="progressbar"/>
+                                </group>
+                            </group>
+                            
+                            <field name="processing_log" readonly="1" widget="html"/>
+                        </page>
+                    </notebook>
+                    
+                    <!-- Warnings and Information -->
+                    <div class="alert alert-warning" role="alert" 
+                         attrs="{'invisible': [('invalid_documents', '=', 0)]}">
+                        <strong>⚠️ Validation Warnings:</strong>
+                        <p><field name="invalid_documents" readonly="1"/> documents have validation errors and cannot be sent.</p>
+                        <p>Please review the validation results and fix any issues before proceeding.</p>
+                    </div>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>💡 Bulk FEL Sending Information:</strong>
+                        <ul class="mb-0">
+                            <li><strong>Sequential:</strong> Documents are sent one by one (safer, slower)</li>
+                            <li><strong>Parallel:</strong> Multiple documents sent simultaneously (faster, uses more API calls)</li>
+                            <li><strong>Cost:</strong> Each document costs Q<field name="cost_per_dte" readonly="1"/> per DTE</li>
+                            <li><strong>Retry:</strong> Failed documents can be automatically retried</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Restaurant-specific info -->
+                    <div class="alert alert-success" role="alert" 
+                         attrs="{'invisible': [('has_pos_orders', '=', False)]}">
+                        <strong>🍽️ Restaurant Orders Detected:</strong>
+                        <p>This batch includes POS orders from your restaurant operations.</p>
+                        <p>Make sure all customer information is complete before sending to FEL.</p>
+                    </div>
+                </sheet>
+                
+                <footer>
+                    <button string="Send Selected to FEL" name="action_send_documents" type="object" class="btn-primary"/>
+                    <button string="Validate First" name="action_validate_documents" type="object" class="btn-secondary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Invoice Bulk Send Wizard -->
+    <record id="view_fel_invoice_send_wizard_form" model="ir.ui.view">
+        <field name="name">fel.invoice.send.wizard.form</field>
+        <field name="model">fel.invoice.send.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Send Invoices to FEL">
+                <header>
+                    <button name="action_send_invoices" string="Send Invoices" type="object" 
+                            class="btn-primary"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_title">
+                        <h1>🧾 Send Invoices to FEL</h1>
+                        <h3>Process multiple invoices for electronic invoicing</h3>
+                    </div>
+                    
+                    <group>
+                        <group string="Invoice Selection">
+                            <field name="invoice_ids" widget="many2many_tags" 
+                                   domain="[('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted')]"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="partner_ids" widget="many2many_tags"/>
+                        </group>
+                        
+                        <group string="Processing Options">
+                            <field name="auto_verify_nits"/>
+                            <field name="skip_verified_only"/>
+                            <field name="create_missing_partners"/>
+                        </group>
+                    </group>
+                    
+                    <button name="action_load_invoices" string="Load Invoices" type="object" class="btn-info"/>
+                    
+                    <!-- Loaded invoices -->
+                    <field name="loaded_invoice_ids" attrs="{'invisible': [('loaded_invoice_ids', '=', [])]}" nolabel="1">
+                        <tree string="Invoices to Process" create="false" delete="false">
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                            <field name="invoice_date"/>
+                            <field name="amount_total" widget="monetary"/>
+                            <field name="fel_status"/>
+                            <field name="requires_fel" widget="boolean"/>
+                            <field name="can_send_fel" widget="boolean"/>
+                        </tree>
+                    </field>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>📋 Invoice Processing Steps:</strong>
+                        <ol class="mb-0">
+                            <li>Select date range and filters</li>
+                            <li>Click "Load Invoices" to see matching invoices</li>
+                            <li>Review the list of invoices to be processed</li>
+                            <li>Click "Send Invoices" to start FEL processing</li>
+                        </ol>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- POS Orders Bulk Send Wizard -->
+    <record id="view_fel_pos_send_wizard_form" model="ir.ui.view">
+        <field name="name">fel.pos.send.wizard.form</field>
+        <field name="model">fel.pos.send.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Send POS Orders to FEL">
+                <header>
+                    <button name="action_send_orders" string="Send Orders" type="object" 
+                            class="btn-primary"/>
+                    <button name="action_set_all_cf" string="Set All as CF" type="object" 
+                            class="btn-warning"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_title">
+                        <h1>🍽️ Send Restaurant Orders to FEL</h1>
+                        <h3>Process POS orders from Kesiyos Restaurant</h3>
+                    </div>
+                    
+                    <group>
+                        <group string="Order Selection">
+                            <field name="session_ids" widget="many2many_tags"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="waiter_ids" widget="many2many_tags"/>
+                            <field name="table_filter"/>
+                        </group>
+                        
+                        <group string="Restaurant Options">
+                            <field name="only_paid_orders"/>
+                            <field name="include_cf_orders"/>
+                            <field name="auto_set_cf"/>
+                            <field name="require_customer_info"/>
+                        </group>
+                    </group>
+                    
+                    <button name="action_load_orders" string="Load Orders" type="object" class="btn-info"/>
+                    
+                    <!-- Order summary -->
+                    <group string="Order Summary" attrs="{'invisible': [('orders_loaded', '=', False)]}">
+                        <group>
+                            <field name="orders_loaded" readonly="1" invisible="1"/>
+                            <field name="total_orders" readonly="1"/>
+                            <field name="orders_with_customer" readonly="1"/>
+                            <field name="orders_without_customer" readonly="1"/>
+                        </group>
+                        
+                        <group>
+                            <field name="total_amount" readonly="1" widget="monetary"/>
+                            <field name="estimated_dte_cost" readonly="1" widget="monetary"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Loaded orders -->
+                    <field name="loaded_order_ids" attrs="{'invisible': [('loaded_order_ids', '=', [])]}" nolabel="1">
+                        <tree string="Restaurant Orders" create="false" delete="false">
+                            <field name="name"/>
+                            <field name="table_number"/>
+                            <field name="waiter_id"/>
+                            <field name="customer_nit"/>
+                            <field name="customer_name"/>
+                            <field name="amount_total" widget="monetary"/>
+                            <field name="fel_status"/>
+                            <field name="can_send_fel" widget="boolean"/>
+                        </tree>
+                    </field>
+                    
+                    <div class="alert alert-warning" role="alert" 
+                         attrs="{'invisible': [('orders_without_customer', '=', 0)]}">
+                        <strong>⚠️ Missing Customer Information:</strong>
+                        <p><field name="orders_without_customer" readonly="1"/> orders don't have customer information.</p>
+                        <p>You can:</p>
+                        <ul class="mb-0">
+                            <li>Set them all as "Consumidor Final" (CF) using the button above</li>
+                            <li>Manually edit each order to add customer information</li>
+                            <li>Skip orders without customer info</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-success" role="alert">
+                        <strong>🍽️ Restaurant FEL Processing:</strong>
+                        <ul class="mb-0">
+                            <li><strong>Table Service:</strong> Orders with table numbers and waiters</li>
+                            <li><strong>Customer Types:</strong> Business customers (with NIT) or Consumidor Final (CF)</li>
+                            <li><strong>Quick Processing:</strong> Bulk set walk-in customers as CF</li>
+                            <li><strong>Cost Tracking:</strong> Monitor DTE usage and costs</li>
+                        </ul>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- FEL Document Send Actions -->
+    <record id="action_fel_document_send_wizard" model="ir.actions.act_window">
+        <field name="name">Send Documents to FEL</field>
+        <field name="res_model">fel.document.send.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_document_ids': active_ids,
+            'active_model': 'fel.document'
+        }</field>
+    </record>
+    
+    <record id="action_fel_invoice_send_wizard" model="ir.actions.act_window">
+        <field name="name">Send Invoices to FEL</field>
+        <field name="res_model">fel.invoice.send.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_invoice_ids': active_ids,
+            'active_model': 'account.move'
+        }</field>
+    </record>
+    
+    <record id="action_fel_pos_send_wizard" model="ir.actions.act_window">
+        <field name="name">Send POS Orders to FEL</field>
+        <field name="res_model">fel.pos.send.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_order_ids': active_ids,
+            'active_model': 'pos.order'
+        }</field>
+    </record>
+    
+    <!-- Bulk Processing Actions (Context Menu) -->
+    <record id="action_bulk_send_invoices_fel" model="ir.actions.server">
+        <field name="name">Send Selected to FEL</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_user'))]"/>
+        <field name="code">
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Send Invoices to FEL',
+    'res_model': 'fel.invoice.send.wizard',
+    'view_mode': 'form',
+    'target': 'new',
+    'context': {
+        'default_invoice_ids': [(6, 0, records.ids)],
+    }
+}
+        </field>
+    </record>
+    
+    <record id="action_bulk_send_pos_orders_fel" model="ir.actions.server">
+        <field name="name">Send Selected to FEL</field>
+        <field name="model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_restaurant_user'))]"/>
+        <field name="code">
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Send POS Orders to FEL',
+    'res_model': 'fel.pos.send.wizard',
+    'view_mode': 'form',
+    'target': 'new',
+    'context': {
+        'default_order_ids': [(6, 0, records.ids)],
+    }
+}
+        </field>
+    </record>
+    
+    <!-- Daily FEL Processing Wizard for Restaurants -->
+    <record id="view_fel_daily_processing_wizard_form" model="ir.ui.view">
+        <field name="name">fel.daily.processing.wizard.form</field>
+        <field name="model">fel.daily.processing.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Daily FEL Processing">
+                <header>
+                    <button name="action_process_today" string="Process Today's Orders" type="object" 
+                            class="btn-primary"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_title">
+                        <h1>📅 Daily FEL Processing</h1>
+                        <h3>End-of-day FEL processing for restaurant</h3>
+                    </div>
+                    
+                    <group>
+                        <group string="Date Range">
+                            <field name="process_date" default="today"/>
+                            <field name="include_previous_days"/>
+                        </group>
+                        
+                        <group string="Processing Summary">
+                            <field name="pending_invoices" readonly="1"/>
+                            <field name="pending_pos_orders" readonly="1"/>
+                            <field name="estimated_total_cost" readonly="1" widget="monetary"/>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>🌅 End of Day Processing:</strong>
+                        <p>This wizard helps you process all pending FEL documents at the end of your business day.</p>
+                        <ul class="mb-0">
+                            <li>Reviews all unpaid orders and invoices</li>
+                            <li>Automatically sets missing customer info to "CF"</li>
+                            <li>Sends all documents to SAT</li>
+                            <li>Generates summary report for your records</li>
+                        </ul>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Daily Processing Action -->
+    <record id="action_fel_daily_processing_wizard" model="ir.actions.act_window">
+        <field name="name">Daily FEL Processing</field>
+        <field name="res_model">fel.daily.processing.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+    
+</odoo>
