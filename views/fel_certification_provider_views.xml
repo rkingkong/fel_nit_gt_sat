@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- FEL Certification Provider Form View -->
+    <record id="view_fel_certification_provider_form" model="ir.ui.view">
+        <field name="name">fel.certification.provider.form</field>
+        <field name="model">fel.certification.provider</field>
+        <field name="arch" type="xml">
+            <form string="FEL Certification Provider">
+                <header>
+                    <button name="test_connection" string="Test Connection" type="object" class="btn-primary"
+                            attrs="{'invisible': [('api_base_url', '=', False)]}"/>
+                    <field name="is_active" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. INFILE, S.A."/>
+                        </h1>
+                        <h3>
+                            <field name="code" placeholder="e.g. infile" class="text-lowercase"/>
+                        </h3>
+                    </div>
+                    
+                    <group>
+                        <group string="Basic Information">
+                            <field name="website" widget="url" placeholder="https://www.provider.com"/>
+                            <field name="api_base_url" placeholder="https://api.provider.com"/>
+                            <field name="api_version" placeholder="1.0"/>
+                        </group>
+                        
+                        <group string="Contact Information">
+                            <field name="contact_name" placeholder="Contact person"/>
+                            <field name="contact_email" widget="email" placeholder="contact@provider.com"/>
+                            <field name="contact_phone" placeholder="+502 2208-2208"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Supported Features" name="features">
+                            <group>
+                                <group string="Core Features">
+                                    <field name="supports_nit_verification"/>
+                                    <field name="supports_xml_generation"/>
+                                    <field name="supports_digital_signature"/>
+                                    <field name="supports_pdf_generation"/>
+                                </group>
+                            </group>
+                            
+                            <div class="alert alert-info" role="alert">
+                                <strong>Feature Support:</strong>
+                                <ul class="mb-0">
+                                    <li><strong>NIT Verification:</strong> Can verify customer NITs with SAT</li>
+                                    <li><strong>XML Generation:</strong> Generates FEL-compliant XML documents</li>
+                                    <li><strong>Digital Signature:</strong> Signs documents with digital certificates</li>
+                                    <li><strong>PDF Generation:</strong> Creates printable PDF versions</li>
+                                </ul>
+                            </div>
+                        </page>
+                        
+                        <page string="Pricing Information" name="pricing">
+                            <group>
+                                <group string="Costs (GTQ)">
+                                    <field name="setup_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="cost_per_dte" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="annual_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="annual_dte_limit"/>
+                                </group>
+                            </group>
+                            
+                            <!-- INFILE pricing example -->
+                            <div class="alert alert-success" role="alert" 
+                                 attrs="{'invisible': [('code', '!=', 'infile')]}">
+                                <strong>INFILE Pricing (from proposal):</strong>
+                                <ul class="mb-0">
+                                    <li>Setup: Q. 995.00 (one-time)</li>
+                                    <li>Cost per DTE: Q. 0.33</li>
+                                    <li>Annual quota: 1,200 DTEs</li>
+                                    <li>Annual cost: Q. 396.00</li>
+                                </ul>
+                            </div>
+                        </page>
+                        
+                        <page string="API Configuration" name="api_config">
+                            <group>
+                                <group string="Environment URLs">
+                                    <field name="test_api_url" placeholder="https://test-api.provider.com"/>
+                                    <field name="production_api_url" placeholder="https://api.provider.com"/>
+                                </group>
+                            </group>
+                            
+                            <div class="alert alert-warning" role="alert">
+                                <strong>API Configuration:</strong>
+                                These URLs will be used by FEL configurations to connect to this provider.
+                                Make sure the URLs are correct and accessible.
+                            </div>
+                        </page>
+                        
+                        <page string="Statistics" name="statistics">
+                            <group>
+                                <group string="Usage Statistics">
+                                    <!-- These would be computed fields in future versions -->
+                                    <label string="Active Configurations" class="o_form_label"/>
+                                    <div>
+                                        <span class="text-muted">Statistics will be available in future versions</span>
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                    
+                    <!-- Hidden currency field for monetary widgets -->
+                    <field name="currency_id" invisible="1"/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    
+    <!-- FEL Certification Provider Tree View -->
+    <record id="view_fel_certification_provider_tree" model="ir.ui.view">
+        <field name="name">fel.certification.provider.tree</field>
+        <field name="model">fel.certification.provider</field>
+        <field name="arch" type="xml">
+            <tree string="FEL Certification Providers" 
+                  decoration-success="is_active" 
+                  decoration-muted="not is_active">
+                <field name="name"/>
+                <field name="code" class="text-uppercase"/>
+                <field name="website" widget="url"/>
+                <field name="contact_phone"/>
+                <field name="contact_email" widget="email"/>
+                <field name="supports_nit_verification" widget="boolean_toggle"/>
+                <field name="supports_xml_generation" widget="boolean_toggle"/>
+                <field name="supports_digital_signature" widget="boolean_toggle"/>
+                <field name="setup_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="cost_per_dte" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="is_active" widget="boolean_toggle"/>
+                <field name="currency_id" invisible="1"/>
+                <button name="test_connection" string="Test" type="object" icon="fa-plug"
+                        attrs="{'invisible': [('is_active', '=', False)]}"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- FEL Certification Provider Search View -->
+    <record id="view_fel_certification_provider_search" model="ir.ui.view">
+        <field name="name">fel.certification.provider.search</field>
+        <field name="model">fel.certification.provider</field>
+        <field name="arch" type="xml">
+            <search string="FEL Certification Providers">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="contact_name"/>
+                <field name="contact_email"/>
+                <separator/>
+                <filter string="Active" name="active" domain="[('is_active', '=', True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('is_active', '=', False)]"/>
+                <separator/>
+                <filter string="Supports NIT Verification" name="supports_nit" 
+                        domain="[('supports_nit_verification', '=', True)]"/>
+                <filter string="Supports XML Generation" name="supports_xml" 
+                        domain="[('supports_xml_generation', '=', True)]"/>
+                <filter string="Supports Digital Signature" name="supports_signature" 
+                        domain="[('supports_digital_signature', '=', True)]"/>
+                <filter string="Supports PDF Generation" name="supports_pdf" 
+                        domain="[('supports_pdf_generation', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Active Status" name="group_active" 
+                            context="{'group_by': 'is_active'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- FEL Certification Provider Kanban View -->
+    <record id="view_fel_certification_provider_kanban" model="ir.ui.view">
+        <field name="name">fel.certification.provider.kanban</field>
+        <field name="model">fel.certification.provider</field>
+        <field name="arch" type="xml">
+            <kanban string="FEL Certification Providers" class="o_kanban_dashboard">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="website"/>
+                <field name="is_active"/>
+                <field name="contact_name"/>
+                <field name="contact_email"/>
+                <field name="contact_phone"/>
+                <field name="supports_nit_verification"/>
+                <field name="supports_xml_generation"/>
+                <field name="supports_digital_signature"/>
+                <field name="supports_pdf_generation"/>
+                <field name="setup_cost"/>
+                <field name="cost_per_dte"/>
+                <field name="annual_cost"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card #{record.is_active.raw_value ? 'oe_kanban_color_2' : 'oe_kanban_color_8'}">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <div class="o_kanban_record_subtitle">
+                                            <span class="badge badge-primary"><field name="code"/></span>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_record_top_right">
+                                        <div class="o_dropdown_kanban dropdown">
+                                            <a class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" href="#" role="button">
+                                                <span class="fa fa-ellipsis-v"/>
+                                            </a>
+                                            <div class="dropdown-menu" role="menu">
+                                                <a name="test_connection" type="object" class="dropdown-item">Test Connection</a>
+                                                <a t-attf-href="#{record.website.raw_value}" target="_blank" class="dropdown-item" 
+                                                   t-if="record.website.raw_value">Visit Website</a>
+                                                <div class="dropdown-divider"/>
+                                                <div class="dropdown-item-text">
+                                                    <field name="is_active" widget="boolean_toggle"/>
+                                                    Active
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="o_kanban_record_body">
+                                    <!-- Contact Information -->
+                                    <div class="row" t-if="record.contact_name.raw_value">
+                                        <div class="col-12">
+                                            <i class="fa fa-user"/> <field name="contact_name"/>
+                                        </div>
+                                    </div>
+                                    <div class="row" t-if="record.contact_email.raw_value">
+                                        <div class="col-12">
+                                            <i class="fa fa-envelope"/> <field name="contact_email"/>
+                                        </div>
+                                    </div>
+                                    <div class="row" t-if="record.contact_phone.raw_value">
+                                        <div class="col-12">
+                                            <i class="fa fa-phone"/> <field name="contact_phone"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Features -->
+                                    <div class="row mt-2">
+                                        <div class="col-12">
+                                            <small class="text-muted">Features: </small>
+                                            <span t-if="record.supports_nit_verification.raw_value" 
+                                                  class="badge badge-success mr-1" title="NIT Verification">NIT</span>
+                                            <span t-if="record.supports_xml_generation.raw_value" 
+                                                  class="badge badge-info mr-1" title="XML Generation">XML</span>
+                                            <span t-if="record.supports_digital_signature.raw_value" 
+                                                  class="badge badge-warning mr-1" title="Digital Signature">Signature</span>
+                                            <span t-if="record.supports_pdf_generation.raw_value" 
+                                                  class="badge badge-secondary mr-1" title="PDF Generation">PDF</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pricing -->
+                                    <div class="row mt-2" t-if="record.cost_per_dte.raw_value">
+                                        <div class="col-12">
+                                            <small class="text-muted">Cost per DTE: </small>
+                                            <strong>Q<t t-esc="record.cost_per_dte.raw_value"/></strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="o_kanban_record_bottom" t-if="record.setup_cost.raw_value">
+                                    <div class="oe_kanban_bottom_left">
+                                        <small>Setup: Q<t t-esc="record.setup_cost.raw_value"/></small>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right" t-if="record.annual_cost.raw_value">
+                                        <small>Annual: Q<t t-esc="record.annual_cost.raw_value"/></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- FEL Certification Provider Action -->
+    <record id="action_fel_certification_provider" model="ir.actions.act_window">
+        <field name="name">FEL Certification Providers</field>
+        <field name="res_model">fel.certification.provider</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="search_view_id" ref="view_fel_certification_provider_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add your first FEL certification provider
+            </p>
+            <p>
+                FEL certification providers are authorized companies that handle 
+                electronic invoice processing with Guatemala's SAT.
+            </p>
+            <p>
+                Popular providers include:
+                <ul>
+                    <li><strong>INFILE, S.A.</strong> - Full-service FEL provider</li>
+                    <li><strong>GUATEFACT</strong> - Alternative FEL provider</li>
+                    <li><strong>DIGIFACT</strong> - Digital invoice solutions</li>
+                </ul>
+            </p>
+        </field>
+    </record>
+    
+    <!-- Quick Create INFILE Provider Action -->
+    <record id="action_create_infile_provider" model="ir.actions.server">
+        <field name="name">Create INFILE Provider</field>
+        <field name="model_id" ref="model_fel_certification_provider"/>
+        <field name="state">code</field>
+        <field name="code">
+# Create INFILE provider with data from proposal
+provider = env['fel.certification.provider'].get_infile_provider()
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'INFILE Provider',
+    'res_model': 'fel.certification.provider',
+    'res_id': provider.id,
+    'view_mode': 'form',
+    'target': 'current',
+}
+        </field>
+    </record>
+    
+    <!-- Context Actions -->
+    <record id="action_activate_providers" model="ir.actions.server">
+        <field name="name">Activate Providers</field>
+        <field name="model_id" ref="model_fel_certification_provider"/>
+        <field name="binding_model_id" ref="model_fel_certification_provider"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_manager'))]"/>
+        <field name="code">
+records.write({'is_active': True})
+        </field>
+    </record>
+    
+    <record id="action_test_provider_connections" model="ir.actions.server">
+        <field name="name">Test Connections</field>
+        <field name="model_id" ref="model_fel_certification_provider"/>
+        <field name="binding_model_id" ref="model_fel_certification_provider"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_manager'))]"/>
+        <field name="code">
+tested_count = 0
+for provider in records.filtered('is_active'):
+    try:
+        provider.test_connection()
+        tested_count += 1
+    except Exception as e:
+        pass
+
+if tested_count > 0:
+    env.user.notify_success(f'Tested {tested_count} provider connections')
+        </field>
+    </record>
+    
+</odoo>
