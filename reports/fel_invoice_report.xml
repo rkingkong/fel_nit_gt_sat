@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- FEL Invoice Report Template -->
+    <template id="fel_invoice_document">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="doc.with_context(lang=lang)"/>
+            <t t-set="forced_vat" t-value="doc.fiscal_position_id.foreign_vat"/> <!-- So that it appears in the footer of the report -->
+            <t t-set="address">
+                <div t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                <p t-if="doc.partner_id.vat"><t t-esc="doc.company_id.country_id.vat_label or 'Tax ID'"/>: <span t-field="doc.partner_id.vat"/></p>
+            </t>
+            <div class="page">
+                <!-- Guatemala Flag and FEL Header -->
+                <div class="row mb-4">
+                    <div class="col-12 text-center">
+                        <h2 class="text-primary">🇬🇹 FACTURA ELECTRÓNICA EN LÍNEA (FEL)</h2>
+                        <p class="text-muted">República de Guatemala - SAT</p>
+                    </div>
+                </div>
+                
+                <!-- Company and FEL Information Header -->
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <strong>EMISOR:</strong><br/>
+                        <span t-field="doc.company_id.name"/><br/>
+                        <span t-if="doc.company_id.partner_id.nit_gt">
+                            NIT: <span t-field="doc.company_id.partner_id.nit_gt"/>
+                        </span><br/>
+                        <div t-field="doc.company_id.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                    </div>
+                    <div class="col-6 text-right">
+                        <h4 class="text-primary">
+                            <span t-field="doc.fel_document_type_id.name"/> 
+                            <span t-field="doc.fel_document_type_id.code" class="badge badge-primary"/>
+                        </h4>
+                        <table class="table table-sm table-borderless">
+                            <tr t-if="doc.fel_series">
+                                <td><strong>Serie:</strong></td>
+                                <td><span t-field="doc.fel_series"/></td>
+                            </tr>
+                            <tr t-if="doc.fel_number">
+                                <td><strong>Número:</strong></td>
+                                <td><span t-field="doc.fel_number"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fecha:</strong></td>
+                                <td><span t-field="doc.invoice_date"/></td>
+                            </tr>
+                            <tr t-if="doc.fel_uuid">
+                                <td><strong>UUID:</strong></td>
+                                <td><small><span t-field="doc.fel_uuid"/></small></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Customer Information -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-primary">RECEPTOR:</h5>
+                        <table class="table table-sm table-bordered">
+                            <tr>
+                                <td width="15%"><strong>NIT:</strong></td>
+                                <td width="35%">
+                                    <span t-if="doc.partner_id.nit_gt" t-field="doc.partner_id.nit_gt"/>
+                                    <span t-else="">CF</span>
+                                </td>
+                                <td width="15%"><strong>Nombre:</strong></td>
+                                <td width="35%"><span t-field="doc.partner_id.name"/></td>
+                            </tr>
+                            <tr t-if="doc.partner_id.nit_gt and doc.partner_id.nit_gt != 'CF'">
+                                <td><strong>Dirección:</strong></td>
+                                <td colspan="3">
+                                    <div t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                                </td>
+                            </tr>
+                            <tr t-if="doc.partner_id.tax_regime_gt">
+                                <td><strong>Régimen:</strong></td>
+                                <td>
+                                    <span t-if="doc.partner_id.tax_regime_gt == 'general'">Régimen General</span>
+                                    <span t-if="doc.partner_id.tax_regime_gt == 'pequeno'">Pequeño Contribuyente</span>
+                                    <span t-if="doc.partner_id.tax_regime_gt == 'especial'">Régimen Especial</span>
+                                </td>
+                                <td><strong>Moneda:</strong></td>
+                                <td><span t-field="doc.currency_id.name"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Restaurant Information (if POS order) -->
+                <div class="row mb-4" t-if="doc.pos_order_id">
+                    <div class="col-12">
+                        <h5 class="text-success">🍽️ INFORMACIÓN DEL RESTAURANTE:</h5>
+                        <table class="table table-sm table-bordered bg-light">
+                            <tr>
+                                <td width="25%"><strong>Mesa:</strong></td>
+                                <td width="25%">
+                                    <span t-if="doc.pos_order_id.table_number" t-field="doc.pos_order_id.table_number"/>
+                                    <span t-else="">-</span>
+                                </td>
+                                <td width="25%"><strong>Mesero:</strong></td>
+                                <td width="25%">
+                                    <span t-if="doc.pos_order_id.waiter_id" t-field="doc.pos_order_id.waiter_id.name"/>
+                                    <span t-else="">-</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Orden POS:</strong></td>
+                                <td><span t-field="doc.pos_order_id.name"/></td>
+                                <td><strong>Fecha Orden:</strong></td>
+                                <td><span t-field="doc.pos_order_id.date_order" t-options='{"widget": "datetime"}'/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Invoice Lines -->
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="text-primary">DETALLE DE PRODUCTOS/SERVICIOS:</h5>
+                        <table class="table table-sm table-bordered">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Descripción</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-center">Unidad</th>
+                                    <th class="text-right">Precio Unitario</th>
+                                    <th class="text-right">Descuento</th>
+                                    <th class="text-right">Subtotal</th>
+                                    <th class="text-right">IVA</th>
+                                    <th class="text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="line_number" t-value="1"/>
+                                <tr t-foreach="doc.invoice_line_ids.filtered(lambda line: not line.display_type)" t-as="line">
+                                    <td class="text-center">
+                                        <span t-esc="line_number"/>
+                                        <t t-set="line_number" t-value="line_number + 1"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="line.name"/>
+                                        <span t-if="line.product_id.type == 'service'" class="badge badge-info ml-1">Servicio</span>
+                                        <span t-else="" class="badge badge-secondary ml-1">Bien</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.quantity" t-options='{"widget": "float", "precision": 2}'/>
+                                    </td>
+                                    <td class="text-center">UNI</td>
+                                    <td class="text-right">
+                                        <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-if="line.discount > 0">
+                                            <span t-esc="line.discount"/>%
+                                        </span>
+                                        <span t-else="">-</span>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-set="line_tax" t-value="line.price_total - line.price_subtotal"/>
+                                        <span t-esc="line_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-field="line.price_total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Totals -->
+                <div class="row">
+                    <div class="col-8"></div>
+                    <div class="col-4">
+                        <table class="table table-sm table-bordered">
+                            <tr>
+                                <td><strong>Subtotal:</strong></td>
+                                <td class="text-right">
+                                    <span t-field="doc.amount_untaxed" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr t-if="doc.amount_tax > 0">
+                                <td><strong>IVA (12%):</strong></td>
+                                <td class="text-right">
+                                    <span t-field="doc.amount_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="table-active">
+                                <td><strong>TOTAL:</strong></td>
+                                <td class="text-right">
+                                    <strong>
+                                        <span t-field="doc.amount_total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Amount in Words -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <p><strong>Cantidad en Letras:</strong> 
+                            <span t-esc="doc.amount_total" t-options='{"widget": "text"}'/> <!-- You could add a custom widget for amount in words -->
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- FEL Certification Information -->
+                <div class="row mb-4" t-if="doc.fel_status == 'certified'">
+                    <div class="col-12">
+                        <div class="alert alert-success">
+                            <h6 class="alert-heading">✅ DOCUMENTO CERTIFICADO POR SAT</h6>
+                            <hr/>
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr>
+                                    <td width="20%"><strong>UUID:</strong></td>
+                                    <td width="80%"><code><span t-field="doc.fel_uuid"/></code></td>
+                                </tr>
+                                <tr t-if="doc.fel_certification_date">
+                                    <td><strong>Fecha Certificación:</strong></td>
+                                    <td><span t-field="doc.fel_certification_date" t-options='{"widget": "datetime"}'/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Proveedor FEL:</strong></td>
+                                    <td>INFILE, S.A.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- QR Code (if available) -->
+                <div class="row mb-4" t-if="doc.fel_uuid">
+                    <div class="col-8">
+                        <p><strong>Observaciones:</strong></p>
+                        <p t-field="doc.narration" t-if="doc.narration"/>
+                        <p t-else="">Este documento ha sido generado electrónicamente y certificado por la SAT de Guatemala.</p>
+                    </div>
+                    <div class="col-4 text-center">
+                        <p><strong>Código QR:</strong></p>
+                        <!-- QR Code would go here - you could generate it with the UUID -->
+                        <div class="border" style="height: 100px; line-height: 100px;">
+                            <small class="text-muted">QR Code<br/>UUID: <span t-field="doc.fel_uuid"/></small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer Information -->
+                <div class="row">
+                    <div class="col-12">
+                        <hr/>
+                        <div class="row">
+                            <div class="col-6">
+                                <small>
+                                    <strong>Kesiyos Restaurant</strong><br/>
+                                    🍽️ Fast-Casual Guatemalan Cuisine<br/>
+                                    📧 info@kesiyos.gt | 📞 +502 1234-5678<br/>
+                                    🌐 www.kesiyos.gt
+                                </small>
+                            </div>
+                            <div class="col-6 text-right">
+                                <small>
+                                    <strong>Factura Electrónica en Línea (FEL)</strong><br/>
+                                    Régimen de Facturación Electrónica<br/>
+                                    SAT - Guatemala<br/>
+                                    <em>Impreso: <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/></em>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- FEL Invoice Report Action -->
+    <record id="action_report_fel_invoice" model="ir.actions.report">
+        <field name="name">FEL Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">fel_guatemala.fel_invoice_document</field>
+        <field name="report_file">fel_guatemala.fel_invoice_document</field>
+        <field name="print_report_name">'FEL_%s_%s' % (object.fel_document_type_id.code or 'INV', object.name)</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_user'))]"/>
+    </record>
+    
+    <!-- POS Order FEL Receipt Template -->
+    <template id="fel_pos_receipt_document">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="doc"/>
+            <div class="page">
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <h3>🍽️ KESIYOS RESTAURANT</h3>
+                    <h4 class="text-primary">🇬🇹 FACTURA ELECTRÓNICA (FEL)</h4>
+                    <p class="text-muted">República de Guatemala</p>
+                </div>
+                
+                <!-- Order Information -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>Orden:</strong> <span t-field="doc.name"/><br/>
+                        <strong>Fecha:</strong> <span t-field="doc.date_order" t-options='{"widget": "datetime"}'/><br/>
+                        <strong>Mesa:</strong> <span t-field="doc.table_number"/> | 
+                        <strong>Mesero:</strong> <span t-field="doc.waiter_id.name"/>
+                    </div>
+                    <div class="col-6 text-right">
+                        <span t-if="doc.fel_document_type_id" class="badge badge-primary">
+                            <span t-field="doc.fel_document_type_id.code"/>
+                        </span><br/>
+                        <small t-if="doc.fel_uuid">
+                            UUID: <span t-field="doc.fel_uuid"/>
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- Customer -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <strong>Cliente:</strong> <span t-field="doc.customer_name"/><br/>
+                        <strong>NIT:</strong> <span t-field="doc.customer_nit"/>
+                    </div>
+                </div>
+                
+                <!-- Order Lines -->
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th class="text-center">Cant.</th>
+                            <th class="text-right">Precio</th>
+                            <th class="text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="doc.lines" t-as="line">
+                            <td><span t-field="line.product_id.name"/></td>
+                            <td class="text-center"><span t-field="line.qty"/></td>
+                            <td class="text-right">
+                                <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                            </td>
+                            <td class="text-right">
+                                <span t-field="line.price_subtotal_incl" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- Totals -->
+                <div class="row">
+                    <div class="col-6"></div>
+                    <div class="col-6">
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>TOTAL:</strong></td>
+                                <td class="text-right">
+                                    <strong>
+                                        <span t-field="doc.amount_total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- FEL Status -->
+                <div class="text-center mt-4" t-if="doc.fel_status == 'certified'">
+                    <div class="alert alert-success">
+                        ✅ <strong>CERTIFICADO POR SAT</strong><br/>
+                        <small><span t-field="doc.fel_uuid"/></small>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="text-center mt-4">
+                    <small>
+                        🍽️ ¡Gracias por visitarnos! 🇬🇹<br/>
+                        Kesiyos Restaurant - Comida Guatemalteca<br/>
+                        www.kesiyos.gt
+                    </small>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- POS FEL Receipt Report Action -->
+    <record id="action_report_fel_pos_receipt" model="ir.actions.report">
+        <field name="name">FEL POS Receipt</field>
+        <field name="model">pos.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">fel_guatemala.fel_pos_receipt_document</field>
+        <field name="report_file">fel_guatemala.fel_pos_receipt_document</field>
+        <field name="print_report_name">'FEL_POS_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_type">report</field>
+        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_restaurant_user'))]"/>
+    </record>
+    
+    <!-- FEL Monthly Report Template -->
+    <template id="fel_monthly_report_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div class="text-center mb-4">
+                    <h2>📊 REPORTE MENSUAL FEL</h2>
+                    <h3>🇬🇹 Kesiyos Restaurant</h3>
+                    <p class="text-muted">Facturación Electrónica en Línea</p>
+                </div>
+                
+                <!-- Summary would go here -->
+                <div class="alert alert-info">
+                    <p>Este reporte mostraría estadísticas mensuales de FEL incluyendo:</p>
+                    <ul>
+                        <li>Documentos generados por tipo</li>
+                        <li>Montos facturados</li>
+                        <li>Clientes atendidos</li>
+                        <li>Uso de DTEs</li>
+                        <li>Costos de certificación</li>
+                    </ul>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Monthly Report Action -->
+    <record id="action_report_fel_monthly" model="ir.actions.report">
+        <field name="name">FEL Monthly Report</field>
+        <field name="model">fel.config</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">fel_guatemala.fel_monthly_report_document</field>
+        <field name="report_file">fel_guatemala.fel_monthly_report_document</field>
+        <field name="print_report_name">'FEL_Monthly_Report_%s' % (datetime.datetime.now().strftime('%Y-%m'))</field>
+        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_manager'))]"/>
+    </record>
+    
+</odoo>
