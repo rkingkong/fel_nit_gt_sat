@@ -1,54 +1,301 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- Main FEL Menu -->
+    <!-- Main FEL Menu - Top Level -->
     <menuitem id="menu_fel_main" 
               name="FEL Guatemala" 
-              sequence="15"
-              groups="group_fel_user"/>
+              sequence="75"
+              web_icon="fel_guatemala,static/description/icon.png"
+              groups="fel_guatemala.group_fel_user"/>
     
-    <!-- Configuration Menu -->
-    <menuitem id="menu_fel_config" 
-              name="Configuration" 
+    <!-- Dashboard Submenu -->
+    <menuitem id="menu_fel_dashboard" 
+              name="Dashboard" 
               parent="menu_fel_main" 
               sequence="10"
-              groups="group_fel_manager"/>
+              action="action_fel_dashboard"
+              groups="fel_guatemala.group_fel_user"/>
+    
+    <!-- Documents Section -->
+    <menuitem id="menu_fel_documents_section" 
+              name="Documents" 
+              parent="menu_fel_main" 
+              sequence="20"
+              groups="fel_guatemala.group_fel_user"/>
+    
+    <menuitem id="menu_fel_documents_all" 
+              name="All FEL Documents" 
+              parent="menu_fel_documents_section" 
+              action="action_fel_document" 
+              sequence="10"/>
+    
+    <menuitem id="menu_fel_documents_pending" 
+              name="Pending Documents" 
+              parent="menu_fel_documents_section" 
+              action="action_fel_document_draft" 
+              sequence="20"/>
+    
+    <menuitem id="menu_fel_documents_certified" 
+              name="Certified Documents" 
+              parent="menu_fel_documents_section" 
+              action="action_fel_document_certified" 
+              sequence="30"/>
+    
+    <menuitem id="menu_fel_documents_errors" 
+              name="Documents with Errors" 
+              parent="menu_fel_documents_section" 
+              action="action_fel_document_error" 
+              sequence="40"/>
+    
+    <!-- Invoices Section -->
+    <menuitem id="menu_fel_invoices_section" 
+              name="Invoices" 
+              parent="menu_fel_main" 
+              sequence="30"
+              groups="fel_guatemala.group_fel_user"/>
+    
+    <menuitem id="menu_fel_invoices_all" 
+              name="FEL Invoices" 
+              parent="menu_fel_invoices_section" 
+              action="action_fel_invoice_dashboard" 
+              sequence="10"/>
+    
+    <menuitem id="menu_fel_invoices_pending" 
+              name="Pending FEL Invoices" 
+              parent="menu_fel_invoices_section" 
+              action="action_fel_pending_invoices" 
+              sequence="20"/>
+    
+    <menuitem id="menu_fel_invoices_errors" 
+              name="FEL Invoice Errors" 
+              parent="menu_fel_invoices_section" 
+              action="action_fel_error_invoices" 
+              sequence="30"/>
+    
+    <!-- Customers Section -->
+    <menuitem id="menu_fel_customers_section" 
+              name="Customers" 
+              parent="menu_fel_main" 
+              sequence="40"
+              groups="fel_guatemala.group_fel_user"/>
+    
+    <menuitem id="menu_fel_customers_dashboard" 
+              name="FEL Customers" 
+              parent="menu_fel_customers_section" 
+              action="action_fel_customer_dashboard" 
+              sequence="10"/>
+    
+    <menuitem id="menu_fel_customers_nit_verification" 
+              name="NIT Verification" 
+              parent="menu_fel_customers_section" 
+              action="action_partner_nit_verification" 
+              sequence="20"
+              groups="fel_guatemala.group_fel_nit_verifier"/>
+    
+    <!-- Tools Section -->
+    <menuitem id="menu_fel_tools_section" 
+              name="Tools" 
+              parent="menu_fel_main" 
+              sequence="50"
+              groups="fel_guatemala.group_fel_user"/>
+    
+    <menuitem id="menu_fel_nit_verification_wizard" 
+              name="Verify NIT" 
+              parent="menu_fel_tools_section" 
+              action="action_fel_nit_verification_wizard" 
+              sequence="10"
+              groups="fel_guatemala.group_fel_nit_verifier"/>
+    
+    <menuitem id="menu_fel_batch_processing" 
+              name="Batch Processing" 
+              parent="menu_fel_tools_section" 
+              action="action_fel_batch_processing_wizard" 
+              sequence="20"
+              groups="fel_guatemala.group_fel_manager"/>
+    
+    <!-- Reports Section -->
+    <menuitem id="menu_fel_reports_section" 
+              name="Reports" 
+              parent="menu_fel_main" 
+              sequence="60"
+              groups="fel_guatemala.group_fel_user"/>
+    
+    <menuitem id="menu_fel_reports_monthly" 
+              name="Monthly FEL Report" 
+              parent="menu_fel_reports_section" 
+              action="action_fel_monthly_report" 
+              sequence="10"/>
+    
+    <menuitem id="menu_fel_reports_usage" 
+              name="DTE Usage Report" 
+              parent="menu_fel_reports_section" 
+              action="action_fel_usage_report" 
+              sequence="20"/>
+    
+    <menuitem id="menu_fel_reports_errors" 
+              name="Error Analysis Report" 
+              parent="menu_fel_reports_section" 
+              action="action_fel_error_report" 
+              sequence="30"/>
+    
+    <!-- Configuration Section (Manager Only) -->
+    <menuitem id="menu_fel_config_section" 
+              name="Configuration" 
+              parent="menu_fel_main" 
+              sequence="90"
+              groups="fel_guatemala.group_fel_manager"/>
     
     <menuitem id="menu_fel_config_main" 
               name="FEL Configuration" 
-              parent="menu_fel_config" 
+              parent="menu_fel_config_section" 
               action="action_fel_config" 
               sequence="10"/>
     
     <menuitem id="menu_fel_providers" 
               name="Certification Providers" 
-              parent="menu_fel_config" 
+              parent="menu_fel_config_section" 
               action="action_fel_certification_provider" 
               sequence="20"/>
     
     <menuitem id="menu_fel_document_types" 
               name="Document Types" 
-              parent="menu_fel_config" 
+              parent="menu_fel_config_section" 
               action="action_fel_document_type" 
               sequence="30"/>
     
-    <!-- Documents Menu -->
-    <menuitem id="menu_fel_documents" 
-              name="FEL Documents" 
-              parent="menu_fel_main" 
-              action="action_fel_document" 
-              sequence="20"/>
+    <!-- Integration with existing Odoo menus -->
     
-    <!-- Tools Menu -->
-    <menuitem id="menu_fel_tools" 
-              name="Tools" 
-              parent="menu_fel_main" 
-              sequence="30"/>
+    <!-- Add FEL submenu to Accounting -->
+    <menuitem id="menu_accounting_fel" 
+              name="FEL Guatemala" 
+              parent="account.menu_finance" 
+              sequence="99"
+              action="action_fel_invoice_dashboard"
+              groups="fel_guatemala.group_fel_user"/>
     
-    <menuitem id="menu_fel_nit_verification" 
-              name="NIT Verification" 
-              parent="menu_fel_tools" 
-              action="action_fel_nit_verification_wizard" 
+    <!-- Add FEL submenu to Point of Sale -->
+    <menuitem id="menu_pos_fel" 
+              name="FEL Integration" 
+              parent="point_of_sale.menu_point_root" 
+              sequence="99"
+              groups="fel_guatemala.group_fel_restaurant_user"/>
+    
+    <menuitem id="menu_pos_fel_orders" 
+              name="FEL POS Orders" 
+              parent="menu_pos_fel" 
+              action="action_fel_pos_orders" 
               sequence="10"/>
     
+    <menuitem id="menu_pos_fel_config" 
+              name="POS FEL Configuration" 
+              parent="menu_pos_fel" 
+              action="action_pos_config_fel" 
+              sequence="20"
+              groups="fel_guatemala.group_fel_manager"/>
+    
+    <!-- Add FEL to Sales menu -->
+    <menuitem id="menu_sales_fel_customers" 
+              name="FEL Customer Verification" 
+              parent="sale.sale_menu_root" 
+              action="action_partner_nit_verification" 
+              sequence="99"
+              groups="fel_guatemala.group_fel_nit_verifier"/>
+    
 </odoo>
+
+<!-- 
+MODULE STRUCTURE LOCATION:
+This file should be placed at: fel_guatemala/menu/fel_menu.xml
+
+COMPLETE MODULE FOLDER STRUCTURE:
+fel_guatemala/
+├── __init__.py                           ✅ (Commit 1)
+├── __manifest__.py                       ✅ (Commit 1) 
+├── models/
+│   ├── __init__.py                       ✅ (Commit 2)
+│   ├── fel_certification_provider.py    ✅ (Commit 1)
+│   ├── fel_document_type.py             ✅ (Commit 2) 
+│   ├── fel_config.py                    ✅ (Commit 3)
+│   ├── res_partner.py                   ✅ (Commit 4)
+│   ├── fel_nit_verification.py          ✅ (Commit 5)
+│   ├── account_move.py                  ✅ (Commit 6)
+│   ├── fel_document.py                  ✅ (Commit 7)
+│   └── pos_order.py                     ✅ (Commit 8)
+├── security/
+│   ├── ir.model.access.csv              ✅ (Commit 9)
+│   └── fel_security.xml                 ✅ (Commit 10)
+├── views/
+│   ├── fel_config_views.xml             ✅ (Commit 11)
+│   ├── fel_document_views.xml           ✅ (Commit 12)
+│   ├── res_partner_views.xml            ✅ (Commit 13)
+│   ├── account_move_views.xml           ✅ (Commit 14)
+│   ├── fel_document_type_views.xml      🔄 (Next)
+│   ├── fel_certification_provider_views.xml  🔄 (Next)
+│   └── pos_order_views.xml              🔄 (Next)
+├── menu/
+│   └── fel_menu.xml                     ✅ (Commit 15 - THIS FILE)
+├── wizard/                              🔄 (Next)
+│   ├── __init__.py
+│   ├── fel_nit_verification_wizard.py
+│   └── fel_nit_verification_views.xml
+├── data/                                🔄 (Next)
+│   ├── fel_document_types.xml
+│   ├── fel_config_data.xml
+│   └── fel_demo_data.xml
+├── reports/                             🔄 (Next)
+│   ├── fel_invoice_report.xml
+│   └── fel_monthly_report.xml
+├── static/
+│   ├── description/
+│   │   ├── icon.png                     🔄 (Next)
+│   │   └── index.html                   🔄 (Next)
+│   └── src/
+│       ├── js/
+│       │   └── fel_pos.js               🔄 (Next)
+│       └── xml/
+│           └── fel_pos_templates.xml    🔄 (Next)
+└── i18n/                                🔄 (Optional)
+    ├── es.po                            
+    └── es_GT.po                         
+
+MENU HIERARCHY IN ODOO:
+Main Menu Bar:
+├── Apps
+├── Discuss  
+├── Calendar
+├── Contacts
+├── CRM
+├── Sales
+├── Invoicing
+│   └── FEL Guatemala (Integration)
+├── Accounting
+│   └── FEL Guatemala (Integration)  
+├── Point of Sale
+│   └── FEL Integration (Restaurant)
+├── FEL Guatemala (MAIN MODULE MENU) ⭐
+│   ├── Dashboard
+│   ├── Documents/
+│   │   ├── All FEL Documents
+│   │   ├── Pending Documents  
+│   │   ├── Certified Documents
+│   │   └── Documents with Errors
+│   ├── Invoices/
+│   │   ├── FEL Invoices
+│   │   ├── Pending FEL Invoices
+│   │   └── FEL Invoice Errors
+│   ├── Customers/
+│   │   ├── FEL Customers
+│   │   └── NIT Verification
+│   ├── Tools/
+│   │   ├── Verify NIT
+│   │   └── Batch Processing
+│   ├── Reports/
+│   │   ├── Monthly FEL Report
+│   │   ├── DTE Usage Report
+│   │   └── Error Analysis Report
+│   └── Configuration/ (Manager Only)
+│       ├── FEL Configuration
+│       ├── Certification Providers
+│       └── Document Types
+└── Settings
+-->
