@@ -1,21 +1,37 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_fel_config_manager,fel.config manager,model_fel_config,account.group_account_manager,1,1,1,1
-access_fel_config_user,fel.config user,model_fel_config,account.group_account_user,1,0,0,0
-access_fel_config_invoice_user,fel.config invoice user,model_fel_config,account.group_account_invoice,1,0,0,0
-access_fel_document_type_manager,fel.document.type manager,model_fel_document_type,account.group_account_manager,1,1,1,1
-access_fel_document_type_user,fel.document.type user,model_fel_document_type,account.group_account_user,1,0,0,0
-access_fel_document_type_invoice_user,fel.document.type invoice user,model_fel_document_type,account.group_account_invoice,1,0,0,0
-access_fel_document_type_pos_user,fel.document.type pos user,model_fel_document_type,point_of_sale.group_pos_user,1,0,0,0
-access_fel_document_manager,fel.document manager,model_fel_document,account.group_account_manager,1,1,1,1
-access_fel_document_user,fel.document user,model_fel_document,account.group_account_user,1,1,1,0
-access_fel_document_invoice_user,fel.document invoice user,model_fel_document,account.group_account_invoice,1,1,1,0
-access_fel_document_pos_user,fel.document pos user,model_fel_document,point_of_sale.group_pos_user,1,1,1,0
-access_fel_document_pos_manager,fel.document pos manager,model_fel_document,point_of_sale.group_pos_manager,1,1,1,1
-access_fel_certification_provider_manager,fel.certification.provider manager,model_fel_certification_provider,account.group_account_manager,1,1,1,1
-access_fel_certification_provider_user,fel.certification.provider user,model_fel_certification_provider,account.group_account_user,1,0,0,0
-access_fel_certification_provider_invoice_user,fel.certification.provider invoice user,model_fel_certification_provider,account.group_account_invoice,1,0,0,0
-access_fel_nit_verification_service_manager,fel.nit.verification.service manager,model_fel_nit_verification_service,account.group_account_manager,1,1,1,1
-access_fel_nit_verification_service_user,fel.nit.verification.service user,model_fel_nit_verification_service,account.group_account_user,1,1,1,0
-access_fel_nit_verification_service_invoice_user,fel.nit.verification.service invoice user,model_fel_nit_verification_service,account.group_account_invoice,1,1,1,0
-access_fel_nit_verification_service_pos_user,fel.nit.verification.service pos user,model_fel_nit_verification_service,point_of_sale.group_pos_user,1,1,1,0
-access_fel_nit_verification_service_sales_user,fel.nit.verification.service sales user,model_fel_nit_verification_service,sales_team.group_sale_salesman,1,1,1,0
+access_fel_config_manager,fel.config manager,model_fel_config,fel_guatemala.group_fel_manager,1,1,1,1
+access_fel_config_user,fel.config user,model_fel_config,fel_guatemala.group_fel_user,1,0,0,0
+access_fel_config_restaurant_user,fel.config restaurant user,model_fel_config,fel_guatemala.group_fel_restaurant_user,1,0,0,0
+access_fel_document_type_manager,fel.document.type manager,model_fel_document_type,fel_guatemala.group_fel_manager,1,1,1,1
+access_fel_document_type_user,fel.document.type user,model_fel_document_type,fel_guatemala.group_fel_user,1,0,0,0
+access_fel_document_type_restaurant_user,fel.document.type restaurant user,model_fel_document_type,fel_guatemala.group_fel_restaurant_user,1,0,0,0
+access_fel_document_manager,fel.document manager,model_fel_document,fel_guatemala.group_fel_manager,1,1,1,1
+access_fel_document_user,fel.document user,model_fel_document,fel_guatemala.group_fel_user,1,1,1,0
+access_fel_document_restaurant_user,fel.document restaurant user,model_fel_document,fel_guatemala.group_fel_restaurant_user,1,1,1,0
+access_fel_certification_provider_manager,fel.certification.provider manager,model_fel_certification_provider,fel_guatemala.group_fel_manager,1,1,1,1
+access_fel_certification_provider_user,fel.certification.provider user,model_fel_certification_provider,fel_guatemala.group_fel_user,1,0,0,0
+access_fel_nit_verification_service_manager,fel.nit.verification.service manager,model_fel_nit_verification_service,fel_guatemala.group_fel_manager,1,1,1,1
+access_fel_nit_verification_service_user,fel.nit.verification.service user,model_fel_nit_verification_service,fel_guatemala.group_fel_user,1,1,1,0
+access_fel_nit_verification_service_nit_verifier,fel.nit.verification.service nit verifier,model_fel_nit_verification_service,fel_guatemala.group_fel_nit_verifier,1,1,1,0
+access_fel_nit_verification_service_restaurant_user,fel.nit.verification.service restaurant user,model_fel_nit_verification_service,fel_guatemala.group_fel_restaurant_user,1,1,1,0
+access_fel_nit_verification_wizard_manager,fel.nit.verification.wizard manager,model_fel_nit_verification_wizard,fel_guatemala.group_fel_manager,1,1,1,1
+access_fel_nit_verification_wizard_user,fel.nit.verification.wizard user,model_fel_nit_verification_wizard,fel_guatemala.group_fel_user,1,1,1,1
+access_fel_nit_verification_wizard_nit_verifier,fel.nit.verification.wizard nit verifier,model_fel_nit_verification_wizard,fel_guatemala.group_fel_nit_verifier,1,1,1,1
+access_fel_nit_verification_wizard_restaurant_user,fel.nit.verification.wizard restaurant user,model_fel_nit_verification_wizard,fel_guatemala.group_fel_restaurant_user,1,1,1,1
+access_pos_order_customer_wizard_manager,pos.order.customer.wizard manager,model_pos_order_customer_wizard,fel_guatemala.group_fel_manager,1,1,1,1
+access_pos_order_customer_wizard_restaurant_user,pos.order.customer.wizard restaurant user,model_pos_order_customer_wizard,fel_guatemala.group_fel_restaurant_user,1,1,1,1
+access_pos_session_close_wizard_manager,pos.session.close.wizard manager,model_pos_session_close_wizard,fel_guatemala.group_fel_manager,1,1,1,1
+access_pos_session_close_wizard_restaurant_user,pos.session.close.wizard restaurant user,model_pos_session_close_wizard,fel_guatemala.group_fel_restaurant_user,1,1,1,1
+access_res_partner_fel_user,res.partner fel user,base.model_res_partner,fel_guatemala.group_fel_user,1,1,0,0
+access_res_partner_fel_nit_verifier,res.partner fel nit verifier,base.model_res_partner,fel_guatemala.group_fel_nit_verifier,1,1,0,0
+access_res_partner_fel_restaurant_user,res.partner fel restaurant user,base.model_res_partner,fel_guatemala.group_fel_restaurant_user,1,1,0,0
+access_account_move_fel_user,account.move fel user,account.model_account_move,fel_guatemala.group_fel_user,1,1,0,0
+access_pos_order_fel_restaurant_user,pos.order fel restaurant user,point_of_sale.model_pos_order,fel_guatemala.group_fel_restaurant_user,1,1,0,0
+access_pos_config_fel_manager,pos.config fel manager,point_of_sale.model_pos_config,fel_guatemala.group_fel_manager,1,1,0,0
+access_pos_config_fel_restaurant_user,pos.config fel restaurant user,point_of_sale.model_pos_config,fel_guatemala.group_fel_restaurant_user,1,0,0,0
+access_res_users_fel_restaurant_user,res.users fel restaurant user,base.model_res_users,fel_guatemala.group_fel_restaurant_user,1,0,0,0
+access_res_currency_fel_user,res.currency fel user,base.model_res_currency,fel_guatemala.group_fel_user,1,0,0,0
+access_res_currency_fel_restaurant_user,res.currency fel restaurant user,base.model_res_currency,fel_guatemala.group_fel_restaurant_user,1,0,0,0
+access_product_product_fel_restaurant_user,product.product fel restaurant user,product.model_product_product,fel_guatemala.group_fel_restaurant_user,1,0,0,0
+access_account_tax_fel_user,account.tax fel user,account.model_account_tax,fel_guatemala.group_fel_user,1,0,0,0
+access_account_tax_fel_restaurant_user,account.tax fel restaurant user,account.model_account_tax,fel_guatemala.group_fel_restaurant_user,1,0,0,0
