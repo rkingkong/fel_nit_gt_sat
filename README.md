@@ -13,10 +13,10 @@ Built specifically for **restaurant operations** and **fast-casual dining** like
 
 ```bash
 # Clone the repository
-git clone https://github.com/rkingkong/factura_electronica_gt.git
+git clone https://github.com/rkingkong/fel_nit_gt_sat.git
 
 # Copy to Odoo addons directory
-cp -r factura_electronica_gt/fel_guatemala /path/to/odoo/addons/
+cp -r factura_electronica_gt/fel_nit_gt_sat /path/to/odoo/addons/
 
 # Install Python dependencies
 pip install requests xmltodict lxml cryptography
@@ -87,13 +87,13 @@ Ensure these modules are installed:
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/rkingkong/factura_electronica_gt.git
-   cd factura_electronica_gt
+   git clone https://github.com/rkingkong/fel_nit_gt_sat.git
+   cd fel_nit_gt_sat
    ```
 
 2. **Copy Module to Odoo**
    ```bash
-   cp -r fel_guatemala /path/to/odoo/addons/
+   cp -r fel_nit_gt_sat /path/to/odoo/addons/
    ```
 
 3. **Update Apps List**
@@ -361,7 +361,7 @@ _logger.setLevel(logging.DEBUG)
 3. **Configure Odoo**
    ```bash
    # Copy module to addons directory
-   sudo cp -r fel_guatemala /opt/odoo/addons/
+   sudo cp -r fel_nit_gt_sat /opt/odoo/addons/
    
    # Restart Odoo service
    sudo systemctl restart odoo
@@ -427,18 +427,18 @@ git checkout -b feature/your-feature-name
 
 ```bash
 # Run Odoo tests
-python3 odoo-bin -d test_db -i fel_guatemala --test-enable --stop-after-init
+python3 odoo-bin -d test_db -i fel_nit_gt_sat --test-enable --stop-after-init
 
 # Run specific test
-python3 odoo-bin -d test_db --test-tags fel_guatemala
+python3 odoo-bin -d test_db --test-tags fel_nit_gt_sat
 ```
 
 ## 📞 Support
 
 ### Community Support
 
-- **GitHub Issues**: [Report bugs and feature requests](https://github.com/rkingkong/factura_electronica_gt/issues)
-- **Discussions**: [Community discussions](https://github.com/rkingkong/factura_electronica_gt/discussions)
+- **GitHub Issues**: [Report bugs and feature requests](https://github.com/rkingkong/fel_nit_gt_sat/issues)
+- **Discussions**: [Community discussions](https://github.com/rkingkong/fel_nit_gt_sat/discussions)
 
 ### Commercial Support
 
@@ -446,6 +446,7 @@ For Kesiyos Restaurant and commercial implementations:
 
 - **Email**: rkong@armku.us
 - **AWS Deployment**: Professional deployment services available
+- **Odoo Consultation**: Professional consulting services available
 
 ### INFILE Support
 
