@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Demo Restaurant Customers with various NIT types -->
+        <record id="partner_restaurant_customer_1" model="res.partner">
+            <field name="name">Restaurante El Fogón S.A.</field>
+            <field name="nit_gt">12345678</field>
+            <field name="tax_regime_gt">general</field>
+            <field name="is_company">True</field>
+            <field name="customer_rank">1</field>
+            <field name="country_id" ref="base.gt"/>
+            <field name="street">5ta Avenida 12-34, Zona 9</field>
+            <field name="city">Guatemala</field>
+            <field name="zip">01009</field>
+            <field name="phone">+502 2234-5678</field>
+            <field name="email">contabilidad@elfogon.com.gt</field>
+            <field name="is_fel_verified">True</field>
+            <field name="fel_verification_status">valid</field>
+            <field name="default_fel_document_type_id" ref="fel_document_type_fact"/>
+        </record>
+        
+        <record id="partner_restaurant_customer_2" model="res.partner">
+            <field name="name">Cafetería Los Arcos</field>
+            <field name="nit_gt">87654321</field>
+            <field name="tax_regime_gt">pequeno</field>
+            <field name="is_company">True</field>
+            <field name="customer_rank">1</field>
+            <field name="country_id" ref="base.gt"/>
+            <field name="street">12 Calle 8-45, Zona 1</field>
+            <field name="city">Guatemala</field>
+            <field name="zip">01001</field>
+            <field name="phone">+502 2345-6789</field>
+            <field name="email">info@losarcos.com.gt</field>
+            <field name="is_fel_verified">True</field>
+            <field name="fel_verification_status">valid</field>
+            <field name="default_fel_document_type_id" ref="fel_document_type_fpeq"/>
+        </record>
+        
+        <record id="partner_restaurant_customer_3" model="res.partner">
+            <field name="name">Hotel Plaza Real</field>
+            <field name="nit_gt">98765432</field>
+            <field name="tax_regime_gt">especial</field>
+            <field name="is_company">True</field>
+            <field name="customer_rank">1</field>
+            <field name="country_id" ref="base.gt"/>
+            <field name="street">7ma Avenida 14-25, Zona 10</field>
+            <field name="city">Guatemala</field>
+            <field name="zip">01010</field>
+            <field name="phone">+502 2456-7890</field>
+            <field name="email">reservas@plazareal.com.gt</field>
+            <field name="is_fel_verified">True</field>
+            <field name="fel_verification_status">valid</field>
+            <field name="default_fel_document_type_id" ref="fel_document_type_fesp"/>
+        </record>
+        
+        <!-- Demo Restaurant Staff -->
+        <record id="user_waiter_juan" model="res.users">
+            <field name="name">Juan Pérez</field>
+            <field name="login">juan.waiter</field>
+            <field name="email">juan@kesiyos.gt</field>
+            <field name="groups_id" eval="[(4, ref('point_of_sale.group_pos_user')), (4, ref('fel_guatemala.group_fel_restaurant_user'))]"/>
+        </record>
+        
+        <record id="user_waiter_maria" model="res.users">
+            <field name="name">María García</field>
+            <field name="login">maria.waiter</field>
+            <field name="email">maria@kesiyos.gt</field>
+            <field name="groups_id" eval="[(4, ref('point_of_sale.group_pos_user')), (4, ref('fel_guatemala.group_fel_restaurant_user'))]"/>
+        </record>
+        
+        <record id="user_manager_carlos" model="res.users">
+            <field name="name">Carlos López</field>
+            <field name="login">carlos.manager</field>
+            <field name="email">carlos@kesiyos.gt</field>
+            <field name="groups_id" eval="[(4, ref('point_of_sale.group_pos_manager')), (4, ref('fel_guatemala.group_fel_manager'))]"/>
+        </record>
+        
+        <!-- Demo Restaurant Products -->
+        <record id="product_carne_asada" model="product.product">
+            <field name="name">Carne Asada</field>
+            <field name="categ_id" ref="product_category_food_main"/>
+            <field name="type">service</field>
+            <field name="list_price">85.00</field>
+            <field name="standard_price">45.00</field>
+            <field name="taxes_id" eval="[(4, ref('tax_iva_guatemala'))]"/>
+            <field name="supplier_taxes_id" eval="[(4, ref('tax_iva_guatemala_purchase'))]"/>
+            <field name="available_in_pos">True</field>
+        </record>
+        
+        <record id="product_pollo_encebollado" model="product.product">
+            <field name="name">Pollo Encebollado</field>
+            <field name="categ_id" ref="product_category_food_main"/>
+            <field name="type">service</field>
+            <field name="list_price">75.00</field>
+            <field name="standard_price">35.00</field>
+            <field name="taxes_id" eval="[(4, ref('tax_iva_guatemala'))]"/>
+            <field name="supplier_taxes_id" eval="[(4, ref('tax_iva_guatemala_purchase'))]"/>
+            <field name="available_in_pos">True</field>
+        </record>
+        
+        <record id="product_pepian" model="product.product">
+            <field name="name">Pepián Guatemalteco</field>
+            <field name="categ_id" ref="product_category_food_main"/>
+            <field name="type">service</field>
+            <field name="list_price">90.00</field>
+            <field name="standard_price">50.00</field>
+            <field name="taxes_id" eval="[(4, ref('tax_iva_guatemala'))]"/>
+            <field name="supplier_taxes_id" eval="[(4, ref('tax_iva_guatemala_purchase'))]"/>
+            <field name="available_in_pos">True</field>
+        </record>
+        
+        <record id="product_guacamole" model="product.product">
+            <field name="name">Guacamole con Chips</field>
+            <field name="categ_id" ref="product_category_food_appetizers"/>
+            <field name="type">service</field>
+            <field name="list_price">35.00</field>
+            <field name="standard_price">18.00</field>
+            <field name="taxes_id" eval="[(4, ref('tax_iva_guatemala'))]"/>
+            <field name="supplier_taxes_id" eval="[(4, ref('tax_iva_guatemala_purchase'))]"/>
+            <field name="available_in_pos">True</field>
+        </record>
+        
+        <record id="product_nachos" model="product.product">
+            <field name="name">Nachos Supreme</field>
+            <field name="categ_id" ref="product_category_food_appetizers"/>
+            <field name="type">service</field>
+            <field name="list_price">45.00</field>
+            <field name="standard_price">22.00</field>
+            <field name="taxes_id" eval="[(4, ref('tax_iva_guatemala'))]"/>
+            <field name="supplier_taxes_id" eval="[(4, ref('tax_iva_guatemala_purchase'))]"/>
+            <field name="available_in_pos">True</field>
+        </record>
+        
+        <record id="product_coca_cola" model="product.product">
+            <field name="name">Coca Cola</field>
+            <field name="categ_id" ref="product_category_beverages"/>
+            <field name="type">consu</field>
+            <field name="list_price">15.00</field>
+            <field name="standard_price">8.00</field>
+            <field name="taxes_id" eval="[(4, ref('tax_iva_guatemala'))]"/>
+            <field name="supplier_taxes_id" eval="[(4, ref('tax_iva_guatemala_purchase'))]"/>
+            <field name="available_in_pos">True</field>
+        </record>
+        
+        <record id="product_horchata" model="product.product">
+            <field name="name">Horchata</field>
+            <field name="categ_id" ref="product_category_beverages"/>
+            <field name="type">service</field>
+            <field name="list_price">18.00</field>
+            <field name="standard_price">7.00</field>
+            <field name="taxes_id" eval="[(4, ref('tax_iva_guatemala'))]"/>
+            <field name="supplier_taxes_id" eval="[(4, ref('tax_iva_guatemala_purchase'))]"/>
+            <field name="available_in_pos">True</field>
+        </record>
+        
+        <record id="product_cafe_guatemalteco" model="product.product">
+            <field name="name">Café Guatemalteco</field>
+            <field name="categ_id" ref="product_category_beverages"/>
+            <field name="type">service</field>
+            <field name="list_price">12.00</field>
+            <field name="standard_price">4.00</field>
+            <field name="taxes_id" eval="[(4, ref('tax_iva_guatemala'))]"/>
+            <field name="supplier_taxes_id" eval="[(4, ref('tax_iva_guatemala_purchase'))]"/>
+            <field name="available_in_pos">True</field>
+        </record>
+        
+        <record id="product_flan" model="product.product">
+            <field name="name">Flan de Coco</field>
+            <field name="categ_id" ref="product_category_desserts"/>
+            <field name="type">service</field>
+            <field name="list_price">25.00</field>
+            <field name="standard_price">12.00</field>
+            <field name="taxes_id" eval="[(4, ref('tax_iva_guatemala'))]"/>
+            <field name="supplier_taxes_id" eval="[(4, ref('tax_iva_guatemala_purchase'))]"/>
+            <field name="available_in_pos">True</field>
+        </record>
+        
+        <record id="product_tres_leches" model="product.product">
+            <field name="name">Tres Leches</field>
+            <field name="categ_id" ref="product_category_desserts"/>
+            <field name="type">service</field>
+            <field name="list_price">28.00</field>
+            <field name="standard_price">15.00</field>
+            <field name="taxes_id" eval="[(4, ref('tax_iva_guatemala'))]"/>
+            <field name="supplier_taxes_id" eval="[(4, ref('tax_iva_guatemala_purchase'))]"/>
+            <field name="available_in_pos">True</field>
+        </record>
+        
+        <!-- Demo Restaurant Tables -->
+        <record id="restaurant_table_1" model="restaurant.table">
+            <field name="name">Mesa 1</field>
+            <field name="seats">4</field>
+            <field name="shape">square</field>
+        </record>
+        
+        <record id="restaurant_table_2" model="restaurant.table">
+            <field name="name">Mesa 2</field>
+            <field name="seats">6</field>
+            <field name="shape">square</field>
+        </record>
+        
+        <record id="restaurant_table_3" model="restaurant.table">
+            <field name="name">Mesa 3</field>
+            <field name="seats">2</field>
+            <field name="shape">round</field>
+        </record>
+        
+        <record id="restaurant_table_4" model="restaurant.table">
+            <field name="name">Mesa 4</field>
+            <field name="seats">8</field>
+            <field name="shape">square</field>
+        </record>
+        
+        <record id="restaurant_table_5" model="restaurant.table">
+            <field name="name">Terraza 1</field>
+            <field name="seats">4</field>
+            <field name="shape">round</field>
+        </record>
+        
+        <!-- Demo Company Configuration -->
+        <record id="demo_company_kesiyos" model="res.company">
+            <field name="name">Kesiyos Restaurant</field>
+            <field name="street">Centro Comercial Zona Viva, Local 123</field>
+            <field name="city">Guatemala</field>
+            <field name="zip">01010</field>
+            <field name="country_id" ref="base.gt"/>
+            <field name="phone">+502 2234-5000</field>
+            <field name="email">info@kesiyos.gt</field>
+            <field name="website">https://kesiyos.gt</field>
+            <field name="currency_id" ref="base.GTQ"/>
+        </record>
+        
+        <!-- Demo FEL Configuration for Kesiyos -->
+        <record id="fel_config_kesiyos_demo" model="fel.config">
+            <field name="company_id" ref="demo_company_kesiyos"/>
+            <field name="provider_id" ref="fel_provider_infile"/>
+            <field name="nit">987654321</field>
+            <field name="tax_regime">general</field>
+            <field name="environment">test</field>
+            <field name="api_url">https://test-api.infile.com.gt</field>
+            <field name="commercial_name">Kesiyos Restaurant</field>
+            <field name="establishment_code">1</field>
+            <field name="address_line">Centro Comercial Zona Viva, Local 123</field>
+            <field name="postal_code">01010</field>
+            <field name="municipality">Guatemala</field>
+            <field name="department">Guatemala</field>
+            <field name="country_code">GT</field>
+            <field name="monthly_dte_limit">100</field>
+            <field name="annual_dte_limit">1200</field>
+            <field name="auto_send_invoices">False</field>
+            <field name="auto_send_credit_notes">False</field>
+            <field name="auto_send_pos_orders">False</field>
+            <field name="test_mode">True</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- Demo POS Sessions and Orders -->
+        <record id="pos_session_demo_1" model="pos.session">
+            <field name="config_id" ref="pos_config_kesiyos_demo"/>
+            <field name="user_id" ref="user_manager_carlos"/>
+            <field name="start_at" eval="datetime.now() - timedelta(hours=8)"/>
+            <field name="state">opened</field>
+        </record>
+        
+        <!-- Demo POS Orders -->
+        <record id="pos_order_demo_1" model="pos.order">
+            <field name="name">Order 001</field>
+            <field name="session_id" ref="pos_session_demo_1"/>
+            <field name="partner_id" ref="partner_restaurant_customer_1"/>
+            <field name="customer_nit">12345678</field>
+            <field name="customer_name">Restaurante El Fogón S.A.</field>
+            <field name="table_number">Mesa 1</field>
+            <field name="waiter_id" ref="user_waiter_juan"/>
+            <field name="fel_document_type_id" ref="fel_document_type_fact"/>
+            <field name="state">paid</field>
+            <field name="fel_status">draft</field>
+        </record>
+        
+        <record id="pos_order_demo_2" model="pos.order">
+            <field name="name">Order 002</field>
+            <field name="session_id" ref="pos_session_demo_1"/>
+            <field name="partner_id" ref="partner_consumidor_final"/>
+            <field name="customer_nit">CF</field>
+            <field name="customer_name">Consumidor Final</field>
+            <field name="table_number">Mesa 3</field>
+            <field name="waiter_id" ref="user_waiter_maria"/>
+            <field name="fel_document_type_id" ref="fel_document_type_fact"/>
+            <field name="state">paid</field>
+            <field name="fel_status">draft</field>
+        </record>
+        
+        <!-- Demo Order Lines -->
+        <record id="pos_order_line_demo_1_1" model="pos.order.line">
+            <field name="order_id" ref="pos_order_demo_1"/>
+            <field name="product_id" ref="product_carne_asada"/>
+            <field name="qty">2</field>
+            <field name="price_unit">85.00</field>
+        </record>
+        
+        <record id="pos_order_line_demo_1_2" model="pos.order.line">
+            <field name="order_id" ref="pos_order_demo_1"/>
+            <field name="product_id" ref="product_guacamole"/>
+            <field name="qty">1</field>
+            <field name="price_unit">35.00</field>
+        </record>
+        
+        <record id="pos_order_line_demo_1_3" model="pos.order.line">
+            <field name="order_id" ref="pos_order_demo_1"/>
+            <field name="product_id" ref="product_coca_cola"/>
+            <field name="qty">2</field>
+            <field name="price_unit">15.00</field>
+        </record>
+        
+        <record id="pos_order_line_demo_2_1" model="pos.order.line">
+            <field name="order_id" ref="pos_order_demo_2"/>
+            <field name="product_id" ref="product_pepian"/>
+            <field name="qty">1</field>
+            <field name="price_unit">90.00</field>
+        </record>
+        
+        <record id="pos_order_line_demo_2_2" model="pos.order.line">
+            <field name="order_id" ref="pos_order_demo_2"/>
+            <field name="product_id" ref="product_cafe_guatemalteco"/>
+            <field name="qty">1</field>
+            <field name="price_unit">12.00</field>
+        </record>
+        
+        <!-- Demo Invoices -->
+        <record id="invoice_demo_1" model="account.move">
+            <field name="move_type">out_invoice</field>
+            <field name="partner_id" ref="partner_restaurant_customer_2"/>
+            <field name="invoice_date" eval="date.today()"/>
+            <field name="fel_document_type_id" ref="fel_document_type_fpeq"/>
+            <field name="fel_status">draft</field>
+        </record>
+        
+        <record id="invoice_line_demo_1_1" model="account.move.line">
+            <field name="move_id" ref="invoice_demo_1"/>
+            <field name="product_id" ref="product_pollo_encebollado"/>
+            <field name="quantity">5</field>
+            <field name="price_unit">75.00</field>
+            <field name="tax_ids" eval="[(4, ref('tax_iva_guatemala'))]"/>
+        </record>
+        
+        <record id="invoice_line_demo_1_2" model="account.move.line">
+            <field name="move_id" ref="invoice_demo_1"/>
+            <field name="product_id" ref="product_nachos"/>
+            <field name="quantity">3</field>
+            <field name="price_unit">45.00</field>
+            <field name="tax_ids" eval="[(4, ref('tax_iva_guatemala'))]"/>
+        </record>
+        
+    </data>
+</odoo>
