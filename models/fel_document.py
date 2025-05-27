@@ -15,6 +15,7 @@ class FelDocument(models.Model):
     _description = 'FEL Document'
     _order = 'create_date desc'
     _rec_name = 'name'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     
     name = fields.Char(
         string='Name', 
@@ -63,7 +64,8 @@ class FelDocument(models.Model):
     uuid = fields.Char(
         string='UUID', 
         readonly=True,
-        help='Unique identifier assigned by SAT'
+        help='Unique identifier assigned by SAT',
+        tracking=True
     )
     
     series = fields.Char(
@@ -115,7 +117,8 @@ class FelDocument(models.Model):
         ('error', 'Error'),
         ('cancelled', 'Cancelled'),
     ], string='State', default='draft', readonly=True,
-       help='Current processing state of the document')
+       help='Current processing state of the document',
+       tracking=True)
     
     error_message = fields.Text(
         string='Error Message', 
@@ -146,7 +149,8 @@ class FelDocument(models.Model):
     certification_date = fields.Datetime(
         string='Certification Date', 
         readonly=True,
-        help='Date when document was certified by SAT'
+        help='Date when document was certified by SAT',
+        tracking=True
     )
     
     # Document amounts for validation
@@ -684,142 +688,4 @@ class FelDocument(models.Model):
         for record in self:
             if record.state == 'certified':
                 raise ValidationError(_('Cannot delete certified FEL documents. Cancel them first if needed.'))
-        return super().unlink()(fel_config)
-            elif self.document_type_id.code == 'NDEB':
-                xml_content = self._generate_debit_note_xml(fel_config)
-            else:
-                raise ValidationError(_('Document type %s not supported yet.') % self.document_type_id.name)
-            
-            # Save XML content
-            self.xml_content = xml_content
-            self.xml_filename = f"{self.document_type_id.code}_{self.partner_id.nit_gt or 'CF'}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xml"
-            self.xml_file = base64.b64encode(xml_content.encode('utf-8'))
-            self.generation_date = fields.Datetime.now()
-            self.state = 'generated'
-            
-            _logger.info(f"XML generated successfully for FEL document {self.id}")
-            
-        except Exception as e:
-            self.state = 'error'
-            self.error_message = str(e)
-            _logger.error(f"XML generation failed for FEL document {self.id}: {str(e)}")
-            raise
-    
-    def _generate_invoice_xml(self, fel_config):
-        """Generate XML for invoice documents (FACT, FPEQ, etc.)"""
-        if not self.invoice_id:
-            raise ValidationError(_('Invoice is required for this document type.'))
-        
-        # Create XML structure according to Guatemala FEL specification
-        root = ET.Element('dte:GTDocumento')
-        root.set('xmlns:dte', 'http://www.sat.gob.gt/dte/fel/0.2.0')
-        root.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
-        root.set('Version', '0.1')
-        
-        # SAT element
-        sat = ET.SubElement(root, 'dte:SAT')
-        sat.set('ClaseDocumento', 'dte')
-        
-        # DTE element
-        dte = ET.SubElement(sat, 'dte:DTE')
-        dte.set('ID', 'DatosCertificados')
-        
-        # DatosEmision
-        datos_emision = ET.SubElement(dte, 'dte:DatosEmision')
-        datos_emision.set('ID', 'DatosEmision')
-        
-        # DatosGenerales
-        datos_generales = ET.SubElement(datos_emision, 'dte:DatosGenerales')
-        datos_generales.set('Tipo', self.document_type_id.code)
-        
-        # Format date according to FEL requirements
-        invoice_datetime = datetime.combine(self.invoice_id.invoice_date, datetime.min.time())
-        fecha_emision = invoice_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + '-06:00'
-        datos_generales.set('FechaHoraEmision', fecha_emision)
-        datos_generales.set('CodigoMoneda', self.invoice_id.currency_id.name)
-        
-        # Emisor (Company/Issuer)
-        emisor = ET.SubElement(datos_emision, 'dte:Emisor')
-        emisor.set('NITEmisor', fel_config.nit)
-        emisor.set('NombreEmisor', fel_config.commercial_name or self.company_id.name)
-        emisor.set('CodigoEstablecimiento', fel_config.establishment_code or '1')
-        emisor.set('NombreComercial', fel_config.commercial_name or self.company_id.name)
-        
-        # DireccionEmisor
-        direccion_emisor = ET.SubElement(emisor, 'dte:DireccionEmisor')
-        ET.SubElement(direccion_emisor, 'dte:Direccion').text = fel_config.address_line or self.company_id.street or ''
-        ET.SubElement(direccion_emisor, 'dte:CodigoPostal').text = fel_config.postal_code or '01001'
-        ET.SubElement(direccion_emisor, 'dte:Municipio').text = fel_config.municipality or 'Guatemala'
-        ET.SubElement(direccion_emisor, 'dte:Departamento').text = fel_config.department or 'Guatemala'
-        ET.SubElement(direccion_emisor, 'dte:Pais').text = fel_config.country_code or 'GT'
-        
-        # Receptor (Customer)
-        receptor = ET.SubElement(datos_emision, 'dte:Receptor')
-        receptor.set('IDReceptor', self.partner_id.nit_gt or 'CF')
-        receptor.set('NombreReceptor', self.partner_id.name)
-        
-        # Add address only if not Consumidor Final
-        if self.partner_id.nit_gt and self.partner_id.nit_gt != 'CF':
-            direccion_receptor = ET.SubElement(receptor, 'dte:DireccionReceptor')
-            ET.SubElement(direccion_receptor, 'dte:Direccion').text = self.partner_id.street or ''
-            ET.SubElement(direccion_receptor, 'dte:CodigoPostal').text = self.partner_id.zip or '01001'
-            ET.SubElement(direccion_receptor, 'dte:Municipio').text = self.partner_id.city or 'Guatemala'
-            ET.SubElement(direccion_receptor, 'dte:Departamento').text = (self.partner_id.state_id.name if self.partner_id.state_id else 'Guatemala')
-            ET.SubElement(direccion_receptor, 'dte:Pais').text = 'GT'
-        
-        # Items
-        items = ET.SubElement(datos_emision, 'dte:Items')
-        self._add_invoice_items_to_xml(items)
-        
-        # Totales
-        totales = ET.SubElement(datos_emision, 'dte:Totales')
-        self._add_totals_to_xml(totales)
-        
-        return ET.tostring(root, encoding='unicode', method='xml')
-    
-    def _add_invoice_items_to_xml(self, items_element):
-        """Add invoice line items to XML"""
-        line_number = 1
-        
-        for line in self.invoice_id.invoice_line_ids.filtered(lambda l: not l.display_type):
-            item = ET.SubElement(items_element, 'dte:Item')
-            item.set('NumeroLinea', str(line_number))
-            item.set('BienOServicio', 'S' if line.product_id.type == 'service' else 'B')
-            
-            ET.SubElement(item, 'dte:Cantidad').text = str(line.quantity)
-            ET.SubElement(item, 'dte:UnidadMedida').text = 'UNI'
-            ET.SubElement(item, 'dte:Descripcion').text = line.name or (line.product_id.name if line.product_id else '')
-            ET.SubElement(item, 'dte:PrecioUnitario').text = f"{line.price_unit:.6f}"
-            ET.SubElement(item, 'dte:Precio').text = f"{line.price_subtotal:.2f}"
-            ET.SubElement(item, 'dte:Descuento').text = f"{line.discount:.2f}"
-            
-            # Impuestos (Taxes)
-            impuestos = ET.SubElement(item, 'dte:Impuestos')
-            
-            # Add IVA if applicable
-            for tax in line.tax_ids:
-                if tax.amount > 0:  # IVA
-                    impuesto = ET.SubElement(impuestos, 'dte:Impuesto')
-                    ET.SubElement(impuesto, 'dte:NombreCorto').text = 'IVA'
-                    ET.SubElement(impuesto, 'dte:CodigoUnidadGravable').text = '1'
-                    ET.SubElement(impuesto, 'dte:MontoGravable').text = f"{line.price_subtotal:.2f}"
-                    ET.SubElement(impuesto, 'dte:MontoImpuesto').text = f"{line.price_total - line.price_subtotal:.2f}"
-            
-            ET.SubElement(item, 'dte:Total').text = f"{line.price_total:.2f}"
-            line_number += 1
-    
-    def _add_totals_to_xml(self, totales_element):
-        """Add totals section to XML"""
-        # TotalImpuestos
-        total_impuestos = ET.SubElement(totales_element, 'dte:TotalImpuestos')
-        
-        # Calculate total IVA
-        total_iva = sum(line.price_total - line.price_subtotal 
-                       for line in self.invoice_id.invoice_line_ids.filtered(lambda l: not l.display_type))
-        
-        if total_iva > 0:
-            total_impuesto = ET.SubElement(total_impuestos, 'dte:TotalImpuesto')
-            total_impuesto.set('NombreCorto', 'IVA')
-            total_impuesto.set('TotalMontoImpuesto', f"{total_iva:.2f}")
-        
-        ET.SubElement(totales_element, 'dte:GranTotal').text = f"{self.invoice_id.amount_total:.2f}"
+        return super().unlink()
