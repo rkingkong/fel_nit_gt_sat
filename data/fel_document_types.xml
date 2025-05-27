@@ -6,52 +6,259 @@
         <record id="fel_document_type_fact" model="fel.document.type">
             <field name="name">Factura</field>
             <field name="code">FACT</field>
-            <field name="description">Factura estándar para régimen general</field>
+            <field name="description">Factura estándar para régimen general y especial</field>
+            <field name="sequence">10</field>
             <field name="is_invoice">True</field>
             <field name="available_for_general">True</field>
             <field name="available_for_pequeno">False</field>
             <field name="available_for_especial">True</field>
+            <field name="is_active">True</field>
         </record>
         
         <record id="fel_document_type_fcam" model="fel.document.type">
             <field name="name">Factura Cambiaria</field>
             <field name="code">FCAM</field>
-            <field name="description">Factura Cambiaria</field>
+            <field name="description">Factura Cambiaria para operaciones comerciales especiales</field>
+            <field name="sequence">20</field>
             <field name="is_invoice">True</field>
             <field name="available_for_general">True</field>
             <field name="available_for_pequeno">False</field>
             <field name="available_for_especial">True</field>
+            <field name="is_active">True</field>
         </record>
         
         <record id="fel_document_type_fpeq" model="fel.document.type">
             <field name="name">Factura Pequeño Contribuyente</field>
             <field name="code">FPEQ</field>
-            <field name="description">Factura para pequeño contribuyente</field>
+            <field name="description">Factura especial para pequeños contribuyentes</field>
+            <field name="sequence">30</field>
             <field name="is_invoice">True</field>
             <field name="available_for_general">False</field>
             <field name="available_for_pequeno">True</field>
             <field name="available_for_especial">False</field>
+            <field name="is_active">True</field>
         </record>
         
-        <!-- Credit/Debit Notes -->
+        <record id="fel_document_type_fcap" model="fel.document.type">
+            <field name="name">Factura Cambiaria Pequeño Contribuyente</field>
+            <field name="code">FCAP</field>
+            <field name="description">Factura Cambiaria para pequeños contribuyentes</field>
+            <field name="sequence">40</field>
+            <field name="is_invoice">True</field>
+            <field name="available_for_general">False</field>
+            <field name="available_for_pequeno">True</field>
+            <field name="available_for_especial">False</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <record id="fel_document_type_fesp" model="fel.document.type">
+            <field name="name">Factura Especial</field>
+            <field name="code">FESP</field>
+            <field name="description">Factura para régimen especial</field>
+            <field name="sequence">50</field>
+            <field name="is_invoice">True</field>
+            <field name="available_for_general">False</field>
+            <field name="available_for_pequeno">False</field>
+            <field name="available_for_especial">True</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- Credit and Debit Notes -->
         <record id="fel_document_type_ncre" model="fel.document.type">
             <field name="name">Nota de Crédito</field>
             <field name="code">NCRE</field>
-            <field name="description">Nota de Crédito</field>
+            <field name="description">Nota de Crédito para devoluciones y ajustes</field>
+            <field name="sequence">60</field>
             <field name="is_credit_note">True</field>
             <field name="available_for_general">True</field>
             <field name="available_for_pequeno">True</field>
             <field name="available_for_especial">True</field>
+            <field name="requires_reference_document">True</field>
+            <field name="allows_negative_amounts">True</field>
+            <field name="is_active">True</field>
         </record>
         
         <record id="fel_document_type_ndeb" model="fel.document.type">
             <field name="name">Nota de Débito</field>
             <field name="code">NDEB</field>
-            <field name="description">Nota de Débito</field>
+            <field name="description">Nota de Débito para cargos adicionales</field>
+            <field name="sequence">70</field>
             <field name="is_debit_note">True</field>
             <field name="available_for_general">True</field>
             <field name="available_for_pequeno">True</field>
             <field name="available_for_especial">True</field>
+            <field name="requires_reference_document">True</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- Other Document Types -->
+        <record id="fel_document_type_nabn" model="fel.document.type">
+            <field name="name">Nota de Abono</field>
+            <field name="code">NABN</field>
+            <field name="description">Nota de Abono para pagos y descuentos</field>
+            <field name="sequence">80</field>
+            <field name="is_credit_note">True</field>
+            <field name="available_for_general">True</field>
+            <field name="available_for_pequeno">True</field>
+            <field name="available_for_especial">True</field>
+            <field name="is_active">False</field>
+        </record>
+        
+        <record id="fel_document_type_rdon" model="fel.document.type">
+            <field name="name">Recibo por Donación</field>
+            <field name="code">RDON</field>
+            <field name="description">Recibo por Donación para organizaciones sin fines de lucro</field>
+            <field name="sequence">90</field>
+            <field name="is_receipt">True</field>
+            <field name="is_donation_receipt">True</field>
+            <field name="available_for_general">True</field>
+            <field name="available_for_pequeno">False</field>
+            <field name="available_for_especial">True</field>
+            <field name="is_active">False</field>
+        </record>
+        
+        <record id="fel_document_type_reci" model="fel.document.type">
+            <field name="name">Recibo</field>
+            <field name="code">RECI</field>
+            <field name="description">Recibo general para pagos y servicios</field>
+            <field name="sequence">100</field>
+            <field name="is_receipt">True</field>
+            <field name="available_for_general">True</field>
+            <field name="available_for_pequeno">True</field>
+            <field name="available_for_especial">True</field>
+            <field name="is_active">False</field>
+        </record>
+        
+        <!-- Default INFILE Provider -->
+        <record id="fel_provider_infile" model="fel.certification.provider">
+            <field name="name">INFILE, S.A.</field>
+            <field name="code">infile</field>
+            <field name="website">https://www.infile.com</field>
+            <field name="api_base_url">https://api.infile.com.gt</field>
+            <field name="api_version">1.0</field>
+            <field name="contact_name">Zayda Karina Sontay Herrera</field>
+            <field name="contact_email">zherrera@infile.com.gt</field>
+            <field name="contact_phone">2208-2208 Ext 2426</field>
+            <field name="supports_nit_verification">True</field>
+            <field name="supports_xml_generation">True</field>
+            <field name="supports_digital_signature">True</field>
+            <field name="supports_pdf_generation">True</field>
+            <!-- Pricing from INFILE proposal -->
+            <field name="setup_cost">995.00</field>
+            <field name="cost_per_dte">0.33</field>
+            <field name="annual_cost">396.00</field>
+            <field name="annual_dte_limit">1200</field>
+            <field name="test_api_url">https://test-api.infile.com.gt</field>
+            <field name="production_api_url">https://api.infile.com.gt</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- Currency for Guatemala -->
+        <record id="currency_gtq" model="res.currency">
+            <field name="name">GTQ</field>
+            <field name="symbol">Q</field>
+            <field name="rate">1.0</field>
+            <field name="rounding">0.01</field>
+            <field name="position">before</field>
+        </record>
+        
+        <!-- Default Consumidor Final Partner -->
+        <record id="partner_consumidor_final" model="res.partner">
+            <field name="name">Consumidor Final</field>
+            <field name="nit_gt">CF</field>
+            <field name="is_company">False</field>
+            <field name="customer_rank">1</field>
+            <field name="supplier_rank">0</field>
+            <field name="country_id" ref="base.gt"/>
+            <field name="tax_regime_gt">general</field>
+            <field name="is_fel_verified">True</field>
+            <field name="fel_verification_status">valid</field>
+            <field name="fel_verification_date" eval="datetime.now()"/>
+            <field name="fel_verification_result">Consumidor Final - No verification required</field>
+        </record>
+        
+        <!-- Default FEL Configuration Template -->
+        <record id="fel_config_template" model="fel.config">
+            <field name="company_id" ref="base.main_company"/>
+            <field name="provider_id" ref="fel_provider_infile"/>
+            <field name="nit">123456789</field>
+            <field name="tax_regime">general</field>
+            <field name="environment">test</field>
+            <field name="api_url">https://test-api.infile.com.gt</field>
+            <field name="commercial_name" eval="obj.env.company.name"/>
+            <field name="establishment_code">1</field>
+            <field name="address_line" eval="obj.env.company.street or 'Guatemala City'"/>
+            <field name="postal_code">01001</field>
+            <field name="municipality">Guatemala</field>
+            <field name="department">Guatemala</field>
+            <field name="country_code">GT</field>
+            <field name="monthly_dte_limit">100</field>
+            <field name="annual_dte_limit">1200</field>
+            <field name="auto_send_invoices">False</field>
+            <field name="auto_send_credit_notes">False</field>
+            <field name="auto_send_pos_orders">False</field>
+            <field name="test_mode">True</field>
+            <field name="is_active">False</field>
+        </record>
+        
+        <!-- Restaurant-specific Product Categories -->
+        <record id="product_category_food" model="product.category">
+            <field name="name">Food &amp; Beverages</field>
+            <field name="parent_id" ref="product.product_category_all"/>
+        </record>
+        
+        <record id="product_category_food_main" model="product.category">
+            <field name="name">Main Dishes</field>
+            <field name="parent_id" ref="product_category_food"/>
+        </record>
+        
+        <record id="product_category_food_appetizers" model="product.category">
+            <field name="name">Appetizers</field>
+            <field name="parent_id" ref="product_category_food"/>
+        </record>
+        
+        <record id="product_category_beverages" model="product.category">
+            <field name="name">Beverages</field>
+            <field name="parent_id" ref="product_category_food"/>
+        </record>
+        
+        <record id="product_category_desserts" model="product.category">
+            <field name="name">Desserts</field>
+            <field name="parent_id" ref="product_category_food"/>
+        </record>
+        
+        <!-- Guatemala Tax Configuration -->
+        <record id="tax_iva_guatemala" model="account.tax">
+            <field name="name">IVA 12% (Guatemala)</field>
+            <field name="amount">12.0</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">sale</field>
+            <field name="price_include">False</field>
+            <field name="description">IVA</field>
+            <field name="country_id" ref="base.gt"/>
+        </record>
+        
+        <record id="tax_iva_guatemala_purchase" model="account.tax">
+            <field name="name">IVA 12% (Compras Guatemala)</field>
+            <field name="amount">12.0</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="price_include">False</field>
+            <field name="description">IVA</field>
+            <field name="country_id" ref="base.gt"/>
+        </record>
+        
+        <!-- Demo Restaurant POS Configuration -->
+        <record id="pos_config_kesiyos_demo" model="pos.config">
+            <field name="name">Kesiyos Restaurant - Demo</field>
+            <field name="use_fel">True</field>
+            <field name="fel_auto_generate">False</field>
+            <field name="fel_document_type_id" ref="fel_document_type_fact"/>
+            <field name="fel_require_customer">False</field>
+            <field name="fel_allow_cf">True</field>
+            <field name="is_restaurant">True</field>
+            <field name="require_waiter">True</field>
+            <field name="module_pos_restaurant">True</field>
         </record>
         
     </data>
