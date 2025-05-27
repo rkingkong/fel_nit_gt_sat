@@ -16,7 +16,7 @@ Built specifically for **restaurant operations** and **fast-casual dining** like
 git clone https://github.com/rkingkong/fel_nit_gt_sat.git
 
 # Copy to Odoo addons directory
-cp -r factura_electronica_gt/fel_nit_gt_sat /path/to/odoo/addons/
+cp -r fel_nit_gt_sat /path/to/odoo/addons/
 
 # Install Python dependencies
 pip install requests xmltodict lxml cryptography
