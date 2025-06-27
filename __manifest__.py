@@ -40,8 +40,8 @@
         'l10n_gt',  # Guatemala localization
     ],
     'data': [
-        'security/ir.model.access.csv',
         'security/fel_security.xml',
+        'security/ir.model.access.csv',
         'data/fel_document_types.xml',
         'data/fel_config_data.xml',
         'views/fel_config_views.xml',
