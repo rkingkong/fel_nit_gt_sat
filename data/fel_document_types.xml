@@ -185,9 +185,9 @@
             <field name="tax_regime">general</field>
             <field name="environment">test</field>
             <field name="api_url">https://test-api.infile.com.gt</field>
-            <field name="commercial_name" eval="obj.env.company.name"/>
+            <field name="commercial_name"/>
             <field name="establishment_code">1</field>
-            <field name="address_line" eval="obj.env.company.street or 'Guatemala City'"/>
+            <field name="address_line">Guatemala City</field>
             <field name="postal_code">01001</field>
             <field name="municipality">Guatemala</field>
             <field name="department">Guatemala</field>
