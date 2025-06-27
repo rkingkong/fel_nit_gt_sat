@@ -153,7 +153,7 @@
             <field name="is_active">True</field>
         </record>
         
-        <!-- Currency for Guatemala -->
+        <!-- Currency for Guatemala 
         <record id="currency_gtq" model="res.currency">
             <field name="name">GTQ</field>
             <field name="symbol">Q</field>
@@ -161,7 +161,7 @@
             <field name="rounding">0.01</field>
             <field name="position">before</field>
         </record>
-        
+        -->
         <!-- Default Consumidor Final Partner -->
         <record id="partner_consumidor_final" model="res.partner">
             <field name="name">Consumidor Final</field>
