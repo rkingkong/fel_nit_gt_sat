@@ -99,6 +99,13 @@ class PosOrder(models.Model):
         string='Waiter',
         help='Waiter who served this table'
     )
+
+    waiter_name = fields.Char(
+        string='Waiter Name',
+        related='waiter_id.name',
+        readonly=True
+    )
+
     
     @api.depends('state', 'config_id')
     def _compute_requires_fel(self):
