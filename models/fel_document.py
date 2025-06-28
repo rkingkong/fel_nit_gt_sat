@@ -380,6 +380,25 @@ class FelDocument(models.Model):
             total_impuesto.set('TotalMontoImpuesto', f"{total_iva:.2f}")
         
         ET.SubElement(totales_element, 'dte:GranTotal').text = f"{grand_total:.2f}"
+
+    def _add_tax_phrases_to_xml(self, datos_emision):
+        """Add tax phrases (frases) to XML"""
+        # Get applicable phrases for this document type
+        phrase_data = self.env['fel.document.phrase'].get_phrases_for_document(
+            self.document_type_id.id,
+            self.invoice_id or self.pos_order_id
+        )
+        
+        if phrase_data:
+            frases = ET.SubElement(datos_emision, 'dte:Frases')
+            
+            for phrase in phrase_data:
+                frase = ET.SubElement(frases, 'dte:Frase')
+                frase.set('TipoFrase', phrase['type'])
+                frase.set('CodigoEscenario', phrase['code'])
+                # Note: Some phrases might not have text content
+                if phrase.get('text'):
+                    frase.text = phrase['text']
     
     def _generate_credit_note_xml(self, fel_config):
         """Generate XML for credit note"""
