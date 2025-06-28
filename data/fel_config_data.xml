@@ -84,6 +84,45 @@
             <field name="currency_id" ref="base.GTQ"/>
             <field name="is_active">True</field>
         </record>
+
+        <!-- Tax Phrases Used by Fusión Gastronómica -->
+        <record id="fel_tax_phrase_isr_1_1" model="fel.tax.phrase">
+            <field name="name">Sujeto a pagos trimestrales ISR</field>
+            <field name="phrase_type">1</field>
+            <field name="scenario_code">1</field>
+            <field name="is_active">True</field>
+            <field name="description">Frase de ISR para pagos trimestrales</field>
+        </record>
+        
+        <record id="fel_tax_phrase_special_5_1" model="fel.tax.phrase">
+            <field name="name">Factura Especial</field>
+            <field name="phrase_type">5</field>
+            <field name="scenario_code">1</field>
+            <field name="is_active">True</field>
+            <field name="description">Frase para facturas especiales</field>
+        </record>
+        
+        <!-- Link Tax Phrases to Document Types -->
+        <record id="fel_doc_phrase_fact_isr" model="fel.document.phrase">
+            <field name="document_type_id" ref="fel_doc_type_fact"/>
+            <field name="tax_phrase_id" ref="fel_tax_phrase_isr_1_1"/>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="fel_doc_phrase_fcam_isr" model="fel.document.phrase">
+            <field name="document_type_id" ref="fel_doc_type_fcam"/>
+            <field name="tax_phrase_id" ref="fel_tax_phrase_isr_1_1"/>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="fel_doc_phrase_fesp_special" model="fel.document.phrase">
+            <field name="document_type_id" ref="fel_doc_type_fesp"/>
+            <field name="tax_phrase_id" ref="fel_tax_phrase_special_5_1"/>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">10</field>
+        </record>
         
         <!-- Alternative FEL Providers -->
         <record id="fel_provider_guatefact" model="fel.certification.provider">
