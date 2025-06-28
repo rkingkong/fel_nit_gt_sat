@@ -27,6 +27,17 @@ class FelConfig(models.Model):
         required=True,
         help='FEL certification provider (e.g., INFILE, GUATEFACT, etc.)'
     )
+
+    # Digital Signature fields (Required by INFILE)
+    signature_username = fields.Char(
+        string='Signature Username',
+        help='Username for digital signature with FEL provider'
+    )
+    
+    signature_key = fields.Char(
+        string='Signature Key',
+        help='Key for digital signature with FEL provider'
+    )
     
     # Company Tax Information
     nit = fields.Char(
