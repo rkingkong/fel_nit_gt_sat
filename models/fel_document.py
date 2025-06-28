@@ -295,6 +295,8 @@ class FelDocument(models.Model):
         # Totales
         totales = ET.SubElement(datos_emision, 'dte:Totales')
         self._add_totals_to_xml(totales)
+        # Add tax phrases (add this line before the ET.tostring)
+        self._add_tax_phrases_to_xml(datos_emision)
         
         return ET.tostring(root, encoding='unicode', method='xml')
     
