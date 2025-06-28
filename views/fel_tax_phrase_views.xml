@@ -92,8 +92,8 @@
     <!-- Add to FEL Configuration Menu -->
     <menuitem id="menu_fel_tax_phrases"
               name="Tax Phrases"
-              parent="fel_guatemala.menu_fel_configuration"
+              parent="fel_nit_gt_sat.menu_fel_configuration"
               action="action_fel_tax_phrases"
               sequence="40"
-              groups="fel_guatemala.group_fel_manager"/>
+              groups="fel_nit_gt_sat.group_fel_manager"/>
 </odoo>
