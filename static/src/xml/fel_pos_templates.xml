@@ -1,207 +1,134 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
     
-    <!-- FEL Customer Information Popup -->
-    <t t-name="FelCustomerPopup">
-        <div class="popup fel-customer-popup">
-            <div class="popup-header">
-                <h3>Customer Information for FEL</h3>
-            </div>
-            <div class="popup-body">
-                <div class="form-group">
-                    <label for="customer-nit">Customer NIT:</label>
-                    <input type="text" id="customer-nit" class="form-control" 
-                           placeholder="Enter NIT or CF for Consumidor Final" 
-                           t-att-value="widget.nit || ''"/>
-                </div>
-                <div class="form-group">
-                    <label for="customer-name">Customer Name:</label>
-                    <input type="text" id="customer-name" class="form-control" 
-                           placeholder="Customer name" 
-                           t-att-value="widget.customer_name || ''"/>
-                </div>
-                <div class="form-group">
-                    <label for="table-number">Table Number:</label>
-                    <input type="text" id="table-number" class="form-control" 
-                           placeholder="Mesa #" 
-                           t-att-value="widget.table_number || ''"/>
-                </div>
-                <div class="form-group">
-                    <label for="waiter-select">Waiter:</label>
-                    <select id="waiter-select" class="form-control">
-                        <option value="">Select Waiter</option>
-                        <t t-foreach="widget.waiters" t-as="waiter">
-                            <option t-att-value="waiter.id" 
-                                    t-att-selected="waiter.id === widget.waiter_id">
-                                <t t-esc="waiter.name"/>
-                            </option>
-                        </t>
-                    </select>
-                </div>
-            </div>
-            <div class="popup-footer">
-                <button class="btn btn-primary" t-on-click="confirm">Set Customer Info</button>
-                <button class="btn btn-secondary" t-on-click="cancel">Cancel</button>
-            </div>
-        </div>
-    </t>
-    
-    <!-- FEL Status Widget for Order Line -->
-    <t t-name="FelStatusWidget">
-        <div class="fel-status-widget">
-            <t t-if="widget.order.fel_status">
-                <span t-attf-class="badge badge-#{widget.getStatusColor()}">
-                    <t t-esc="widget.getStatusText()"/>
-                </span>
-            </t>
-        </div>
-    </t>
-    
-    <!-- FEL Order Summary -->
-    <t t-name="FelOrderSummary">
-        <div class="fel-order-summary">
-            <h4>FEL Information</h4>
-            <div class="fel-info">
-                <div class="info-row" t-if="widget.order.customer_nit">
-                    <strong>NIT:</strong> <span t-esc="widget.order.customer_nit"/>
-                </div>
-                <div class="info-row" t-if="widget.order.customer_name">
-                    <strong>Customer:</strong> <span t-esc="widget.order.customer_name"/>
-                </div>
-                <div class="info-row" t-if="widget.order.table_number">
-                    <strong>Table:</strong> <span t-esc="widget.order.table_number"/>
-                </div>
-                <div class="info-row" t-if="widget.order.waiter_name">
-                    <strong>Waiter:</strong> <span t-esc="widget.order.waiter_name"/>
-                </div>
-                <div class="info-row" t-if="widget.order.fel_status">
-                    <strong>FEL Status:</strong> 
-                    <span t-attf-class="badge badge-#{widget.getStatusColor()}">
-                        <t t-esc="widget.getStatusText()"/>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </t>
-    
-    <!-- FEL Control Panel Button -->
-    <t t-name="FelControlButton">
-        <div class="control-button fel-button" t-on-click="action_fel_customer_info">
-            <i class="fa fa-user"></i>
-            Customer Info
-        </div>
-    </t>
-    
-    <!-- FEL Document Type Selector -->
-    <t t-name="FelDocumentTypePopup">
-        <div class="popup fel-document-type-popup">
-            <div class="popup-header">
-                <h3>Select FEL Document Type</h3>
-            </div>
-            <div class="popup-body">
-                <div class="document-types">
-                    <t t-foreach="widget.document_types" t-as="doc_type">
-                        <div class="document-type-option" 
-                             t-on-click="selectDocumentType" 
-                             t-att-data-id="doc_type.id"
-                             t-attf-class="#{widget.selected_type_id === doc_type.id ? 'selected' : ''}">
-                            <div class="type-code">
-                                <t t-esc="doc_type.code"/>
-                            </div>
-                            <div class="type-name">
-                                <t t-esc="doc_type.name"/>
-                            </div>
-                            <div class="type-description">
-                                <t t-esc="doc_type.description"/>
-                            </div>
+    <!-- FEL Customer Info Popup -->
+    <t t-name="FelCustomerPopupWidget">
+        <div class="modal-dialog">
+            <div class="popup popup-text">
+                <p class="title">
+                    <t t-esc="widget.options.title || 'Customer Information for FEL'"/>
+                </p>
+                <div class="body">
+                    <div class="fel-customer-form">
+                        <div class="form-group">
+                            <label>NIT:</label>
+                            <input type="text" class="form-control customer-nit" 
+                                   placeholder="12345678-9 or CF"
+                                   autocomplete="off"/>
+                            <small class="form-text text-muted">
+                                Enter customer NIT or 'CF' for Consumidor Final
+                            </small>
                         </div>
-                    </t>
+                        
+                        <div class="form-group">
+                            <label>Customer Name:</label>
+                            <input type="text" class="form-control customer-name" 
+                                   placeholder="Customer name"
+                                   autocomplete="off"/>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>🇬🇹 Guatemala FEL Requirements:</strong>
+                            <ul class="mb-0">
+                                <li>All sales require customer NIT for electronic invoicing</li>
+                                <li>Use 'CF' for walk-in customers (Consumidor Final)</li>
+                                <li>NITs will be verified with SAT automatically</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="popup-footer">
-                <button class="btn btn-primary" t-on-click="confirm">Select</button>
-                <button class="btn btn-secondary" t-on-click="cancel">Cancel</button>
-            </div>
-        </div>
-    </t>
-    
-    <!-- FEL Send Confirmation Popup -->
-    <t t-name="FelSendConfirmationPopup">
-        <div class="popup fel-send-popup">
-            <div class="popup-header">
-                <h3>Send to FEL</h3>
-            </div>
-            <div class="popup-body">
-                <div class="confirmation-message">
-                    <p>Are you sure you want to send this order to FEL?</p>
-                    <div class="order-details">
-                        <strong>Order:</strong> <span t-esc="widget.order.name"/> <br/>
-                        <strong>Total:</strong> <span t-esc="widget.formatCurrency(widget.order.get_total_with_tax())"/> <br/>
-                        <strong>Customer:</strong> <span t-esc="widget.order.customer_name || 'Consumidor Final'"/> <br/>
-                        <strong>NIT:</strong> <span t-esc="widget.order.customer_nit || 'CF'"/>
+                <div class="footer">
+                    <div class="button cancel">
+                        Cancel
+                    </div>
+                    <div class="button confirm">
+                        Confirm
                     </div>
                 </div>
             </div>
-            <div class="popup-footer">
-                <button class="btn btn-primary" t-on-click="confirm">Send to FEL</button>
-                <button class="btn btn-secondary" t-on-click="cancel">Cancel</button>
-            </div>
         </div>
     </t>
     
-    <!-- FEL Success Notification -->
-    <t t-name="FelSuccessNotification">
-        <div class="notification fel-success">
-            <div class="notification-icon">
-                <i class="fa fa-check-circle"></i>
-            </div>
-            <div class="notification-content">
-                <h4>FEL Sent Successfully!</h4>
-                <p>
-                    Order <strong t-esc="widget.order_name"/> has been sent to FEL.
-                    <span t-if="widget.uuid">UUID: <strong t-esc="widget.uuid"/></span>
+    <!-- Waiter Selection Popup for Restaurant -->
+    <t t-name="WaiterSelectionPopupWidget">
+        <div class="modal-dialog">
+            <div class="popup popup-selection">
+                <p class="title">
+                    <t t-esc="widget.options.title || 'Select Waiter'"/>
                 </p>
+                <div class="body">
+                    <div class="waiter-list selection-list">
+                        <!-- Waiters will be rendered dynamically -->
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="button cancel">
+                        Cancel
+                    </div>
+                </div>
             </div>
         </div>
     </t>
     
-    <!-- FEL Error Notification -->
-    <t t-name="FelErrorNotification">
-        <div class="notification fel-error">
-            <div class="notification-icon">
-                <i class="fa fa-exclamation-triangle"></i>
-            </div>
-            <div class="notification-content">
-                <h4>FEL Error</h4>
-                <p t-esc="widget.error_message"/>
-            </div>
+    <!-- FEL Action Button -->
+    <t t-name="FelActionButton">
+        <div class='control-button'>
+            <i class='fa fa-file-text-o'/> FEL Info
         </div>
     </t>
-
-    <!-- Restaurant Table Widget -->
-    <t t-name="RestaurantTableWidget">
-        <div class="table-widget" t-att-data-table="widget.table_id">
-            <div class="table-number">
-                <t t-esc="widget.table_number"/>
-            </div>
-            <div class="table-status" t-attf-class="status-#{widget.status}">
-                <t t-if="widget.status === 'occupied'">
-                    <span class="occupancy-info">
-                        <i class="fa fa-users"></i>
-                        <t t-esc="widget.customer_count"/>
-                    </span>
+    
+    <!-- Order Receipt Extension with FEL Info -->
+    <t t-extend="OrderReceipt">
+        <t t-jquery=".pos-receipt-contact" t-operation="after">
+            <t t-if="order.customer_nit">
+                <div class="fel-info">
+                    <div>NIT: <t t-esc="order.customer_nit"/></div>
+                    <div>Nombre: <t t-esc="order.customer_name"/></div>
+                </div>
+            </t>
+        </t>
+        
+        <t t-jquery=".receipt-orderlines" t-operation="before">
+            <t t-if="order.table_number">
+                <div class="receipt-table">
+                    Mesa: <t t-esc="order.table_number"/>
+                </div>
+            </t>
+            <t t-if="order.waiter_name">
+                <div class="receipt-waiter">
+                    Mesero: <t t-esc="order.waiter_name"/>
+                </div>
+            </t>
+        </t>
+    </t>
+    
+    <!-- Order Widget Extension to show FEL Status -->
+    <t t-extend="OrderWidget">
+        <t t-jquery=".order-info" t-operation="append">
+            <t t-if="order">
+                <t t-if="order.customer_nit">
+                    <div class="fel-status">
+                        <span class="label">FEL:</span>
+                        <span class="value">
+                            <t t-esc="order.customer_nit"/> - 
+                            <t t-esc="order.customer_name"/>
+                        </span>
+                    </div>
                 </t>
-                <t t-if="widget.status === 'available'">
-                    <span class="available-info">
-                        <i class="fa fa-check"></i>
-                        Available
-                    </span>
+                <t t-if="order.table_number">
+                    <div class="table-info">
+                        <span class="label">Mesa:</span>
+                        <span class="value"><t t-esc="order.table_number"/></span>
+                    </div>
                 </t>
-            </div>
-            <div class="table-waiter" t-if="widget.waiter_name">
-                <small><t t-esc="widget.waiter_name"/></small>
-            </div>
-        </div>
+                <t t-if="order.waiter_name">
+                    <div class="waiter-info">
+                        <span class="label">Mesero:</span>
+                        <span class="value"><t t-esc="order.waiter_name"/></span>
+                    </div>
+                </t>
+            </t>
+        </t>
     </t>
     
 </templates>
