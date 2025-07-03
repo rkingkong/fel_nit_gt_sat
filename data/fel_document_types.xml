@@ -6,12 +6,15 @@
         <record id="fel_provider_infile" model="fel.certification.provider">
             <field name="name">INFILE, S.A.</field>
             <field name="code">infile</field>
+            <field name="description">FEL Provider - INFILE GUATEMALA</field>
             <field name="website">https://www.infile.com.gt</field>
             <field name="contact_phone">2208-2208</field>
             <field name="contact_email">soporte@infile.com.gt</field>
+            <field name="support_hours">Lunes a Viernes 8:00 - 17:00</field>
             <field name="test_api_url">https://certificador.test.infile.com.gt</field>
             <field name="production_api_url">https://certificador.feel.com.gt</field>
             <field name="setup_cost">995.00</field>
+            <field name="monthly_cost">0.00</field>
             <field name="annual_cost">396.00</field>
             <field name="cost_per_dte">0.33</field>
             <field name="annual_dte_limit">1200</field>
