@@ -43,7 +43,6 @@
         'security/fel_security.xml',
         'security/ir.model.access.csv',
         'data/fel_document_types.xml',
-        'data/fel_config_data.xml',
         'views/fel_config_views.xml',
         'views/fel_document_views.xml',
         'views/fel_tax_phrase_views.xml',
@@ -57,7 +56,7 @@
         'menu/fel_menu.xml',
     ],
     'demo': [
-        'demo/fel_demo_data.xml',
+        #no demo data for now
     ],
     'qweb': [
         'static/src/xml/fel_pos_templates.xml',
