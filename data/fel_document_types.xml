@@ -11,13 +11,13 @@
             <field name="contact_phone">2208-2208</field>
             <field name="contact_email">soporte@infile.com.gt</field>
             <field name="support_hours">Lunes a Viernes 8:00 - 17:00</field>
-            <field name="test_url">https://certificador.test.infile.com.gt</field>
-            <field name="production_url">https://certificador.feel.com.gt</field>
+            <field name="test_api_url">https://certificador.test.infile.com.gt</field>
+            <field name="production_api_url">https://certificador.feel.com.gt</field>
             <field name="setup_cost">995.00</field>
             <field name="monthly_cost">0.00</field>
             <field name="annual_cost">396.00</field>
             <field name="cost_per_dte">0.33</field>
-            <field name="free_dte_quota">1200</field>
+            <field name="annual_dte_limit">1200</field>
             <field name="is_active">True</field>
         </record>
         
@@ -34,40 +34,49 @@
             <field name="requires_reference">False</field>
             <field name="allowed_regimes">general,especial</field>
             <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="xml_schema_location">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="sat_classification">FACTURAElectronica</field>
-            <field name="sequence">10</field>
-            <field name="is_active">True</field>
+            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
         </record>
         
         <!-- FCAM - Factura Cambiaria -->
         <record id="fel_document_type_fcam" model="fel.document.type">
             <field name="name">Factura Cambiaria</field>
             <field name="code">FCAM</field>
-            <field name="description">Factura Cambiaria para Crédito</field>
+            <field name="description">Factura Cambiaria</field>
             <field name="is_invoice">True</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
             <field name="requires_reference">False</field>
             <field name="allowed_regimes">general,especial</field>
             <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="sequence">20</field>
-            <field name="is_active">True</field>
+            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoFacturaExportacion/0.1.0</field>
         </record>
         
         <!-- FPEQ - Factura Pequeño Contribuyente -->
         <record id="fel_document_type_fpeq" model="fel.document.type">
             <field name="name">Factura Pequeño Contribuyente</field>
             <field name="code">FPEQ</field>
-            <field name="description">Factura para Régimen de Pequeño Contribuyente</field>
+            <field name="description">Factura de Pequeño Contribuyente</field>
             <field name="is_invoice">True</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
             <field name="requires_reference">False</field>
             <field name="allowed_regimes">pequeno</field>
             <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="sequence">30</field>
-            <field name="is_active">True</field>
+            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+        </record>
+        
+        <!-- FCAP - Factura Cambiaria Pequeño Contribuyente -->
+        <record id="fel_document_type_fcap" model="fel.document.type">
+            <field name="name">Factura Cambiaria Pequeño Contribuyente</field>
+            <field name="code">FCAP</field>
+            <field name="description">Factura Cambiaria de Pequeño Contribuyente</field>
+            <field name="is_invoice">True</field>
+            <field name="is_credit_note">False</field>
+            <field name="is_debit_note">False</field>
+            <field name="requires_reference">False</field>
+            <field name="allowed_regimes">pequeno</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
         </record>
         
         <!-- FESP - Factura Especial -->
@@ -81,104 +90,107 @@
             <field name="requires_reference">False</field>
             <field name="allowed_regimes">especial</field>
             <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="sequence">40</field>
-            <field name="is_active">True</field>
-        </record>
-        
-        <!-- NCRE - Nota de Crédito -->
-        <record id="fel_document_type_ncre" model="fel.document.type">
-            <field name="name">Nota de Crédito</field>
-            <field name="code">NCRE</field>
-            <field name="description">Nota de Crédito Electrónica</field>
-            <field name="is_invoice">False</field>
-            <field name="is_credit_note">True</field>
-            <field name="is_debit_note">False</field>
-            <field name="requires_reference">True</field>
-            <field name="allowed_regimes">general,especial,pequeno</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="sequence">50</field>
-            <field name="is_active">True</field>
-        </record>
-        
-        <!-- NDEB - Nota de Débito -->
-        <record id="fel_document_type_ndeb" model="fel.document.type">
-            <field name="name">Nota de Débito</field>
-            <field name="code">NDEB</field>
-            <field name="description">Nota de Débito Electrónica</field>
-            <field name="is_invoice">False</field>
-            <field name="is_credit_note">False</field>
-            <field name="is_debit_note">True</field>
-            <field name="requires_reference">True</field>
-            <field name="allowed_regimes">general,especial,pequeno</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="sequence">60</field>
-            <field name="is_active">True</field>
+            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
         </record>
         
         <!-- NABN - Nota de Abono -->
         <record id="fel_document_type_nabn" model="fel.document.type">
             <field name="name">Nota de Abono</field>
             <field name="code">NABN</field>
-            <field name="description">Nota de Abono a Cuenta</field>
+            <field name="description">Nota de Abono</field>
             <field name="is_invoice">False</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
-            <field name="requires_reference">False</field>
-            <field name="allowed_regimes">general,especial</field>
+            <field name="requires_reference">True</field>
+            <field name="allowed_regimes">general,pequeno,especial</field>
             <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="sequence">70</field>
-            <field name="is_active">True</field>
-        </record>
-        
-        <!-- RECI - Recibo -->
-        <record id="fel_document_type_reci" model="fel.document.type">
-            <field name="name">Recibo</field>
-            <field name="code">RECI</field>
-            <field name="description">Recibo por Pago</field>
-            <field name="is_invoice">False</field>
-            <field name="is_credit_note">False</field>
-            <field name="is_debit_note">False</field>
-            <field name="requires_reference">False</field>
-            <field name="allowed_regimes">general,especial</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="sequence">80</field>
-            <field name="is_active">True</field>
+            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
         </record>
         
         <!-- RDON - Recibo por Donación -->
         <record id="fel_document_type_rdon" model="fel.document.type">
             <field name="name">Recibo por Donación</field>
             <field name="code">RDON</field>
-            <field name="description">Recibo por Donación Deducible</field>
+            <field name="description">Recibo de Donación</field>
             <field name="is_invoice">False</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
             <field name="requires_reference">False</field>
-            <field name="allowed_regimes">general</field>
+            <field name="allowed_regimes">general,pequeno,especial</field>
             <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="sequence">90</field>
-            <field name="is_active">True</field>
+            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
         </record>
         
-        <!-- Standard Tax Phrases -->
+        <!-- RECI - Recibo -->
+        <record id="fel_document_type_reci" model="fel.document.type">
+            <field name="name">Recibo</field>
+            <field name="code">RECI</field>
+            <field name="description">Recibo</field>
+            <field name="is_invoice">False</field>
+            <field name="is_credit_note">False</field>
+            <field name="is_debit_note">False</field>
+            <field name="requires_reference">False</field>
+            <field name="allowed_regimes">general,pequeno,especial</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+        </record>
         
-        <!-- ISR Phrase -->
+        <!-- NDEB - Nota de Débito -->
+        <record id="fel_document_type_ndeb" model="fel.document.type">
+            <field name="name">Nota de Débito</field>
+            <field name="code">NDEB</field>
+            <field name="description">Nota de Débito</field>
+            <field name="is_invoice">False</field>
+            <field name="is_credit_note">False</field>
+            <field name="is_debit_note">True</field>
+            <field name="requires_reference">True</field>
+            <field name="allowed_regimes">general,pequeno,especial</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+        </record>
+        
+        <!-- NCRE - Nota de Crédito -->
+        <record id="fel_document_type_ncre" model="fel.document.type">
+            <field name="name">Nota de Crédito</field>
+            <field name="code">NCRE</field>
+            <field name="description">Nota de Crédito</field>
+            <field name="is_invoice">False</field>
+            <field name="is_credit_note">True</field>
+            <field name="is_debit_note">False</field>
+            <field name="requires_reference">True</field>
+            <field name="allowed_regimes">general,pequeno,especial</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+        </record>
+        
+        <!-- FEL Tax Phrases -->
+        
+        <!-- ISR Tax Phrase -->
         <record id="fel_tax_phrase_isr" model="fel.tax.phrase">
-            <field name="name">Sujeto a retención definitiva ISR</field>
-            <field name="phrase_type">1</field>
-            <field name="scenario_code">1</field>
-            <field name="description">Para facturas con retención de ISR</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="code">ISR</field>
+            <field name="type">1</field>
+            <field name="tax_type">1</field>
+            <field name="phrase">Sujeto a retención definitiva ISR</field>
+            <field name="apply_to_fact">True</field>
+            <field name="apply_to_fcam">True</field>
+            <field name="apply_to_fesp">True</field>
+            <field name="condition_type">always</field>
             <field name="is_active">True</field>
         </record>
         
-        <!-- IVA Phrase -->
-        <record id="fel_tax_phrase_iva" model="fel.tax.phrase">
-            <field name="name">Sujeto a pagos trimestrales ISR</field>
-            <field name="phrase_type">1</field>
-            <field name="scenario_code">2</field>
-            <field name="description">Para régimen de pequeño contribuyente</field>
-            <field name="company_id" ref="base.main_company"/>
+        <!-- IVA Exento Tax Phrase -->
+        <record id="fel_tax_phrase_iva_exento" model="fel.tax.phrase">
+            <field name="code">IVA_EXENTO</field>
+            <field name="type">1</field>
+            <field name="tax_type">2</field>
+            <field name="phrase">Operación exenta de IVA según Artículo 7 Ley del IVA</field>
+            <field name="apply_to_fact">True</field>
+            <field name="apply_to_fcam">True</field>
+            <field name="apply_to_fpeq">True</field>
+            <field name="apply_to_fesp">True</field>
+            <field name="apply_to_ncre">True</field>
+            <field name="apply_to_ndeb">True</field>
+            <field name="condition_type">always</field>
             <field name="is_active">True</field>
         </record>
         
