@@ -6,15 +6,12 @@
         <record id="fel_provider_infile" model="fel.certification.provider">
             <field name="name">INFILE, S.A.</field>
             <field name="code">infile</field>
-            <field name="description">FEL Provider - INFILE GUATEMALA</field>
             <field name="website">https://www.infile.com.gt</field>
             <field name="contact_phone">2208-2208</field>
             <field name="contact_email">soporte@infile.com.gt</field>
-            <field name="support_hours">Lunes a Viernes 8:00 - 17:00</field>
             <field name="test_api_url">https://certificador.test.infile.com.gt</field>
             <field name="production_api_url">https://certificador.feel.com.gt</field>
             <field name="setup_cost">995.00</field>
-            <field name="monthly_cost">0.00</field>
             <field name="annual_cost">396.00</field>
             <field name="cost_per_dte">0.33</field>
             <field name="annual_dte_limit">1200</field>
@@ -31,10 +28,13 @@
             <field name="is_invoice">True</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
-            <field name="requires_reference">False</field>
-            <field name="allowed_regimes">general,especial</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+            <field name="is_receipt">False</field>
+            <field name="requires_reference_document">False</field>
+            <field name="available_for_general">True</field>
+            <field name="available_for_pequeno">False</field>
+            <field name="available_for_especial">True</field>
+            <field name="sequence">10</field>
+            <field name="is_active">True</field>
         </record>
         
         <!-- FCAM - Factura Cambiaria -->
@@ -45,10 +45,13 @@
             <field name="is_invoice">True</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
-            <field name="requires_reference">False</field>
-            <field name="allowed_regimes">general,especial</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoFacturaExportacion/0.1.0</field>
+            <field name="is_receipt">False</field>
+            <field name="requires_reference_document">False</field>
+            <field name="available_for_general">True</field>
+            <field name="available_for_pequeno">False</field>
+            <field name="available_for_especial">True</field>
+            <field name="sequence">20</field>
+            <field name="is_active">True</field>
         </record>
         
         <!-- FPEQ - Factura Pequeño Contribuyente -->
@@ -59,10 +62,13 @@
             <field name="is_invoice">True</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
-            <field name="requires_reference">False</field>
-            <field name="allowed_regimes">pequeno</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+            <field name="is_receipt">False</field>
+            <field name="requires_reference_document">False</field>
+            <field name="available_for_general">False</field>
+            <field name="available_for_pequeno">True</field>
+            <field name="available_for_especial">False</field>
+            <field name="sequence">30</field>
+            <field name="is_active">True</field>
         </record>
         
         <!-- FCAP - Factura Cambiaria Pequeño Contribuyente -->
@@ -73,10 +79,13 @@
             <field name="is_invoice">True</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
-            <field name="requires_reference">False</field>
-            <field name="allowed_regimes">pequeno</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+            <field name="is_receipt">False</field>
+            <field name="requires_reference_document">False</field>
+            <field name="available_for_general">False</field>
+            <field name="available_for_pequeno">True</field>
+            <field name="available_for_especial">False</field>
+            <field name="sequence">35</field>
+            <field name="is_active">True</field>
         </record>
         
         <!-- FESP - Factura Especial -->
@@ -87,10 +96,13 @@
             <field name="is_invoice">True</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
-            <field name="requires_reference">False</field>
-            <field name="allowed_regimes">especial</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+            <field name="is_receipt">False</field>
+            <field name="requires_reference_document">False</field>
+            <field name="available_for_general">False</field>
+            <field name="available_for_pequeno">False</field>
+            <field name="available_for_especial">True</field>
+            <field name="sequence">40</field>
+            <field name="is_active">True</field>
         </record>
         
         <!-- NABN - Nota de Abono -->
@@ -101,10 +113,13 @@
             <field name="is_invoice">False</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
-            <field name="requires_reference">True</field>
-            <field name="allowed_regimes">general,pequeno,especial</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+            <field name="is_receipt">True</field>
+            <field name="requires_reference_document">True</field>
+            <field name="available_for_general">True</field>
+            <field name="available_for_pequeno">True</field>
+            <field name="available_for_especial">True</field>
+            <field name="sequence">50</field>
+            <field name="is_active">True</field>
         </record>
         
         <!-- RDON - Recibo por Donación -->
@@ -115,10 +130,14 @@
             <field name="is_invoice">False</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
-            <field name="requires_reference">False</field>
-            <field name="allowed_regimes">general,pequeno,especial</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+            <field name="is_receipt">True</field>
+            <field name="is_donation_receipt">True</field>
+            <field name="requires_reference_document">False</field>
+            <field name="available_for_general">True</field>
+            <field name="available_for_pequeno">True</field>
+            <field name="available_for_especial">True</field>
+            <field name="sequence">60</field>
+            <field name="is_active">True</field>
         </record>
         
         <!-- RECI - Recibo -->
@@ -129,10 +148,13 @@
             <field name="is_invoice">False</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">False</field>
-            <field name="requires_reference">False</field>
-            <field name="allowed_regimes">general,pequeno,especial</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+            <field name="is_receipt">True</field>
+            <field name="requires_reference_document">False</field>
+            <field name="available_for_general">True</field>
+            <field name="available_for_pequeno">True</field>
+            <field name="available_for_especial">True</field>
+            <field name="sequence">70</field>
+            <field name="is_active">True</field>
         </record>
         
         <!-- NDEB - Nota de Débito -->
@@ -143,10 +165,13 @@
             <field name="is_invoice">False</field>
             <field name="is_credit_note">False</field>
             <field name="is_debit_note">True</field>
-            <field name="requires_reference">True</field>
-            <field name="allowed_regimes">general,pequeno,especial</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+            <field name="is_receipt">False</field>
+            <field name="requires_reference_document">True</field>
+            <field name="available_for_general">True</field>
+            <field name="available_for_pequeno">True</field>
+            <field name="available_for_especial">True</field>
+            <field name="sequence">80</field>
+            <field name="is_active">True</field>
         </record>
         
         <!-- NCRE - Nota de Crédito -->
@@ -157,10 +182,13 @@
             <field name="is_invoice">False</field>
             <field name="is_credit_note">True</field>
             <field name="is_debit_note">False</field>
-            <field name="requires_reference">True</field>
-            <field name="allowed_regimes">general,pequeno,especial</field>
-            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
-            <field name="xml_schema_location">http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0</field>
+            <field name="is_receipt">False</field>
+            <field name="requires_reference_document">True</field>
+            <field name="available_for_general">True</field>
+            <field name="available_for_pequeno">True</field>
+            <field name="available_for_especial">True</field>
+            <field name="sequence">90</field>
+            <field name="is_active">True</field>
         </record>
         
         <!-- FEL Tax Phrases -->
