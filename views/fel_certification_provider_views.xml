@@ -340,7 +340,7 @@ action = {
         <field name="binding_model_id" ref="model_fel_certification_provider"/>
         <field name="binding_view_types">list</field>
         <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_manager'))]"/>
         <field name="code">
 records.write({'is_active': True})
         </field>
@@ -352,7 +352,7 @@ records.write({'is_active': True})
         <field name="binding_model_id" ref="model_fel_certification_provider"/>
         <field name="binding_view_types">list</field>
         <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_manager'))]"/>
         <field name="code">
 tested_count = 0
 for provider in records.filtered('is_active'):

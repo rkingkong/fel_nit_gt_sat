@@ -1,4 +1,4 @@
-odoo.define('fel_guatemala.pos', function (require) {
+odoo.define('fel_nit_gt_sat.pos', function (require) {
 "use strict";
 
 var models = require('point_of_sale.models');

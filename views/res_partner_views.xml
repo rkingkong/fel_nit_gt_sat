@@ -16,7 +16,7 @@
                         class="oe_stat_button"
                         icon="fa-check-circle"
                         attrs="{'invisible': [('can_verify_nit', '=', False)]}"
-                        groups="fel_guatemala.group_fel_nit_verifier">
+                        groups="fel_nit_gt_sat.group_fel_nit_verifier">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Verify</span>
                         <span class="o_stat_text">NIT</span>
@@ -28,7 +28,7 @@
                         type="object" 
                         class="oe_stat_button"
                         icon="fa-file-text-o"
-                        groups="fel_guatemala.group_fel_user">
+                        groups="fel_nit_gt_sat.group_fel_user">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">FEL</span>
                         <span class="o_stat_text">Documents</span>
@@ -51,7 +51,7 @@
             <xpath expr="//field[@name='category_id']" position="after">
                 <group string="FEL Information" 
                        attrs="{'invisible': [('nit_gt', '=', False)]}"
-                       groups="fel_guatemala.group_fel_user">
+                       groups="fel_nit_gt_sat.group_fel_user">
                     
                     <!-- Verification status with color indicators -->
                     <field name="fel_verification_status" widget="badge"
@@ -79,7 +79,7 @@
             <!-- Add FEL preferences section -->
             <xpath expr="//group[@name='purchase']" position="after">
                 <group string="FEL Preferences" name="fel_preferences"
-                       groups="fel_guatemala.group_fel_user"
+                       groups="fel_nit_gt_sat.group_fel_user"
                        attrs="{'invisible': [('customer_rank', '=', 0)]}">
                     <field name="default_fel_document_type_id" 
                            domain="[('is_invoice', '=', True)]"
@@ -140,23 +140,23 @@
                 <separator/>
                 <filter string="FEL Verified" name="fel_verified" 
                         domain="[('is_fel_verified', '=', True)]"
-                        groups="fel_guatemala.group_fel_user"/>
+                        groups="fel_nit_gt_sat.group_fel_user"/>
                 <filter string="NIT Pending Verification" name="nit_pending" 
                         domain="[('nit_gt', '!=', False), ('nit_gt', '!=', 'CF'), ('is_fel_verified', '=', False)]"
-                        groups="fel_guatemala.group_fel_user"/>
+                        groups="fel_nit_gt_sat.group_fel_user"/>
                 <filter string="Consumidor Final" name="consumidor_final" 
                         domain="['|', ('nit_gt', '=', 'CF'), ('nit_gt', '=', False)]"
-                        groups="fel_guatemala.group_fel_user"/>
+                        groups="fel_nit_gt_sat.group_fel_user"/>
             </xpath>
             
             <!-- Add FEL grouping -->
             <xpath expr="//filter[@name='group_category']" position="after">
                 <filter string="Tax Regime" name="group_tax_regime" 
                         context="{'group_by': 'tax_regime_gt'}"
-                        groups="fel_guatemala.group_fel_user"/>
+                        groups="fel_nit_gt_sat.group_fel_user"/>
                 <filter string="FEL Status" name="group_fel_status" 
                         context="{'group_by': 'fel_verification_status'}"
-                        groups="fel_guatemala.group_fel_user"/>
+                        groups="fel_nit_gt_sat.group_fel_user"/>
             </xpath>
             
         </field>
@@ -172,14 +172,14 @@
             <!-- Add FEL verification badge -->
             <xpath expr="//div[hasclass('oe_kanban_details')]//ul" position="inside">
                 <li t-if="record.nit_gt.raw_value and record.nit_gt.raw_value != 'CF'" 
-                    groups="fel_guatemala.group_fel_user">
+                    groups="fel_nit_gt_sat.group_fel_user">
                     <span>NIT: </span><field name="nit_gt"/>
                     <span t-attf-class="badge float-right #{record.is_fel_verified.raw_value ? 'badge-success' : 'badge-warning'}"
                           t-if="record.fel_verification_status.raw_value">
                         <field name="fel_verification_status"/>
                     </span>
                 </li>
-                <li t-if="record.tax_regime_gt.raw_value" groups="fel_guatemala.group_fel_user">
+                <li t-if="record.tax_regime_gt.raw_value" groups="fel_nit_gt_sat.group_fel_user">
                     <span>Regime: </span><field name="tax_regime_gt"/>
                 </li>
             </xpath>
@@ -233,7 +233,7 @@
         <field name="binding_model_id" ref="base.model_res_partner"/>
         <field name="binding_view_types">list</field>
         <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_nit_verifier'))]"/>
+        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_nit_verifier'))]"/>
         <field name="code">
 # Verify NITs for selected partners
 verified_count = 0

@@ -1,7 +1,7 @@
 FEL Guatemala Module Icon Requirements
 =====================================
 
-📁 File Location: fel_guatemala/static/description/icon.png
+📁 File Location: fel_nit_gt_sat/static/description/icon.png
 
 🎨 Icon Specifications:
 - Dimensions: 128x128 pixels
@@ -33,7 +33,7 @@ FEL Guatemala Module Icon Requirements
 4. Include "FEL" text in professional font
 5. Add subtle shadow and border
 6. Export as PNG with transparency
-7. Save as: fel_guatemala/static/description/icon.png
+7. Save as: fel_nit_gt_sat/static/description/icon.png
 
 🎯 Alternative Quick Solution:
 Until a custom icon is created, you can use a simple text-based icon:

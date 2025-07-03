@@ -286,12 +286,12 @@
         <field name="name">FEL Invoice</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">fel_guatemala.fel_invoice_document</field>
-        <field name="report_file">fel_guatemala.fel_invoice_document</field>
+        <field name="report_name">fel_nit_gt_sat.fel_invoice_document</field>
+        <field name="report_file">fel_nit_gt_sat.fel_invoice_document</field>
         <field name="print_report_name">'FEL_%s_%s' % (object.fel_document_type_id.code or 'INV', object.name)</field>
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
-        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_user'))]"/>
+        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_user'))]"/>
     </record>
     
     <!-- POS Order FEL Receipt Template -->
@@ -398,12 +398,12 @@
         <field name="name">FEL POS Receipt</field>
         <field name="model">pos.order</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">fel_guatemala.fel_pos_receipt_document</field>
-        <field name="report_file">fel_guatemala.fel_pos_receipt_document</field>
+        <field name="report_name">fel_nit_gt_sat.fel_pos_receipt_document</field>
+        <field name="report_file">fel_nit_gt_sat.fel_pos_receipt_document</field>
         <field name="print_report_name">'FEL_POS_%s' % (object.name)</field>
         <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
         <field name="binding_type">report</field>
-        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_restaurant_user'))]"/>
+        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_restaurant_user'))]"/>
     </record>
     
     <!-- FEL Monthly Report Template -->
@@ -436,10 +436,10 @@
         <field name="name">FEL Monthly Report</field>
         <field name="model">fel.config</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">fel_guatemala.fel_monthly_report_document</field>
-        <field name="report_file">fel_guatemala.fel_monthly_report_document</field>
+        <field name="report_name">fel_nit_gt_sat.fel_monthly_report_document</field>
+        <field name="report_file">fel_nit_gt_sat.fel_monthly_report_document</field>
         <field name="print_report_name">'FEL_Monthly_Report_%s' % (datetime.datetime.now().strftime('%Y-%m'))</field>
-        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_manager'))]"/>
     </record>
     
 </odoo>

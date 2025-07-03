@@ -5,8 +5,8 @@
     <menuitem id="menu_fel_main" 
               name="FEL Guatemala" 
               sequence="75"
-              web_icon="fel_guatemala,static/description/icon.png"
-              groups="fel_guatemala.group_fel_user"/>
+              web_icon="fel_nit_gt_sat,static/description/icon.png"
+              groups="fel_nit_gt_sat.group_fel_user"/>
     
     <!-- Dashboard Submenu -->
     <menuitem id="menu_fel_dashboard" 
@@ -14,14 +14,14 @@
               parent="menu_fel_main" 
               sequence="10"
               action="action_fel_dashboard"
-              groups="fel_guatemala.group_fel_user"/>
+              groups="fel_nit_gt_sat.group_fel_user"/>
     
     <!-- Documents Section -->
     <menuitem id="menu_fel_documents_section" 
               name="Documents" 
               parent="menu_fel_main" 
               sequence="20"
-              groups="fel_guatemala.group_fel_user"/>
+              groups="fel_nit_gt_sat.group_fel_user"/>
     
     <menuitem id="menu_fel_documents_all" 
               name="All FEL Documents" 
@@ -52,7 +52,7 @@
               name="Invoices" 
               parent="menu_fel_main" 
               sequence="30"
-              groups="fel_guatemala.group_fel_user"/>
+              groups="fel_nit_gt_sat.group_fel_user"/>
     
     <menuitem id="menu_fel_invoices_all" 
               name="FEL Invoices" 
@@ -77,7 +77,7 @@
               name="Customers" 
               parent="menu_fel_main" 
               sequence="40"
-              groups="fel_guatemala.group_fel_user"/>
+              groups="fel_nit_gt_sat.group_fel_user"/>
     
     <menuitem id="menu_fel_customers_dashboard" 
               name="FEL Customers" 
@@ -90,35 +90,35 @@
               parent="menu_fel_customers_section" 
               action="action_partner_nit_verification" 
               sequence="20"
-              groups="fel_guatemala.group_fel_nit_verifier"/>
+              groups="fel_nit_gt_sat.group_fel_nit_verifier"/>
     
     <!-- Tools Section -->
     <menuitem id="menu_fel_tools_section" 
               name="Tools" 
               parent="menu_fel_main" 
               sequence="50"
-              groups="fel_guatemala.group_fel_user"/>
+              groups="fel_nit_gt_sat.group_fel_user"/>
     
     <menuitem id="menu_fel_nit_verification_wizard" 
               name="Verify NIT" 
               parent="menu_fel_tools_section" 
               action="action_fel_nit_verification_wizard" 
               sequence="10"
-              groups="fel_guatemala.group_fel_nit_verifier"/>
+              groups="fel_nit_gt_sat.group_fel_nit_verifier"/>
     
     <menuitem id="menu_fel_batch_processing" 
               name="Batch Processing" 
               parent="menu_fel_tools_section" 
               action="action_fel_batch_processing_wizard" 
               sequence="20"
-              groups="fel_guatemala.group_fel_manager"/>
+              groups="fel_nit_gt_sat.group_fel_manager"/>
     
     <!-- Reports Section -->
     <menuitem id="menu_fel_reports_section" 
               name="Reports" 
               parent="menu_fel_main" 
               sequence="60"
-              groups="fel_guatemala.group_fel_user"/>
+              groups="fel_nit_gt_sat.group_fel_user"/>
     
     <menuitem id="menu_fel_reports_monthly" 
               name="Monthly FEL Report" 
@@ -143,7 +143,7 @@
               name="Configuration" 
               parent="menu_fel_main" 
               sequence="90"
-              groups="fel_guatemala.group_fel_manager"/>
+              groups="fel_nit_gt_sat.group_fel_manager"/>
     
     <menuitem id="menu_fel_config_main" 
               name="FEL Configuration" 
@@ -171,14 +171,14 @@
               parent="account.menu_finance" 
               sequence="99"
               action="action_fel_invoice_dashboard"
-              groups="fel_guatemala.group_fel_user"/>
+              groups="fel_nit_gt_sat.group_fel_user"/>
     
     <!-- Add FEL submenu to Point of Sale -->
     <menuitem id="menu_pos_fel" 
               name="FEL Integration" 
               parent="point_of_sale.menu_point_root" 
               sequence="99"
-              groups="fel_guatemala.group_fel_restaurant_user"/>
+              groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
     
     <menuitem id="menu_pos_fel_orders" 
               name="FEL POS Orders" 
@@ -191,7 +191,7 @@
               parent="menu_pos_fel" 
               action="action_pos_config_fel" 
               sequence="20"
-              groups="fel_guatemala.group_fel_manager"/>
+              groups="fel_nit_gt_sat.group_fel_manager"/>
     
     <!-- Add FEL to Sales menu -->
     <menuitem id="menu_sales_fel_customers" 
@@ -199,16 +199,16 @@
               parent="sale.sale_menu_root" 
               action="action_partner_nit_verification" 
               sequence="99"
-              groups="fel_guatemala.group_fel_nit_verifier"/>
+              groups="fel_nit_gt_sat.group_fel_nit_verifier"/>
     
 </odoo>
 
 <!-- 
 MODULE STRUCTURE LOCATION:
-This file should be placed at: fel_guatemala/menu/fel_menu.xml
+This file should be placed at: fel_nit_gt_sat/menu/fel_menu.xml
 
 COMPLETE MODULE FOLDER STRUCTURE:
-fel_guatemala/
+fel_nit_gt_sat/
 ├── __init__.py                           ✅ (Commit 1)
 ├── __manifest__.py                       ✅ (Commit 1) 
 ├── models/

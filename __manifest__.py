@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 {
     'name': 'FEL Guatemala - Factura Electrónica en Línea',
     'version': '17.0.1.0.0',
@@ -50,28 +51,28 @@
         'views/account_move_views.xml',
         'views/pos_order_views.xml',
         'views/pos_config_views.xml',
+        'views/fel_certification_provider_views.xml',
+        'views/fel_document_type_views.xml',
         'wizard/fel_nit_verification_views.xml',
         'wizard/fel_document_send_views.xml',
         'reports/fel_invoice_report.xml',
         'menu/fel_menu.xml',
     ],
-    'demo': [
-        #no demo data for now
-    ],
-    'qweb': [
-        'static/src/xml/fel_pos_templates.xml',
-    ],
+    'assets': {
+        'point_of_sale.assets': [
+            'fel_nit_gt_sat/static/src/js/fel_pos.js',
+            'fel_nit_gt_sat/static/src/xml/fel_pos_templates.xml',
+        ],
+    },
     'external_dependencies': {
         'python': [
             'requests',
             'xmltodict',
             'lxml',
             'cryptography',
-            'suds-community',
         ],
     },
     'installable': True,
     'auto_install': False,
     'application': True,
-    'post_init_hook': 'post_init_hook',
 }

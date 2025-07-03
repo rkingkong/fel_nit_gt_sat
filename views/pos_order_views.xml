@@ -16,7 +16,7 @@
                         class="oe_stat_button"
                         icon="fa-send"
                         attrs="{'invisible': ['|', ('can_send_fel', '=', False), ('fel_status', 'in', ['certified', 'sending'])]}"
-                        groups="fel_guatemala.group_fel_restaurant_user">
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Send to</span>
                         <span class="o_stat_text">FEL</span>
@@ -29,7 +29,7 @@
                         class="oe_stat_button"
                         icon="fa-file-text-o"
                         attrs="{'invisible': [('fel_document_id', '=', False)]}"
-                        groups="fel_guatemala.group_fel_restaurant_user">
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">FEL</span>
                         <span class="o_stat_text">Document</span>
@@ -42,7 +42,7 @@
                         class="oe_stat_button"
                         icon="fa-user"
                         attrs="{'invisible': [('state', 'not in', ['paid', 'done'])]}"
-                        groups="fel_guatemala.group_fel_restaurant_user">
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Customer</span>
                         <span class="o_stat_text">Info</span>
@@ -55,7 +55,7 @@
                         class="oe_stat_button"
                         icon="fa-refresh"
                         attrs="{'invisible': [('fel_status', '!=', 'error')]}"
-                        groups="fel_guatemala.group_fel_restaurant_user">
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Retry</span>
                         <span class="o_stat_text">FEL</span>
@@ -68,7 +68,7 @@
                 
                 <!-- Restaurant Information -->
                 <group string="Restaurant Information" 
-                       groups="fel_guatemala.group_fel_restaurant_user">
+                       groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <field name="table_number" placeholder="Table #"/>
                     <field name="waiter_id" domain="[('groups_id', 'in', [ref('point_of_sale.group_pos_user')])]"
                            options="{'no_create_edit': True}"/>
@@ -77,7 +77,7 @@
                 <!-- Customer Information for FEL -->
                 <group string="Customer Information (FEL)" 
                        attrs="{'invisible': [('requires_fel', '=', False)]}"
-                       groups="fel_guatemala.group_fel_restaurant_user">
+                       groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <field name="customer_nit" placeholder="NIT or CF for Consumidor Final"/>
                     <field name="customer_name" placeholder="Customer name"/>
                 </group>
@@ -85,7 +85,7 @@
                 <!-- FEL Status Information -->
                 <group string="FEL Information" 
                        attrs="{'invisible': [('requires_fel', '=', False)]}"
-                       groups="fel_guatemala.group_fel_restaurant_user">
+                       groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     
                     <!-- FEL Status with color coding -->
                     <field name="fel_status" widget="badge"
@@ -119,14 +119,14 @@
             <xpath expr="//sheet" position="before">
                 <div class="alert alert-danger" role="alert" 
                      attrs="{'invisible': [('fel_error_message', '=', False)]}"
-                     groups="fel_guatemala.group_fel_restaurant_user">
+                     groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <strong>FEL Error:</strong>
                     <field name="fel_error_message" readonly="1"/>
                 </div>
                 
                 <div class="alert alert-success" role="alert" 
                      attrs="{'invisible': [('fel_status', '!=', 'certified')]}"
-                     groups="fel_guatemala.group_fel_restaurant_user">
+                     groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <strong>FEL Certified:</strong> 
                     This order has been successfully certified by SAT.
                     <span attrs="{'invisible': [('fel_uuid', '=', False)]}">
@@ -147,9 +147,9 @@
             
             <!-- Add restaurant and FEL columns -->
             <xpath expr="//field[@name='date_order']" position="after">
-                <field name="table_number" optional="show" groups="fel_guatemala.group_fel_restaurant_user"/>
-                <field name="waiter_id" optional="hide" groups="fel_guatemala.group_fel_restaurant_user"/>
-                <field name="customer_nit" optional="hide" groups="fel_guatemala.group_fel_restaurant_user"/>
+                <field name="table_number" optional="show" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="waiter_id" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="customer_nit" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
             <!-- Add FEL status column -->
@@ -159,18 +159,18 @@
                        decoration-danger="fel_status=='error'"
                        decoration-warning="fel_status=='cancelled'"
                        decoration-info="fel_status in ('sending', 'generating')"
-                       groups="fel_guatemala.group_fel_restaurant_user"/>
-                <field name="fel_uuid" optional="hide" groups="fel_guatemala.group_fel_restaurant_user"/>
+                       groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="fel_uuid" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
             <!-- Add action buttons -->
             <xpath expr="//field[@name='amount_total']" position="after">
                 <button name="action_send_fel" string="Send FEL" type="object" icon="fa-send"
                         attrs="{'invisible': [('can_send_fel', '=', False)]}"
-                        groups="fel_guatemala.group_fel_restaurant_user"/>
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <button name="retry_fel" string="Retry" type="object" icon="fa-refresh"
                         attrs="{'invisible': [('fel_status', '!=', 'error')]}"
-                        groups="fel_guatemala.group_fel_restaurant_user"/>
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
             <!-- Hidden fields for logic -->
@@ -191,47 +191,47 @@
             
             <!-- Add FEL search fields -->
             <xpath expr="//field[@name='name']" position="after">
-                <field name="fel_uuid" string="FEL UUID" groups="fel_guatemala.group_fel_restaurant_user"/>
-                <field name="customer_nit" string="Customer NIT" groups="fel_guatemala.group_fel_restaurant_user"/>
-                <field name="table_number" string="Table" groups="fel_guatemala.group_fel_restaurant_user"/>
-                <field name="waiter_id" string="Waiter" groups="fel_guatemala.group_fel_restaurant_user"/>
+                <field name="fel_uuid" string="FEL UUID" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="customer_nit" string="Customer NIT" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="table_number" string="Table" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="waiter_id" string="Waiter" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
             <!-- Add FEL filters -->
             <xpath expr="//filter[@name='invoiced']" position="after">
-                <separator groups="fel_guatemala.group_fel_restaurant_user"/>
+                <separator groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="Requires FEL" name="requires_fel" 
                         domain="[('requires_fel', '=', True)]"
-                        groups="fel_guatemala.group_fel_restaurant_user"/>
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="FEL Certified" name="fel_certified" 
                         domain="[('fel_status', '=', 'certified')]"
-                        groups="fel_guatemala.group_fel_restaurant_user"/>
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="FEL Pending" name="fel_pending" 
                         domain="[('requires_fel', '=', True), ('fel_status', 'in', ['draft', 'error'])]"
-                        groups="fel_guatemala.group_fel_restaurant_user"/>
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="FEL Errors" name="fel_errors" 
                         domain="[('fel_status', '=', 'error')]"
-                        groups="fel_guatemala.group_fel_restaurant_user"/>
-                <separator groups="fel_guatemala.group_fel_restaurant_user"/>
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <separator groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="With Table" name="with_table" 
                         domain="[('table_number', '!=', False)]"
-                        groups="fel_guatemala.group_fel_restaurant_user"/>
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="Consumidor Final" name="consumidor_final" 
                         domain="['|', ('customer_nit', '=', 'CF'), ('customer_nit', '=', False)]"
-                        groups="fel_guatemala.group_fel_restaurant_user"/>
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
             <!-- Add FEL grouping -->
             <xpath expr="//filter[@name='session']" position="after">
                 <filter string="FEL Status" name="group_fel_status" 
                         context="{'group_by': 'fel_status'}"
-                        groups="fel_guatemala.group_fel_restaurant_user"/>
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="Table" name="group_table" 
                         context="{'group_by': 'table_number'}"
-                        groups="fel_guatemala.group_fel_restaurant_user"/>
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="Waiter" name="group_waiter" 
                         context="{'group_by': 'waiter_id'}"
-                        groups="fel_guatemala.group_fel_restaurant_user"/>
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
         </field>
@@ -247,7 +247,7 @@
             <!-- Add FEL configuration section -->
             <xpath expr="//page[@name='payment']" position="after">
                 <page string="FEL Configuration" name="fel_config" 
-                      groups="fel_guatemala.group_fel_restaurant_user">
+                      groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <group>
                         <group string="FEL Settings">
                             <field name="use_fel"/>
@@ -346,7 +346,7 @@
         <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
         <field name="binding_view_types">list</field>
         <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_restaurant_user'))]"/>
+        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_restaurant_user'))]"/>
         <field name="code">
 # Send selected POS orders to FEL
 sent_count = 0
@@ -373,7 +373,7 @@ if error_count > 0:
         <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
         <field name="binding_view_types">list</field>
         <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_restaurant_user'))]"/>
+        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_restaurant_user'))]"/>
         <field name="code">
 # Open wizard to set customer info for multiple orders
 if len(records) == 1:

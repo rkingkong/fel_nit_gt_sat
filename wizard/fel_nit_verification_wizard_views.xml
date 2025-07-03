@@ -378,7 +378,7 @@
         <field name="binding_model_id" ref="base.model_res_partner"/>
         <field name="binding_view_types">form</field>
         <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_guatemala.group_fel_nit_verifier'))]"/>
+        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_nit_verifier'))]"/>
         <field name="code">
 if record.nit_gt:
     action = {

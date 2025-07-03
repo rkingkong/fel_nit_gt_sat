@@ -1,134 +1,186 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<templates id="template" xml:space="preserve">
-    
-    <!-- FEL Customer Info Popup -->
-    <t t-name="FelCustomerPopupWidget">
-        <div class="modal-dialog">
-            <div class="popup popup-text">
-                <p class="title">
-                    <t t-esc="widget.options.title || 'Customer Information for FEL'"/>
-                </p>
-                <div class="body">
-                    <div class="fel-customer-form">
-                        <div class="form-group">
-                            <label>NIT:</label>
-                            <input type="text" class="form-control customer-nit" 
-                                   placeholder="12345678-9 or CF"
-                                   autocomplete="off"/>
-                            <small class="form-text text-muted">
-                                Enter customer NIT or 'CF' for Consumidor Final
-                            </small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Customer Name:</label>
-                            <input type="text" class="form-control customer-name" 
-                                   placeholder="Customer name"
-                                   autocomplete="off"/>
-                        </div>
-                        
-                        <div class="alert alert-info">
-                            <strong>🇬🇹 Guatemala FEL Requirements:</strong>
-                            <ul class="mb-0">
-                                <li>All sales require customer NIT for electronic invoicing</li>
-                                <li>Use 'CF' for walk-in customers (Consumidor Final)</li>
-                                <li>NITs will be verified with SAT automatically</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="button cancel">
-                        Cancel
-                    </div>
-                    <div class="button confirm">
-                        Confirm
-                    </div>
-                </div>
-            </div>
-        </div>
-    </t>
-    
-    <!-- Waiter Selection Popup for Restaurant -->
-    <t t-name="WaiterSelectionPopupWidget">
-        <div class="modal-dialog">
-            <div class="popup popup-selection">
-                <p class="title">
-                    <t t-esc="widget.options.title || 'Select Waiter'"/>
-                </p>
-                <div class="body">
-                    <div class="waiter-list selection-list">
-                        <!-- Waiters will be rendered dynamically -->
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="button cancel">
-                        Cancel
-                    </div>
-                </div>
-            </div>
-        </div>
-    </t>
-    
-    <!-- FEL Action Button -->
-    <t t-name="FelActionButton">
-        <div class='control-button'>
-            <i class='fa fa-file-text-o'/> FEL Info
-        </div>
-    </t>
-    
-    <!-- Order Receipt Extension with FEL Info -->
-    <t t-extend="OrderReceipt">
-        <t t-jquery=".pos-receipt-contact" t-operation="after">
-            <t t-if="order.customer_nit">
-                <div class="fel-info">
-                    <div>NIT: <t t-esc="order.customer_nit"/></div>
-                    <div>Nombre: <t t-esc="order.customer_name"/></div>
-                </div>
-            </t>
-        </t>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
         
-        <t t-jquery=".receipt-orderlines" t-operation="before">
-            <t t-if="order.table_number">
-                <div class="receipt-table">
-                    Mesa: <t t-esc="order.table_number"/>
-                </div>
-            </t>
-            <t t-if="order.waiter_name">
-                <div class="receipt-waiter">
-                    Mesero: <t t-esc="order.waiter_name"/>
-                </div>
-            </t>
-        </t>
-    </t>
-    
-    <!-- Order Widget Extension to show FEL Status -->
-    <t t-extend="OrderWidget">
-        <t t-jquery=".order-info" t-operation="append">
-            <t t-if="order">
-                <t t-if="order.customer_nit">
-                    <div class="fel-status">
-                        <span class="label">FEL:</span>
-                        <span class="value">
-                            <t t-esc="order.customer_nit"/> - 
-                            <t t-esc="order.customer_name"/>
-                        </span>
-                    </div>
-                </t>
-                <t t-if="order.table_number">
-                    <div class="table-info">
-                        <span class="label">Mesa:</span>
-                        <span class="value"><t t-esc="order.table_number"/></span>
-                    </div>
-                </t>
-                <t t-if="order.waiter_name">
-                    <div class="waiter-info">
-                        <span class="label">Mesero:</span>
-                        <span class="value"><t t-esc="order.waiter_name"/></span>
-                    </div>
-                </t>
-            </t>
-        </t>
-    </t>
-    
-</templates>
+        <!-- INFILE Provider -->
+        <record id="fel_provider_infile" model="fel.certification.provider">
+            <field name="name">INFILE, S.A.</field>
+            <field name="code">infile</field>
+            <field name="description">FEL Provider - INFILE GUATEMALA</field>
+            <field name="website">https://www.infile.com.gt</field>
+            <field name="contact_phone">2208-2208</field>
+            <field name="contact_email">soporte@infile.com.gt</field>
+            <field name="support_hours">Lunes a Viernes 8:00 - 17:00</field>
+            <field name="test_url">https://certificador.test.infile.com.gt</field>
+            <field name="production_url">https://certificador.feel.com.gt</field>
+            <field name="setup_cost">995.00</field>
+            <field name="monthly_cost">0.00</field>
+            <field name="annual_cost">396.00</field>
+            <field name="cost_per_dte">0.33</field>
+            <field name="free_dte_quota">1200</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- FEL Document Types -->
+        
+        <!-- FACT - Factura -->
+        <record id="fel_document_type_fact" model="fel.document.type">
+            <field name="name">Factura</field>
+            <field name="code">FACT</field>
+            <field name="description">Factura Electrónica Normal</field>
+            <field name="is_invoice">True</field>
+            <field name="is_credit_note">False</field>
+            <field name="is_debit_note">False</field>
+            <field name="requires_reference">False</field>
+            <field name="allowed_regimes">general,especial</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="xml_schema_location">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="sat_classification">FACTURAElectronica</field>
+            <field name="sequence">10</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- FCAM - Factura Cambiaria -->
+        <record id="fel_document_type_fcam" model="fel.document.type">
+            <field name="name">Factura Cambiaria</field>
+            <field name="code">FCAM</field>
+            <field name="description">Factura Cambiaria para Crédito</field>
+            <field name="is_invoice">True</field>
+            <field name="is_credit_note">False</field>
+            <field name="is_debit_note">False</field>
+            <field name="requires_reference">False</field>
+            <field name="allowed_regimes">general,especial</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="sequence">20</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- FPEQ - Factura Pequeño Contribuyente -->
+        <record id="fel_document_type_fpeq" model="fel.document.type">
+            <field name="name">Factura Pequeño Contribuyente</field>
+            <field name="code">FPEQ</field>
+            <field name="description">Factura para Régimen de Pequeño Contribuyente</field>
+            <field name="is_invoice">True</field>
+            <field name="is_credit_note">False</field>
+            <field name="is_debit_note">False</field>
+            <field name="requires_reference">False</field>
+            <field name="allowed_regimes">pequeno</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="sequence">30</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- FESP - Factura Especial -->
+        <record id="fel_document_type_fesp" model="fel.document.type">
+            <field name="name">Factura Especial</field>
+            <field name="code">FESP</field>
+            <field name="description">Factura de Régimen Especial</field>
+            <field name="is_invoice">True</field>
+            <field name="is_credit_note">False</field>
+            <field name="is_debit_note">False</field>
+            <field name="requires_reference">False</field>
+            <field name="allowed_regimes">especial</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="sequence">40</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- NCRE - Nota de Crédito -->
+        <record id="fel_document_type_ncre" model="fel.document.type">
+            <field name="name">Nota de Crédito</field>
+            <field name="code">NCRE</field>
+            <field name="description">Nota de Crédito Electrónica</field>
+            <field name="is_invoice">False</field>
+            <field name="is_credit_note">True</field>
+            <field name="is_debit_note">False</field>
+            <field name="requires_reference">True</field>
+            <field name="allowed_regimes">general,especial,pequeno</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="sequence">50</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- NDEB - Nota de Débito -->
+        <record id="fel_document_type_ndeb" model="fel.document.type">
+            <field name="name">Nota de Débito</field>
+            <field name="code">NDEB</field>
+            <field name="description">Nota de Débito Electrónica</field>
+            <field name="is_invoice">False</field>
+            <field name="is_credit_note">False</field>
+            <field name="is_debit_note">True</field>
+            <field name="requires_reference">True</field>
+            <field name="allowed_regimes">general,especial,pequeno</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="sequence">60</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- NABN - Nota de Abono -->
+        <record id="fel_document_type_nabn" model="fel.document.type">
+            <field name="name">Nota de Abono</field>
+            <field name="code">NABN</field>
+            <field name="description">Nota de Abono a Cuenta</field>
+            <field name="is_invoice">False</field>
+            <field name="is_credit_note">False</field>
+            <field name="is_debit_note">False</field>
+            <field name="requires_reference">False</field>
+            <field name="allowed_regimes">general,especial</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="sequence">70</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- RECI - Recibo -->
+        <record id="fel_document_type_reci" model="fel.document.type">
+            <field name="name">Recibo</field>
+            <field name="code">RECI</field>
+            <field name="description">Recibo por Pago</field>
+            <field name="is_invoice">False</field>
+            <field name="is_credit_note">False</field>
+            <field name="is_debit_note">False</field>
+            <field name="requires_reference">False</field>
+            <field name="allowed_regimes">general,especial</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="sequence">80</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- RDON - Recibo por Donación -->
+        <record id="fel_document_type_rdon" model="fel.document.type">
+            <field name="name">Recibo por Donación</field>
+            <field name="code">RDON</field>
+            <field name="description">Recibo por Donación Deducible</field>
+            <field name="is_invoice">False</field>
+            <field name="is_credit_note">False</field>
+            <field name="is_debit_note">False</field>
+            <field name="requires_reference">False</field>
+            <field name="allowed_regimes">general</field>
+            <field name="xml_ns">http://www.sat.gob.gt/dte/fel/0.1.0</field>
+            <field name="sequence">90</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- Standard Tax Phrases -->
+        
+        <!-- ISR Phrase -->
+        <record id="fel_tax_phrase_isr" model="fel.tax.phrase">
+            <field name="name">Sujeto a retención definitiva ISR</field>
+            <field name="phrase_type">1</field>
+            <field name="scenario_code">1</field>
+            <field name="description">Para facturas con retención de ISR</field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- IVA Phrase -->
+        <record id="fel_tax_phrase_iva" model="fel.tax.phrase">
+            <field name="name">Sujeto a pagos trimestrales ISR</field>
+            <field name="phrase_type">1</field>
+            <field name="scenario_code">2</field>
+            <field name="description">Para régimen de pequeño contribuyente</field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="is_active">True</field>
+        </record>
+        
+    </data>
+</odoo>

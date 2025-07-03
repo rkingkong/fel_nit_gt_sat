@@ -684,7 +684,7 @@ class FelPosSendWizard(models.TransientModel):
             lambda o: not o.customer_nit and not o.partner_id
         )
         
-        cf_partner = self.env.ref('fel_guatemala.partner_consumidor_final_gt', raise_if_not_found=False)
+        cf_partner = self.env.ref('fel_nit_gt_sat.partner_consumidor_final_gt', raise_if_not_found=False)
         
         for order in orders_without_customer:
             order.write({
@@ -850,7 +850,7 @@ class FelDailyProcessingWizard(models.TransientModel):
             lambda o: not o.customer_nit and not o.partner_id
         )
         
-        cf_partner = self.env.ref('fel_guatemala.partner_consumidor_final_gt', raise_if_not_found=False)
+        cf_partner = self.env.ref('fel_nit_gt_sat.partner_consumidor_final_gt', raise_if_not_found=False)
         
         for order in pos_orders_no_customer:
             order.write({
