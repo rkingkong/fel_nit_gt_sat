@@ -217,6 +217,7 @@
             <field name="scenario_code">1</field>
             <field name="apply_to_fact">True</field>
             <field name="apply_to_fcam">True</field>
+            <field name="apply_to_fpeq">True</field>
             <field name="apply_to_fesp">True</field>
             <field name="apply_to_ncre">True</field>
             <field name="apply_to_ndeb">True</field>

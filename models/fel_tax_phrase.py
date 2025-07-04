@@ -56,20 +56,39 @@ class FelTaxPhrase(models.Model):
     apply_to_fact = fields.Boolean(
         string='Apply to FACT',
         default=False,
-        help='Apply this phrase to FACT documents'
+        help='Apply this phrase to FACTURA (FACT) documents'
     )
     
     apply_to_fcam = fields.Boolean(
         string='Apply to FCAM',
         default=False,
-        help='Apply this phrase to FCAM documents'
+        help='Apply this phrase to Factura de Cambio (FCAM)'
     )
     
     apply_to_fesp = fields.Boolean(
         string='Apply to FESP',
         default=False,
-        help='Apply this phrase to FESP documents'
+        help='Apply this phrase to FESP (Factura Especial) documents'
     )
+    
+    apply_to_ncre = fields.Boolean(
+    string='Apply to NCRE',
+    default=False,
+    help='Apply this phrase to Nota de Crédito (NCRE)'
+    )
+
+    apply_to_ndeb = fields.Boolean(
+        string='Apply to NDEB',
+        default=False,
+        help='Apply this phrase to Nota de Débito (NDEB)'
+    )
+
+    apply_to_fpeq = fields.Boolean(
+        string='Apply to FPEQ',
+        default=False,
+        help='Apply this phrase to Factura Pequeño Contribuyente (FPEQ)'
+    )
+
     
     condition_type = fields.Selection(
     selection=[
