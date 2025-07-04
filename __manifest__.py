@@ -42,22 +42,35 @@
         'l10n_gt',  # Guatemala localization
     ],
     'data': [
+        # Security files first
         'security/fel_security.xml',
         'security/ir.model.access.csv',
+        
+        # Data files
         'data/fel_document_types.xml',
-        'menu/fel_menu.xml',
+        
+        # View files that define ACTIONS (must be loaded before menus)
         'views/fel_dashboard_views.xml',
         'views/fel_config_views.xml',
         'views/fel_document_views.xml',
-        'views/fel_tax_phrase_views.xml',
         'views/res_partner_views.xml',
         'views/account_move_views.xml',
         'views/pos_order_views.xml',
         'views/pos_config_views.xml',
         'views/fel_certification_provider_views.xml',
         'views/fel_document_type_views.xml',
+        
+        # Wizard files (also define actions)
         'wizard/fel_nit_verification_views.xml',
         'wizard/fel_document_send_views.xml',
+        
+        # Menu file AFTER all actions are defined
+        'menu/fel_menu.xml',
+        
+        # View files that ADD menu items (must be after menu file)
+        'views/fel_tax_phrase_views.xml',
+        
+        # Report files
         'reports/fel_invoice_report.xml',
         
     ],
