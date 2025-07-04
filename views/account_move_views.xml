@@ -91,7 +91,7 @@
             </xpath>
             
             <!-- Add FEL error message if exists -->
-            <xpath expr="//group[@name='header_right_group']" position="after">
+            <xpath expr="//sheet" position="inside">
                 <div class="alert alert-danger" role="alert" 
                      modifiers="{'invisible': [('fel_error_message', '=', False)]}"
                      groups="fel_nit_gt_sat.group_fel_user">
