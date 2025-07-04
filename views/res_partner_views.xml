@@ -26,8 +26,7 @@
             
             <!-- Add NIT field after vat -->
             <xpath expr="//field[@name='vat']" position="after">
-                <field name="nit_gt" placeholder="e.g. 12345678-9 or CF" 
-                       readonly="is_fel_verified == True"/>
+                <field name="nit_gt" placeholder="e.g. 12345678-9 or CF"/>
                 <field name="display_nit" readonly="1" 
                        invisible="not display_nit"/>
                 <field name="dpi_gt" placeholder="e.g. 1234567890123"
