@@ -12,7 +12,7 @@
                             <field name="name" placeholder="e.g., Sujeto a pagos trimestrales ISR"/>
                             <field name="phrase_type"/>
                             <field name="scenario_code"/>
-                            <field name="is_active"/>
+                            <field name="active"/>
                         </group>
                         <group>
                             <field name="company_id" groups="base.group_multi_company"/>
@@ -41,11 +41,11 @@
         <field name="name">fel.tax.phrase.tree</field>
         <field name="model">fel.tax.phrase</field>
         <field name="arch" type="xml">
-            <tree string="Tax Phrases" decoration-muted="not is_active">
+            <tree string="Tax Phrases" decoration-muted="not active">
                 <field name="phrase_type"/>
                 <field name="scenario_code"/>
                 <field name="name"/>
-                <field name="is_active"/>
+                <field name="active"/>
                 <field name="company_id" groups="base.group_multi_company"/>
             </tree>
         </field>
@@ -60,8 +60,8 @@
                 <field name="name"/>
                 <field name="phrase_type"/>
                 <field name="scenario_code"/>
-                <filter string="Active" name="active" domain="[('is_active', '=', True)]"/>
-                <filter string="Inactive" name="inactive" domain="[('is_active', '=', False)]"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
                 <separator/>
                 <filter string="Type 1 - ISR" name="type_1" domain="[('phrase_type', '=', '1')]"/>
                 <filter string="Type 5 - Special" name="type_5" domain="[('phrase_type', '=', '5')]"/>
