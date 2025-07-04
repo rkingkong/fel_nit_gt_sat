@@ -148,7 +148,7 @@
             <!-- Add restaurant and FEL columns -->
             <xpath expr="//field[@name='date_order']" position="after">
                 <field name="table_number" optional="show" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="waiter_id" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="user_id" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <field name="customer_nit" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
@@ -194,7 +194,7 @@
                 <field name="fel_uuid" string="FEL UUID" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <field name="customer_nit" string="Customer NIT" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <field name="table_number" string="Table" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="waiter_id" string="Waiter" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="user_id" string="POS User" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
             <!-- Add FEL filters -->
@@ -229,9 +229,7 @@
                 <filter string="Table" name="group_table" 
                         context="{'group_by': 'table_number'}"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <filter string="Waiter" name="group_waiter" 
-                        context="{'group_by': 'waiter_id'}"
-                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <filter string="User" name="group_user" context="{'group_by': 'user_id'}" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
         </field>
