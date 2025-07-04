@@ -12,6 +12,13 @@ class FelDocumentType(models.Model):
     _rec_name = 'name'
     _order = 'sequence, name'
     
+    active = fields.Boolean(
+    string='Active',
+    default=True,
+    help='Indicates if this document type is active'
+    )
+
+    
     # Basic Information
     name = fields.Char(
         string='Document Name', 

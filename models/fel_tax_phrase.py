@@ -11,6 +11,13 @@ class FelTaxPhrase(models.Model):
     _order = 'sequence, id'
     
     # Basic Information
+    
+    active = fields.Boolean(
+    string='Active',
+    default=True,
+    help='Indicates if this document type is active'
+    )
+    
     name = fields.Char(
         string='Name',
         required=True,
