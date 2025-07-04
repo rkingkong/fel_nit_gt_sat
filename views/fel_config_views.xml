@@ -10,6 +10,8 @@
                 <header>
                     <button name="test_connection" string="Test Connection" type="object" class="btn-primary" 
                             attrs="{'invisible': [('api_url', '=', False)]}"/>
+                    <button name="action_check_signature_expiry" string="Check Signature Expiry" type="object" 
+                            class="btn-secondary" attrs="{'invisible': [('llave_firma_expiry', '=', False)]}"/>
                     <field name="is_active" widget="boolean_toggle"/>
                 </header>
                 <sheet>
@@ -37,31 +39,37 @@
                             <field name="tax_regime"/>
                             <field name="commercial_name" placeholder="Commercial name for documents"/>
                             <field name="establishment_code" placeholder="1"/>
+                            <field name="establishment_name" placeholder="e.g. FUSIÓN GATRONÓMICA"/>
+                            <field name="establishment_classification" placeholder="e.g. 885 for restaurants"/>
+                            <field name="establishment_type" placeholder="e.g. 888"/>
                         </group>
                         
                         <group string="Environment">
                             <field name="environment" widget="radio"/>
                             <field name="test_mode" attrs="{'invisible': [('environment', '=', 'production')]}"/>
                             <field name="last_sync" readonly="1"/>
+                            <field name="health_status" widget="badge" 
+                                   decoration-success="health_status=='healthy'"
+                                   decoration-warning="health_status=='warning'"
+                                   decoration-danger="health_status in ('error','critical')"/>
                         </group>
                     </group>
                     
                     <notebook>
-                        <page string="API Configuration" name="api_config">
+                        <page string="INFILE Configuration" name="infile_config">
                             <group>
-                                <group string="Connection Settings">
-                                    <field name="api_url" placeholder="https://api.provider.com"/>
-                                    <field name="api_username"/>
-                                    <field name="api_password" password="True"/>
-                                    <field name="api_token" password="True"/>
-                                    <field name="api_key" password="True"/>
+                                <group string="Authentication Credentials">
+                                    <field name="usuario_firma" placeholder="Your INFILE username/prefix"/>
+                                    <field name="llave_firma" password="True" placeholder="Token signer from SAT"/>
+                                    <field name="usuario_api" placeholder="Usually same as Usuario Firma"/>
+                                    <field name="llave_api" password="True" placeholder="API key from INFILE"/>
+                                    <field name="llave_firma_expiry" placeholder="Signature key expiry date"/>
                                 </group>
                                 
-                                <group string="Certificate (Optional)">
-                                    <field name="certificate_file" filename="certificate_filename"/>
-                                    <field name="certificate_filename" invisible="1"/>
-                                    <field name="certificate_password" password="True" 
-                                           attrs="{'invisible': [('certificate_file', '=', False)]}"/>
+                                <group string="API Endpoints">
+                                    <field name="api_url" readonly="1"/>
+                                    <field name="certification_url" attrs="{'invisible': [('provider_id', '=', False)]}"/>
+                                    <field name="nit_verification_url" attrs="{'invisible': [('provider_id', '=', False)]}"/>
                                 </group>
                             </group>
                         </page>
@@ -81,21 +89,25 @@
                         <page string="Usage &amp; Limits" name="usage">
                             <group>
                                 <group string="DTE Limits &amp; Usage">
-                                    <field name="annual_dte_limit" readonly="1"/>
+                                    <field name="annual_dte_limit" placeholder="1200"/>
                                     <field name="annual_dte_count" readonly="1"/>
                                     <field name="dte_usage_percentage" widget="progressbar"/>
+                                    <field name="monthly_dte_limit" placeholder="100"/>
+                                    <field name="monthly_dte_count" readonly="1"/>
                                 </group>
                                 
                                 <group string="Costs &amp; Pricing">
-                                    <field name="setup_cost" readonly="1" widget="monetary"/>
-                                    <field name="annual_cost" readonly="1" widget="monetary"/>
-                                    <field name="dte_cost" readonly="1" widget="monetary"/>
+                                    <field name="setup_cost" widget="monetary"/>
+                                    <field name="annual_cost" widget="monetary"/>
+                                    <field name="dte_cost" widget="monetary"/>
                                 </group>
                             </group>
                             
-                            <group string="Usage History">
-                                <field name="last_dte_date" readonly="1"/>
-                                <field name="monthly_dte_count" readonly="1"/>
+                            <group string="Daily Limits">
+                                <field name="daily_limit" readonly="1"/>
+                                <field name="daily_counter" readonly="1"/>
+                                <field name="daily_errors" readonly="1"/>
+                                <field name="last_counter_reset" readonly="1"/>
                             </group>
                         </page>
                         
@@ -106,10 +118,35 @@
                                     <field name="auto_send_credit_notes"/>
                                     <field name="auto_send_pos_orders"/>
                                 </group>
+                                
+                                <group string="Retry Configuration">
+                                    <field name="max_retry_attempts"/>
+                                    <field name="retry_delay_seconds"/>
+                                    <field name="retry_on_timeout"/>
+                                    <field name="retry_on_connection_error"/>
+                                </group>
                             </group>
+                            
                             <div class="alert alert-info" role="alert">
                                 <strong>Info:</strong> When enabled, FEL documents will be automatically generated and sent when invoices are posted or POS orders are completed.
                             </div>
+                        </page>
+                        
+                        <page string="Status &amp; Errors" name="status">
+                            <group>
+                                <group string="Transaction History">
+                                    <field name="last_successful_transaction" readonly="1"/>
+                                    <field name="last_dte_date" readonly="1"/>
+                                    <field name="consecutive_errors" readonly="1"/>
+                                </group>
+                                
+                                <group string="Last Error">
+                                    <field name="last_error_date" readonly="1"/>
+                                    <field name="last_error_message" readonly="1"/>
+                                </group>
+                            </group>
+                            
+                            <field name="health_message" readonly="1" placeholder="No issues detected"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -137,7 +174,10 @@
                 <field name="annual_dte_count"/>
                 <field name="annual_dte_limit"/>
                 <field name="dte_usage_percentage" widget="progressbar"/>
-                <field name="last_sync"/>
+                <field name="health_status" widget="badge" 
+                       decoration-success="health_status=='healthy'"
+                       decoration-warning="health_status=='warning'"
+                       decoration-danger="health_status in ('error','critical')"/>
                 <button name="test_connection" string="Test" type="object" icon="fa-plug" 
                         attrs="{'invisible': [('is_active', '=', False)]}"/>
             </tree>
@@ -164,11 +204,16 @@
                 <filter string="General Regime" name="general" domain="[('tax_regime', '=', 'general')]"/>
                 <filter string="Pequeño Contribuyente" name="pequeno" domain="[('tax_regime', '=', 'pequeno')]"/>
                 <filter string="Special Regime" name="especial" domain="[('tax_regime', '=', 'especial')]"/>
+                <separator/>
+                <filter string="Healthy" name="healthy" domain="[('health_status', '=', 'healthy')]"/>
+                <filter string="Warning" name="warning" domain="[('health_status', '=', 'warning')]"/>
+                <filter string="Error" name="error" domain="[('health_status', 'in', ['error','critical'])]"/>
                 <group expand="0" string="Group By">
                     <filter string="Company" name="group_company" context="{'group_by': 'company_id'}"/>
                     <filter string="Provider" name="group_provider" context="{'group_by': 'provider_id'}"/>
                     <filter string="Environment" name="group_environment" context="{'group_by': 'environment'}"/>
                     <filter string="Tax Regime" name="group_regime" context="{'group_by': 'tax_regime'}"/>
+                    <filter string="Health Status" name="group_health" context="{'group_by': 'health_status'}"/>
                 </group>
             </search>
         </field>
@@ -188,57 +233,68 @@
                 <field name="annual_dte_count"/>
                 <field name="annual_dte_limit"/>
                 <field name="dte_usage_percentage"/>
+                <field name="health_status"/>
                 <templates>
                     <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_card #{record.is_active.raw_value ? 'oe_kanban_color_2' : 'oe_kanban_color_8'}">
-                            <div class="oe_kanban_content">
-                                <div class="o_kanban_record_top">
-                                    <div class="o_kanban_record_headings">
-                                        <strong class="o_kanban_record_title">
-                                            <field name="company_id"/>
-                                        </strong>
-                                        <div class="o_kanban_record_subtitle">
-                                            <field name="provider_id"/> - <field name="environment"/>
-                                        </div>
+                        <div t-attf-class="oe_kanban_card #{record.is_active.raw_value ? 'oe_kanban_global_click' : 'oe_kanban_color_7'}">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary font-weight-bold">
+                                        <field name="company_id"/>
                                     </div>
-                                    <div class="o_kanban_record_top_right">
-                                        <div class="o_dropdown_kanban dropdown">
-                                            <a class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" href="#" role="button" aria-label="Dropdown menu" title="Dropdown menu">
-                                                <span class="fa fa-ellipsis-v"/>
-                                            </a>
-                                            <div class="dropdown-menu" role="menu">
-                                                <a name="test_connection" type="object" class="dropdown-item">Test Connection</a>
-                                                <div class="dropdown-divider"/>
-                                                <div class="dropdown-item-text">
-                                                    <field name="is_active" widget="boolean_toggle"/>
-                                                    Active
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="o_secondary">
+                                        <field name="provider_id"/>
                                     </div>
                                 </div>
-                                <div class="o_kanban_record_body">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <span>NIT: <field name="nit"/></span>
+                                <div class="o_kanban_manage_button_section">
+                                    <a class="o_kanban_manage_toggle_button" href="#">
+                                        <i class="fa fa-ellipsis-v" aria-label="Manage" title="Manage"/>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="container o_kanban_card_content">
+                                <div class="row">
+                                    <div class="col-6 o_kanban_primary_left">
+                                        <div class="mb-1">
+                                            <strong>NIT:</strong> <field name="nit"/>
                                         </div>
-                                        <div class="col-6">
-                                            <span>Usage: <field name="dte_usage_percentage"/>%</span>
+                                        <div class="mb-1">
+                                            <field name="environment" widget="badge" 
+                                                   decoration-info="environment=='test'"
+                                                   decoration-success="environment=='production'"/>
+                                        </div>
+                                        <div class="mb-1">
+                                            <field name="health_status" widget="badge" 
+                                                   decoration-success="health_status=='healthy'"
+                                                   decoration-warning="health_status=='warning'"
+                                                   decoration-danger="health_status in ('error','critical')"/>
                                         </div>
                                     </div>
-                                    <div class="row mt-2">
-                                        <div class="col-12">
-                                            <div class="progress">
-                                                <div class="progress-bar" t-attf-style="width: #{record.dte_usage_percentage.raw_value}%"/>
-                                            </div>
+                                    <div class="col-6 o_kanban_primary_right">
+                                        <div class="mb-1 text-center">
+                                            <strong class="d-block">DTE Usage</strong>
+                                            <h2 class="mb-0"><t t-esc="record.annual_dte_count.raw_value"/></h2>
+                                            <span class="text-muted">of <t t-esc="record.annual_dte_limit.raw_value"/></span>
                                         </div>
+                                        <field name="dte_usage_percentage" widget="progressbar"/>
                                     </div>
                                 </div>
-                                <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_left">
-                                        <span t-if="record.annual_dte_count.raw_value">
-                                            <t t-esc="record.annual_dte_count.raw_value"/> / <t t-esc="record.annual_dte_limit.raw_value"/> DTEs
-                                        </span>
+                            </div>
+                            <div class="o_kanban_card_manage_pane dropdown-menu" role="menu">
+                                <div class="o_kanban_card_manage_section o_kanban_manage_reports">
+                                    <div role="menuitem">
+                                        <a name="action_view_documents" type="object">View Documents</a>
+                                    </div>
+                                    <div role="menuitem">
+                                        <a name="action_view_monthly_stats" type="object">Monthly Stats</a>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_card_manage_settings row">
+                                    <div role="menuitem" aria-haspopup="true" class="col-6">
+                                        <a name="test_connection" type="object">Test Connection</a>
+                                    </div>
+                                    <div role="menuitem" class="col-6">
+                                        <a type="edit">Configuration</a>
                                     </div>
                                 </div>
                             </div>

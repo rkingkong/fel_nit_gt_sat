@@ -349,6 +349,43 @@ class FelConfig(models.Model):
         help='Detailed health status message'
     )
     
+    # Cost Information (Related from Provider)
+    setup_cost = fields.Monetary(
+        string='Setup Cost',
+        related='provider_id.setup_cost',
+        readonly=True,
+        help='One-time setup cost from provider'
+    )
+    
+    annual_cost = fields.Monetary(
+        string='Annual Cost',
+        related='provider_id.annual_cost',
+        readonly=True,
+        help='Annual cost from provider'
+    )
+    
+    dte_cost = fields.Monetary(
+        string='Cost per DTE',
+        related='provider_id.cost_per_dte',
+        readonly=True,
+        help='Cost per document from provider'
+    )
+    
+    # Additional Transaction Tracking
+    last_dte_date = fields.Datetime(
+        string='Last DTE Date',
+        readonly=True,
+        help='Date of the last DTE sent'
+    )
+    
+    # Currency field for monetary fields
+    currency_id = fields.Many2one(
+        'res.currency',
+        string='Currency',
+        related='company_id.currency_id',
+        readonly=True
+    )
+    
     @api.depends('provider_id')
     def _compute_api_urls(self):
         """Compute API URLs based on provider"""
@@ -602,21 +639,6 @@ class FelConfig(models.Model):
             }
         }
     
-    def action_view_health_dashboard(self):
-        """Open health monitoring dashboard"""
-        self.ensure_one()
-        # This will be implemented in a separate view
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('FEL Health Dashboard'),
-            'res_model': 'fel.config',
-            'view_mode': 'form',
-            'res_id': self.id,
-            'target': 'current',
-            'context': {'show_health_dashboard': True},
-        }
-    # Add these methods to the FelConfig class in models/fel_config.py
-
     def action_view_documents(self):
         """View all FEL documents for this configuration"""
         self.ensure_one()
@@ -625,11 +647,14 @@ class FelConfig(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('FEL Documents'),
             'res_model': 'fel.document',
-            'view_mode': 'tree,form',
+            'view_mode': 'tree,form,kanban',
             'domain': [('company_id', '=', self.company_id.id)],
-            'context': {'default_company_id': self.company_id.id},
+            'context': {
+                'default_company_id': self.company_id.id,
+                'search_default_certified': 1,
+            },
         }
-
+    
     def action_view_monthly_stats(self):
         """View monthly statistics for FEL documents"""
         self.ensure_one()
@@ -661,36 +686,72 @@ class FelConfig(models.Model):
             },
         }
     
-    
-    @api.constrains('is_active')
-    def _check_unique_active_config(self):
+    @api.constrains('company_id', 'is_active')
+    def _check_unique_active(self):
         """Ensure only one active configuration per company"""
         for config in self:
             if config.is_active:
-                other_active = self.search([
+                domain = [
                     ('company_id', '=', config.company_id.id),
                     ('is_active', '=', True),
                     ('id', '!=', config.id)
-                ])
-                if other_active:
-                    raise ValidationError(_('Only one FEL configuration can be active per company.'))
+                ]
+                if self.search_count(domain) > 0:
+                    raise ValidationError(_('There can only be one active FEL configuration per company.'))
     
     @api.constrains('nit')
     def _check_nit_format(self):
         """Validate NIT format"""
+        import re
         for config in self:
             if config.nit:
-                # Remove non-digits
-                import re
-                clean_nit = re.sub(r'\D', '', config.nit)
-                if len(clean_nit) < 6 or len(clean_nit) > 14:
-                    raise ValidationError(_('Company NIT must have between 6 and 14 digits.'))
+                # Remove any dashes or spaces
+                clean_nit = config.nit.replace('-', '').replace(' ', '')
+                # Check if it matches the pattern (digits only, 8-9 characters)
+                if not re.match(r'^\d{8,9}$', clean_nit):
+                    raise ValidationError(_('NIT format is invalid. Should be 8-9 digits (e.g., 12345678 or 123456789)'))
     
-    @api.onchange('provider_id')
-    def _onchange_provider_id(self):
-        """Update URLs when provider changes"""
-        if self.provider_id and self.provider_id.code == 'infile':
-            self.certification_url = 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml'
-            self.nit_verification_url = 'https://consultareceptores.feel.com.gt/rest/action'
-            self.cui_verification_url = 'https://certificador.feel.com.gt/api/v2/servicios/externos/cui'
-            self.cui_login_url = 'https://certificador.feel.com.gt/api/v2/servicios/externos/login'
+    @api.model
+    def create(self, vals):
+        """Override create to ensure provider defaults"""
+        # If INFILE provider, set default URLs
+        if 'provider_id' in vals:
+            provider = self.env['fel.certification.provider'].browse(vals['provider_id'])
+            if provider.code == 'infile':
+                vals.setdefault('certification_url', 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml')
+                vals.setdefault('nit_verification_url', 'https://consultareceptores.feel.com.gt/rest/action')
+                vals.setdefault('cui_verification_url', 'https://certificador.feel.com.gt/api/v2/servicios/externos/cui')
+                vals.setdefault('cui_login_url', 'https://certificador.feel.com.gt/api/v2/servicios/externos/login')
+        
+        return super(FelConfig, self).create(vals)
+    
+    def write(self, vals):
+        """Override write to handle certain updates"""
+        result = super(FelConfig, self).write(vals)
+        
+        # If provider changed to INFILE, update URLs
+        if 'provider_id' in vals:
+            for config in self:
+                if config.provider_id.code == 'infile':
+                    config.write({
+                        'certification_url': 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
+                        'nit_verification_url': 'https://consultareceptores.feel.com.gt/rest/action',
+                        'cui_verification_url': 'https://certificador.feel.com.gt/api/v2/servicios/externos/cui',
+                        'cui_login_url': 'https://certificador.feel.com.gt/api/v2/servicios/externos/login',
+                    })
+        
+        return result
+    
+    def action_sync_provider_data(self):
+        """Sync data from provider (for future use)"""
+        self.ensure_one()
+        # Placeholder for future provider sync functionality
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Provider Sync'),
+                'message': _('Provider synchronization will be available in future versions.'),
+                'type': 'info',
+            }
+        }
