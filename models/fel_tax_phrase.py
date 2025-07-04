@@ -64,6 +64,17 @@ class FelTaxPhrase(models.Model):
         help='Apply this phrase to FESP documents'
     )
     
+    condition_type = fields.Selection(
+    selection=[
+        ('always', 'Always'),
+        ('conditional', 'Conditional'),
+        ('never', 'Never')
+    ],
+    string='Condition Type',
+    default='always',
+    help='Defines under what condition this phrase applies'
+    )
+    
     sequence = fields.Integer(
         string='Sequence',
         default=10,
