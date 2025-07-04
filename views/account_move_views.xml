@@ -1,306 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
+
     <!-- Invoice Form View Extension for FEL -->
     <record id="view_move_form_fel" model="ir.ui.view">
         <field name="name">account.move.form.fel</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
-            
+
             <!-- Add FEL buttons to button box -->
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_send_fel" 
-                        string="Send to FEL" 
-                        type="object" 
-                        class="oe_stat_button"
-                        icon="fa-send"
+                <button name="action_send_fel" string="Send to FEL" type="object" class="oe_stat_button" icon="fa-send"
                         modifiers="{'invisible': ['|', ('can_send_fel', '=', False), ('fel_status', 'in', ['certified', 'sending'])]}"
                         groups="fel_nit_gt_sat.group_fel_user">
                     <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">Send to</span>
-                        <span class="o_stat_text">FEL</span>
+                        <span class="o_stat_text">Send to</span><span class="o_stat_text">FEL</span>
                     </div>
                 </button>
-                
-                <button name="action_view_fel_document" 
-                        string="FEL Document" 
-                        type="object" 
-                        class="oe_stat_button"
-                        icon="fa-file-text-o"
+                <button name="action_view_fel_document" string="FEL Document" type="object" class="oe_stat_button" icon="fa-file-text-o"
                         modifiers="{'invisible': [('fel_document_id', '=', False)]}"
                         groups="fel_nit_gt_sat.group_fel_user">
                     <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">FEL</span>
-                        <span class="o_stat_text">Document</span>
+                        <span class="o_stat_text">FEL</span><span class="o_stat_text">Document</span>
                     </div>
                 </button>
-                
-                <button name="retry_fel" 
-                        string="Retry FEL" 
-                        type="object" 
-                        class="oe_stat_button"
-                        icon="fa-refresh"
+                <button name="retry_fel" string="Retry FEL" type="object" class="oe_stat_button" icon="fa-refresh"
                         modifiers="{'invisible': [('fel_status', '!=', 'error')]}"
                         groups="fel_nit_gt_sat.group_fel_user">
                     <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">Retry</span>
-                        <span class="o_stat_text">FEL</span>
+                        <span class="o_stat_text">Retry</span><span class="o_stat_text">FEL</span>
                     </div>
                 </button>
             </xpath>
-            
-            <!-- Add FEL information after invoice reference -->
+
+            <!-- Add FEL fields to accounting info tab -->
             <xpath expr="//group[@name='accounting_info_group']" position="inside">
-                <group string="FEL Information" 
-                       modifiers="{'invisible': [('requires_fel', '=', False)]}"
+                <group string="FEL Information" modifiers="{'invisible': [('requires_fel', '=', False)]}"
                        groups="fel_nit_gt_sat.group_fel_user">
-                    
-                    <!-- FEL Status with color coding -->
                     <field name="fel_status" widget="badge"
                            decoration-success="fel_status=='certified'"
                            decoration-danger="fel_status=='error'"
                            decoration-warning="fel_status=='cancelled'"
                            decoration-info="fel_status in ('sending', 'generating')"/>
-                    
-                    <!-- Document type selection -->
-                    <field name="fel_document_type_id" 
+                    <field name="fel_document_type_id"
                            modifiers="{'readonly': [('fel_status', 'in', ['certified', 'sending'])]}"
                            options="{'no_create_edit': True}"/>
-                    
-                    <!-- SAT assigned information -->
-                    <field name="fel_uuid" readonly="1"
-                           modifiers="{'invisible': [('fel_uuid', '=', False)]}"/>
-                    <field name="fel_series" readonly="1"
-                           modifiers="{'invisible': [('fel_series', '=', False)]}"/>
-                    <field name="fel_number" readonly="1"
-                           modifiers="{'invisible': [('fel_number', '=', False)]}"/>
-                    <field name="fel_certification_date" readonly="1"
-                           modifiers="{'invisible': [('fel_certification_date', '=', False)]}"/>
-                    
-                    <!-- Customer information for FEL -->
-                    <field name="customer_nit" readonly="1"
-                           modifiers="{'invisible': [('customer_nit', '=', False)]}"/>
-                    <field name="customer_tax_regime" readonly="1"
-                           modifiers="{'invisible': [('customer_tax_regime', '=', False)]}"/>
-                    
-                    <!-- Hidden computed fields -->
+                    <field name="fel_uuid" readonly="1" modifiers="{'invisible': [('fel_uuid', '=', False)]}"/>
+                    <field name="fel_series" readonly="1" modifiers="{'invisible': [('fel_series', '=', False)]}"/>
+                    <field name="fel_number" readonly="1" modifiers="{'invisible': [('fel_number', '=', False)]}"/>
+                    <field name="fel_certification_date" readonly="1" modifiers="{'invisible': [('fel_certification_date', '=', False)]}"/>
+                    <field name="customer_nit" readonly="1" modifiers="{'invisible': [('customer_nit', '=', False)]}"/>
+                    <field name="customer_tax_regime" readonly="1" modifiers="{'invisible': [('customer_tax_regime', '=', False)]}"/>
                     <field name="requires_fel" invisible="1"/>
                     <field name="can_send_fel" invisible="1"/>
                 </group>
             </xpath>
-            
-            <!-- Add FEL error message if exists -->
+
+            <!-- Alerts in sheet -->
             <xpath expr="//sheet" position="inside">
-                <div class="alert alert-danger" role="alert" 
+                <div class="alert alert-danger" role="alert"
                      modifiers="{'invisible': [('fel_error_message', '=', False)]}"
                      groups="fel_nit_gt_sat.group_fel_user">
                     <strong>FEL Error:</strong>
                     <field name="fel_error_message" readonly="1"/>
                 </div>
-                
-                <div class="alert alert-success" role="alert" 
+                <div class="alert alert-success" role="alert"
                      modifiers="{'invisible': [('fel_status', '!=', 'certified')]}"
                      groups="fel_nit_gt_sat.group_fel_user">
-                    <strong>FEL Certified:</strong> 
+                    <strong>FEL Certified:</strong>
                     This invoice has been successfully certified by SAT.
                     <span modifiers="{'invisible': [('fel_uuid', '=', False)]}">
                         UUID: <field name="fel_uuid" readonly="1"/>
                     </span>
                 </div>
             </xpath>
-            
-        </field>
-    </record>
-    
-    <!-- Invoice Tree View Extension -->
-    <record id="view_move_tree_fel" model="ir.ui.view">
-        <field name="name">account.move.tree.fel</field>
-        <field name="model">account.move</field>
-        <field name="inherit_id" ref="account.view_move_tree"/>
-        <field name="arch" type="xml">
-            
-            <!-- Add FEL status column -->
-            <xpath expr="//field[@name='state']" position="after">
-                <field name="fel_status" optional="show" widget="badge"
-                       decoration-success="fel_status=='certified'"
-                       decoration-danger="fel_status=='error'"
-                       decoration-warning="fel_status=='cancelled'"
-                       decoration-info="fel_status in ('sending', 'generating')"
-                       groups="fel_nit_gt_sat.group_fel_user"/>
-                <field name="fel_uuid" optional="hide" groups="fel_nit_gt_sat.group_fel_user"/>
-            </xpath>
-            
-            <!-- Add action buttons -->
-            <xpath expr="//field[@name='amount_total']" position="after">
-                <button name="action_send_fel" string="Send FEL" type="object" icon="fa-send"
-                        modifiers="{'invisible': [('can_send_fel', '=', False)]}"
-                        groups="fel_nit_gt_sat.group_fel_user"/>
-                <button name="retry_fel" string="Retry" type="object" icon="fa-refresh"
-                        modifiers="{'invisible': [('fel_status', '!=', 'error')]}"
-                        groups="fel_nit_gt_sat.group_fel_user"/>
-            </xpath>
-            
-            <!-- Hidden fields for logic -->
-            <xpath expr="//field[@name='move_type']" position="after">
-                <field name="can_send_fel" invisible="1"/>
-                <field name="requires_fel" invisible="1"/>
-            </xpath>
-            
-        </field>
-    </record>
-    
-    <!-- Invoice Search View Extension -->
-    <record id="view_move_search_fel" model="ir.ui.view">
-        <field name="name">account.move.search.fel</field>
-        <field name="model">account.move</field>
-        <field name="inherit_id" ref="account.view_account_move_filter"/>
-        <field name="arch" type="xml">
-            
-            <!-- Add FEL search fields -->
-            <xpath expr="//field[@name='name']" position="after">
-                <field name="fel_uuid" string="FEL UUID" groups="fel_nit_gt_sat.group_fel_user"/>
-            </xpath>
-            
-            <!-- Add FEL filters -->
-            <xpath expr="//filter[@name='draft']" position="after">
-                <separator groups="fel_nit_gt_sat.group_fel_user"/>
-                <filter string="Requires FEL" name="requires_fel" 
-                        domain="[('requires_fel', '=', True)]"
-                        groups="fel_nit_gt_sat.group_fel_user"/>
-                <filter string="FEL Certified" name="fel_certified" 
-                        domain="[('fel_status', '=', 'certified')]"
-                        groups="fel_nit_gt_sat.group_fel_user"/>
-                <filter string="FEL Pending" name="fel_pending" 
-                        domain="[('requires_fel', '=', True), ('fel_status', 'in', ['draft', 'error'])]"
-                        groups="fel_nit_gt_sat.group_fel_user"/>
-                <filter string="FEL Errors" name="fel_errors" 
-                        domain="[('fel_status', '=', 'error')]"
-                        groups="fel_nit_gt_sat.group_fel_user"/>
-            </xpath>
-            
-            <!-- Add FEL grouping -->
-            <xpath expr="//filter[@name='group_by_journal']" position="after">
-                <filter string="FEL Status" name="group_fel_status" 
-                        context="{'group_by': 'fel_status'}"
-                        groups="fel_nit_gt_sat.group_fel_user"/>
-                <filter string="FEL Document Type" name="group_fel_doc_type" 
-                        context="{'group_by': 'fel_document_type_id'}"
-                        groups="fel_nit_gt_sat.group_fel_user"/>
-            </xpath>
-            
-        </field>
-    </record>
-    
-    <!-- FEL Invoice Dashboard Action -->
-    <record id="action_fel_invoice_dashboard" model="ir.actions.act_window">
-        <field name="name">FEL Invoices</field>
-        <field name="res_model">account.move</field>
-        <field name="view_mode">tree,kanban,form</field>
-        <field name="domain">[('move_type', 'in', ['out_invoice', 'out_refund']), ('requires_fel', '=', True)]</field>
-        <field name="context">{
-            'default_move_type': 'out_invoice',
-            'search_default_fel_certified': 1
-        }</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                No FEL invoices found
-            </p>
-            <p>
-                Here you can view and manage all invoices that require FEL processing.
-                Posted invoices can be sent to the FEL provider for certification with SAT.
-            </p>
-        </field>
-    </record>
-    
-    <!-- Pending FEL Invoices Action -->
-    <record id="action_fel_pending_invoices" model="ir.actions.act_window">
-        <field name="name">Pending FEL Invoices</field>
-        <field name="res_model">account.move</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('requires_fel', '=', True), ('fel_status', 'in', ['draft', 'error'])]</field>
-        <field name="context">{'search_default_fel_pending': 1}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                No pending FEL invoices
-            </p>
-            <p>
-                All invoices have been successfully processed with FEL!
-                Posted invoices that require FEL will appear here if they haven't been sent yet.
-            </p>
-        </field>
-    </record>
-    
-    <!-- FEL Error Invoices Action -->
-    <record id="action_fel_error_invoices" model="ir.actions.act_window">
-        <field name="name">FEL Error Invoices</field>
-        <field name="res_model">account.move</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('fel_status', '=', 'error')]</field>
-        <field name="context">{'search_default_fel_errors': 1}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                No FEL errors found
-            </p>
-            <p>
-                Great! All FEL invoices have been processed successfully.
-                If there are any errors during FEL processing, they will appear here for resolution.
-            </p>
-        </field>
-    </record>
-    
-    <!-- Context Actions for Bulk FEL Processing -->
-    <record id="action_send_selected_to_fel" model="ir.actions.server">
-        <field name="name">Send Selected to FEL</field>
-        <field name="model_id" ref="account.model_account_move"/>
-        <field name="binding_model_id" ref="account.model_account_move"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_user'))]"/>
-        <field name="code">
-# Send selected invoices to FEL
-sent_count = 0
-error_count = 0
 
-for invoice in records.filtered(lambda inv: inv.can_send_fel):
-    try:
-        invoice.send_to_fel()
-        if invoice.fel_status == 'certified':
-            sent_count += 1
-    except Exception as e:
-        error_count += 1
-        
-if sent_count > 0:
-    env.user.notify_success(f'Successfully sent {sent_count} invoices to FEL')
-if error_count > 0:
-    env.user.notify_warning(f'{error_count} invoices could not be sent to FEL')
         </field>
     </record>
-    
-    <record id="action_retry_fel_selected" model="ir.actions.server">
-        <field name="name">Retry FEL for Selected</field>
-        <field name="model_id" ref="account.model_account_move"/>
-        <field name="binding_model_id" ref="account.model_account_move"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_user'))]"/>
-        <field name="code">
-# Retry FEL for selected invoices with errors
-retry_count = 0
-success_count = 0
 
-for invoice in records.filtered(lambda inv: inv.fel_status == 'error'):
-    try:
-        invoice.retry_fel()
-        retry_count += 1
-        if invoice.fel_status == 'certified':
-            success_count += 1
-    except Exception as e:
-        pass
-        
-if retry_count > 0:
-    env.user.notify_info(f'Retried FEL for {retry_count} invoices, {success_count} successful')
-        </field>
-    </record>
-    
 </odoo>
