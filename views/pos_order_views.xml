@@ -143,31 +143,29 @@
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
         <field name="arch" type="xml">
-            
-            <!-- Insert all custom fields directly inside <tree> -->
+
             <xpath expr="//tree" position="inside">
-                <field name="table_number" optional="show" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="user_id" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="customer_nit" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="fel_status" optional="show" widget="badge"
+                <field name="table_number" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="user_id" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="customer_nit" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="fel_status" widget="badge"
                     decoration-success="fel_status=='certified'"
                     decoration-danger="fel_status=='error'"
                     decoration-warning="fel_status=='cancelled'"
                     decoration-info="fel_status in ('sending', 'generating')"
                     groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="fel_uuid" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="fel_uuid" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <button name="action_send_fel" string="Send FEL" type="object" icon="fa-send"
-                        modifiers="{'invisible': [('can_send_fel', '=', False)]}"
+                        attrs="{'invisible': [('can_send_fel', '=', False)]}"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <button name="retry_fel" string="Retry" type="object" icon="fa-refresh"
-                        modifiers="{'invisible': [('fel_status', '!=', 'error')]}"
+                        attrs="{'invisible': [('fel_status', '!=', 'error')]}"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="can_send_fel" invisible="1"/>
-                <field name="requires_fel" invisible="1"/>
             </xpath>
 
         </field>
     </record>
+
     
     <!-- POS Order Search View Extension -->
     <record id="view_pos_order_search_fel" model="ir.ui.view">
