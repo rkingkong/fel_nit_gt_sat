@@ -45,6 +45,7 @@
         'security/fel_security.xml',
         'security/ir.model.access.csv',
         'data/fel_document_types.xml',
+        'menu/fel_menu.xml',
         'views/fel_dashboard_views.xml',
         'views/fel_config_views.xml',
         'views/fel_document_views.xml',
@@ -58,7 +59,7 @@
         'wizard/fel_nit_verification_views.xml',
         'wizard/fel_document_send_views.xml',
         'reports/fel_invoice_report.xml',
-        'menu/fel_menu.xml',
+        
     ],
     'assets': {
         'point_of_sale.assets': [
