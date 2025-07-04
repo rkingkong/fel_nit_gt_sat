@@ -37,7 +37,7 @@
             <field name="available_for_pequeno">False</field>
             <field name="available_for_especial">True</field>
             <field name="sequence">10</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- FCAM - Factura Cambiaria -->
@@ -54,7 +54,7 @@
             <field name="available_for_pequeno">False</field>
             <field name="available_for_especial">True</field>
             <field name="sequence">20</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- FPEQ - Factura Pequeño Contribuyente -->
@@ -71,7 +71,7 @@
             <field name="available_for_pequeno">True</field>
             <field name="available_for_especial">False</field>
             <field name="sequence">30</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- FCAP - Factura Cambiaria Pequeño Contribuyente -->
@@ -88,7 +88,7 @@
             <field name="available_for_pequeno">True</field>
             <field name="available_for_especial">False</field>
             <field name="sequence">35</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- FESP - Factura Especial -->
@@ -105,7 +105,7 @@
             <field name="available_for_pequeno">False</field>
             <field name="available_for_especial">True</field>
             <field name="sequence">40</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- NABN - Nota de Abono -->
@@ -122,7 +122,7 @@
             <field name="available_for_pequeno">True</field>
             <field name="available_for_especial">True</field>
             <field name="sequence">50</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- RDON - Recibo por Donación -->
@@ -140,7 +140,7 @@
             <field name="available_for_pequeno">True</field>
             <field name="available_for_especial">True</field>
             <field name="sequence">60</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- RECI - Recibo -->
@@ -157,7 +157,7 @@
             <field name="available_for_pequeno">True</field>
             <field name="available_for_especial">True</field>
             <field name="sequence">70</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- NDEB - Nota de Débito -->
@@ -174,7 +174,7 @@
             <field name="available_for_pequeno">True</field>
             <field name="available_for_especial">True</field>
             <field name="sequence">80</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- NCRE - Nota de Crédito -->
@@ -191,7 +191,7 @@
             <field name="available_for_pequeno">True</field>
             <field name="available_for_especial">True</field>
             <field name="sequence">90</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- FEL Tax Phrases -->
@@ -205,7 +205,7 @@
             <field name="apply_to_fcam">True</field>
             <field name="apply_to_fesp">True</field>
             <field name="condition_type">always</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- IVA Exento Tax Phrase -->
@@ -220,7 +220,7 @@
             <field name="apply_to_ncre">True</field>
             <field name="apply_to_ndeb">True</field>
             <field name="condition_type">always</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
     </data>
