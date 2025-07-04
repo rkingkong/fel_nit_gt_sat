@@ -48,7 +48,7 @@
                             <field name="environment" widget="radio"/>
                             <field name="test_mode" modifiers="{'invisible': [('environment', '=', 'production')]}"/>
                             <field name="last_sync" readonly="1"/>
-                            <field name="health_status" widget="badge" 
+                            <field name="health_status" 
                                    decoration-success="health_status=='healthy'"
                                    decoration-warning="health_status=='warning'"
                                    decoration-danger="health_status in ('error','critical')"/>
@@ -91,7 +91,7 @@
                                 <group string="DTE Limits &amp; Usage">
                                     <field name="annual_dte_limit" placeholder="1200"/>
                                     <field name="annual_dte_count" readonly="1"/>
-                                    <field name="dte_usage_percentage" widget="progressbar"/>
+                                    <field name="dte_usage_percentage"/>
                                     <field name="monthly_dte_limit" placeholder="100"/>
                                     <field name="monthly_dte_count" readonly="1"/>
                                 </group>
@@ -173,8 +173,8 @@
                 <field name="is_active"/>
                 <field name="annual_dte_count"/>
                 <field name="annual_dte_limit"/>
-                <field name="dte_usage_percentage" widget="progressbar"/>
-                <field name="health_status" widget="badge" 
+                <field name="dte_usage_percentage"/>
+                <field name="health_status" 
                        decoration-success="health_status=='healthy'"
                        decoration-warning="health_status=='warning'"
                        decoration-danger="health_status in ('error','critical')"/>
@@ -264,7 +264,7 @@
                                                    decoration-success="environment=='production'"/>
                                         </div>
                                         <div class="mb-1">
-                                            <field name="health_status" widget="badge" 
+                                            <field name="health_status" 
                                                    decoration-success="health_status=='healthy'"
                                                    decoration-warning="health_status=='warning'"
                                                    decoration-danger="health_status in ('error','critical')"/>
@@ -276,7 +276,7 @@
                                             <h2 class="mb-0"><t t-esc="record.annual_dte_count.raw_value"/></h2>
                                             <span class="text-muted">of <t t-esc="record.annual_dte_limit.raw_value"/></span>
                                         </div>
-                                        <field name="dte_usage_percentage" widget="progressbar"/>
+                                        <field name="dte_usage_percentage"/>
                                     </div>
                                 </div>
                             </div>
