@@ -199,6 +199,7 @@
         <!-- ISR Tax Phrase -->
         <record id="fel_tax_phrase_isr" model="fel.tax.phrase">
             <field name="name">Sujeto a retención definitiva ISR</field>
+            <field name="code">ISR_RET</field>
             <field name="phrase_type">1</field>
             <field name="scenario_code">1</field>
             <field name="apply_to_fact">True</field>
@@ -211,6 +212,7 @@
         <!-- IVA Exento Tax Phrase -->
         <record id="fel_tax_phrase_iva_exento" model="fel.tax.phrase">
             <field name="name">Operación exenta de IVA según Artículo 7 Ley del IVA</field>
+            <field name="code">IVA_EXENTO</field> 
             <field name="phrase_type">4</field>
             <field name="scenario_code">1</field>
             <field name="apply_to_fact">True</field>
