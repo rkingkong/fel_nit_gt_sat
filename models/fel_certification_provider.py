@@ -12,6 +12,13 @@ class FelCertificationProvider(models.Model):
     _rec_name = 'name'
     _order = 'sequence, name'
     
+    #check for active provider
+    active = fields.Boolean(
+    string="Active",
+    default=True,
+    help="Indicates if this provider is currently active."
+    )
+
     # Basic Information
     name = fields.Char(
         string='Provider Name', 
