@@ -27,4 +27,11 @@
             </xpath>
         </field>
     </record>
+
+    <record id="action_pos_config_fel" model="ir.actions.act_window">
+        <field name="name">POS FEL Configuration</field>
+        <field name="res_model">pos.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_use_fel': 1}</field>
+    </record>
 </odoo>

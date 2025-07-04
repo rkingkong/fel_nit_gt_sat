@@ -159,4 +159,19 @@
         </field>
     </record>
 
+    <!-- In fel_config_views.xml, add: -->
+    <record id="action_fel_config" model="ir.actions.act_window">
+        <field name="name">FEL Configuration</field>
+        <field name="res_model">fel.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure FEL Settings
+            </p>
+            <p>
+                Set up your company's FEL configuration including provider credentials and preferences.
+            </p>
+        </field>
+    </record>
 </odoo>

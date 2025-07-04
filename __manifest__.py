@@ -71,6 +71,7 @@
         'views/fel_tax_phrase_views.xml',
         
         # Report files
+        'reports/fel_report_actions.xml',
         'reports/fel_invoice_report.xml',
         
     ],

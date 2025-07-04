@@ -130,4 +130,36 @@
         </field>
     </record>
 
+    <!-- In fel_document_views.xml, ensure these exist: -->
+    <record id="action_fel_document" model="ir.actions.act_window">
+        <field name="name">FEL Documents</field>
+        <field name="res_model">fel.document</field>
+        <field name="view_mode">tree,form,kanban,pivot,graph</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No FEL documents found
+            </p>
+        </field>
+    </record>
+
+    <record id="action_fel_document_draft" model="ir.actions.act_window">
+        <field name="name">Draft FEL Documents</field>
+        <field name="res_model">fel.document</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'draft')]</field>
+    </record>
+
+    <record id="action_fel_document_certified" model="ir.actions.act_window">
+        <field name="name">Certified FEL Documents</field>
+        <field name="res_model">fel.document</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'certified')]</field>
+    </record>
+
+    <record id="action_fel_document_error" model="ir.actions.act_window">
+        <field name="name">FEL Documents with Errors</field>
+        <field name="res_model">fel.document</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'error')]</field>
+    </record>
 </odoo>

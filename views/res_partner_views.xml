@@ -8,49 +8,37 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             
-            <!-- Add NIT verification button to button box -->
+            <!-- Add FEL buttons to button box -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="verify_nit_with_sat" 
                         string="Verify NIT" 
                         type="object" 
                         class="oe_stat_button"
                         icon="fa-check-circle"
-                        modifiers="{'invisible': [('can_verify_nit', '=', False)]}"
+                        attrs="{'invisible': [('can_verify_nit', '=', False)]}"
                         groups="fel_nit_gt_sat.group_fel_nit_verifier">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Verify</span>
                         <span class="o_stat_text">NIT</span>
                     </div>
                 </button>
-                
-                <button name="action_open_fel_documents" 
-                        string="FEL Documents" 
-                        type="object" 
-                        class="oe_stat_button"
-                        icon="fa-file-text-o"
-                        groups="fel_nit_gt_sat.group_fel_user">
-                    <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">FEL</span>
-                        <span class="o_stat_text">Documents</span>
-                    </div>
-                </button>
             </xpath>
             
-            <!-- Add Guatemala fields after VAT -->
+            <!-- Add NIT field after vat -->
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="nit_gt" placeholder="e.g. 12345678-9 or CF" 
-                       modifiers="{'readonly': [('is_fel_verified', '=', True)]}"/>
+                       attrs="{'readonly': [('is_fel_verified', '=', True)]}"/>
                 <field name="display_nit" readonly="1" 
-                       modifiers="{'invisible': [('display_nit', '=', False)]}"/>
+                       attrs="{'invisible': [('display_nit', '=', False)]}"/>
                 <field name="dpi_gt" placeholder="e.g. 1234567890123"
-                       modifiers="{'invisible': [('is_company', '=', True)]}"/>
+                       attrs="{'invisible': [('is_company', '=', True)]}"/>
                 <field name="tax_regime_gt"/>
             </xpath>
             
             <!-- Add FEL verification status after category_id -->
             <xpath expr="//field[@name='category_id']" position="after">
                 <group string="FEL Information" 
-                       modifiers="{'invisible': [('nit_gt', '=', False)]}"
+                       attrs="{'invisible': [('nit_gt', '=', False)]}"
                        groups="fel_nit_gt_sat.group_fel_user">
                     
                     <!-- Verification status with color indicators -->
@@ -62,25 +50,25 @@
                     
                     <field name="is_fel_verified" readonly="1"/>
                     <field name="fel_verification_date" readonly="1"
-                           modifiers="{'invisible': [('fel_verification_date', '=', False)]}"/>
+                           attrs="{'invisible': [('fel_verification_date', '=', False)]}"/>
                     
                     <!-- SAT registered information -->
                     <field name="sat_name" readonly="1"
-                           modifiers="{'invisible': [('sat_name', '=', False)]}"/>
+                           attrs="{'invisible': [('sat_name', '=', False)]}"/>
                     <field name="sat_status" readonly="1"
-                           modifiers="{'invisible': [('sat_status', '=', False)]}"/>
+                           attrs="{'invisible': [('sat_status', '=', False)]}"/>
                     
                     <!-- Verification result message -->
                     <field name="fel_verification_result" readonly="1" widget="text"
-                           modifiers="{'invisible': [('fel_verification_result', '=', False)]}"/>
+                           attrs="{'invisible': [('fel_verification_result', '=', False)]}"/>
                 </group>
             </xpath>
             
-            <!-- Add FEL preferences section -->
-            <xpath expr="//group[@name='purchase']" position="after">
+            <!-- Add FEL preferences section after sales & purchase group -->
+            <xpath expr="//page[@name='sales_purchases']//group[@name='sale']" position="after">
                 <group string="FEL Preferences" name="fel_preferences"
                        groups="fel_nit_gt_sat.group_fel_user"
-                       modifiers="{'invisible': [('customer_rank', '=', 0)]}">
+                       attrs="{'invisible': [('customer_rank', '=', 0)]}">
                     <field name="default_fel_document_type_id" 
                            domain="[('is_invoice', '=', True)]"
                            options="{'no_create_edit': True}"/>
@@ -105,14 +93,14 @@
         <field name="inherit_id" ref="base.view_partner_tree"/>
         <field name="arch" type="xml">
             
-            <!-- Add NIT column after name -->
+            <!-- Add NIT column after display_name -->
             <xpath expr="//field[@name='display_name']" position="after">
                 <field name="nit_gt" optional="show"/>
                 <field name="tax_regime_gt" optional="hide"/>
             </xpath>
             
-            <!-- Add FEL verification status -->
-            <xpath expr="//field[@name='supplier_rank']" position="after">
+            <!-- Add FEL verification status at the end of the tree -->
+            <xpath expr="//tree" position="inside">
                 <field name="fel_verification_status" optional="hide" widget="badge"
                        decoration-success="fel_verification_status=='valid'"
                        decoration-danger="fel_verification_status=='invalid'"
@@ -135,8 +123,8 @@
                 <field name="nit_gt" string="NIT"/>
             </xpath>
             
-            <!-- Add FEL filters -->
-            <xpath expr="//filter[@name='supplier']" position="after">
+            <!-- Add FEL filters after customer/supplier filters -->
+            <xpath expr="//search" position="inside">
                 <separator/>
                 <filter string="FEL Verified" name="fel_verified" 
                         domain="[('is_fel_verified', '=', True)]"
@@ -150,13 +138,15 @@
             </xpath>
             
             <!-- Add FEL grouping -->
-            <xpath expr="//filter[@name='group_category']" position="after">
-                <filter string="Tax Regime" name="group_tax_regime" 
-                        context="{'group_by': 'tax_regime_gt'}"
-                        groups="fel_nit_gt_sat.group_fel_user"/>
-                <filter string="FEL Status" name="group_fel_status" 
-                        context="{'group_by': 'fel_verification_status'}"
-                        groups="fel_nit_gt_sat.group_fel_user"/>
+            <xpath expr="//search" position="inside">
+                <group expand="0" string="Group By">
+                    <filter string="Tax Regime" name="group_tax_regime" 
+                            context="{'group_by': 'tax_regime_gt'}"
+                            groups="fel_nit_gt_sat.group_fel_user"/>
+                    <filter string="FEL Status" name="group_fel_status" 
+                            context="{'group_by': 'fel_verification_status'}"
+                            groups="fel_nit_gt_sat.group_fel_user"/>
+                </group>
             </xpath>
             
         </field>
