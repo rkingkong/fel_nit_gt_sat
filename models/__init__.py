@@ -10,3 +10,4 @@ from . import fel_nit_verification
 from . import res_partner
 from . import account_move
 from . import pos_order
+from . import pos_config

@@ -2,225 +2,145 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-import re
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class PosOrderCustomerWizard(models.TransientModel):
     _name = 'pos.order.customer.wizard'
     _description = 'POS Order Customer Information Wizard'
     
-    # Order information
-    order_id = fields.Many2one(
+    # POS Order
+    pos_order_id = fields.Many2one(
         'pos.order',
         string='POS Order',
         required=True,
+        readonly=True,
+        help='POS order to update'
+    )
+    
+    order_reference = fields.Char(
+        related='pos_order_id.pos_reference',
+        string='Order Reference',
         readonly=True
     )
     
-    order_name = fields.Char(
-        string='Order',
-        related='order_id.name',
+    amount_total = fields.Float(
+        related='pos_order_id.amount_total',
+        string='Total Amount',
         readonly=True
     )
     
-    order_amount = fields.Float(
-        string='Order Amount',
-        related='order_id.amount_total',
-        readonly=True
+    # Customer Information
+    partner_id = fields.Many2one(
+        'res.partner',
+        string='Customer',
+        help='Select existing customer'
     )
     
-    # Customer information
     customer_nit = fields.Char(
         string='Customer NIT',
-        help='Customer NIT for FEL document (enter CF for Consumidor Final)'
+        help='Customer NIT for FEL (use CF for Consumidor Final)'
     )
     
     customer_name = fields.Char(
         string='Customer Name',
-        help='Customer name for FEL document'
+        help='Customer name for the invoice'
+    )
+    
+    customer_address = fields.Char(
+        string='Customer Address',
+        help='Customer address (optional)'
     )
     
     # Options
     create_partner = fields.Boolean(
-        string='Create Customer Record',
+        string='Create Customer',
         default=False,
-        help='Create a customer record for this NIT'
+        help='Create new customer if not exists'
     )
     
     verify_nit = fields.Boolean(
-        string='Verify NIT with SAT',
+        string='Verify NIT',
         default=True,
-        help='Verify the NIT with SAT before setting'
+        help='Verify NIT with SAT before saving'
     )
     
-    # Existing partner selection
-    partner_id = fields.Many2one(
-        'res.partner',
-        string='Existing Customer',
-        domain="[('customer_rank', '>', 0)]",
-        help='Select an existing customer instead of entering NIT manually'
+    send_to_fel = fields.Boolean(
+        string='Send to FEL',
+        default=False,
+        help='Send to FEL after setting customer info'
     )
     
-    # Validation fields
-    clean_nit = fields.Char(
-        string='Cleaned NIT',
-        compute='_compute_clean_nit',
-        help='NIT formatted for processing'
+    # Verification Results
+    nit_verified = fields.Boolean(
+        string='NIT Verified',
+        readonly=True,
+        help='Whether NIT was verified with SAT'
     )
     
-    is_consumidor_final = fields.Boolean(
-        string='Is Consumidor Final',
-        compute='_compute_is_consumidor_final',
-        help='Whether this is a consumidor final order'
+    verification_message = fields.Text(
+        string='Verification Message',
+        readonly=True
     )
     
-    show_verification = fields.Boolean(
-        string='Show Verification',
-        compute='_compute_show_verification',
-        help='Whether to show NIT verification option'
-    )
-    
-    @api.depends('customer_nit')
-    def _compute_clean_nit(self):
-        """Clean and format NIT"""
-        for wizard in self:
-            if wizard.customer_nit:
-                if wizard.customer_nit.upper() == 'CF':
-                    wizard.clean_nit = 'CF'
-                else:
-                    wizard.clean_nit = re.sub(r'\D', '', wizard.customer_nit)
-            else:
-                wizard.clean_nit = ''
-    
-    @api.depends('clean_nit')
-    def _compute_is_consumidor_final(self):
-        """Check if this is consumidor final"""
-        for wizard in self:
-            wizard.is_consumidor_final = wizard.clean_nit == 'CF' or not wizard.clean_nit
-    
-    @api.depends('clean_nit', 'verify_nit')
-    def _compute_show_verification(self):
-        """Show verification option for valid NITs"""
-        for wizard in self:
-            wizard.show_verification = (
-                wizard.verify_nit and 
-                wizard.clean_nit and 
-                wizard.clean_nit != 'CF' and 
-                len(wizard.clean_nit) >= 8
-            )
+    @api.model
+    def default_get(self, fields_list):
+        """Set default values from context"""
+        res = super().default_get(fields_list)
+        
+        # Get POS order from context
+        active_id = self.env.context.get('active_id')
+        active_model = self.env.context.get('active_model')
+        
+        if active_model == 'pos.order' and active_id:
+            order = self.env['pos.order'].browse(active_id)
+            res['pos_order_id'] = order.id
+            
+            # Pre-fill customer info if available
+            if order.partner_id:
+                res['partner_id'] = order.partner_id.id
+                res['customer_nit'] = order.partner_id.nit_gt or order.customer_nit
+                res['customer_name'] = order.partner_id.name or order.customer_name
+            elif order.customer_nit:
+                res['customer_nit'] = order.customer_nit
+                res['customer_name'] = order.customer_name
+            
+        return res
     
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
-        """Fill customer info when partner is selected"""
+        """Update fields when partner changes"""
         if self.partner_id:
             self.customer_nit = self.partner_id.nit_gt or 'CF'
             self.customer_name = self.partner_id.name
-            self.create_partner = False
-        else:
-            self.customer_nit = ''
-            self.customer_name = ''
+            self.customer_address = self.partner_id.street or ''
     
     @api.onchange('customer_nit')
     def _onchange_customer_nit(self):
-        """Auto-fill customer name and find existing partner"""
-        if self.customer_nit:
-            # Reset partner selection
-            self.partner_id = False
+        """Try to find partner when NIT changes"""
+        if self.customer_nit and self.customer_nit != 'CF':
+            # Clean NIT
+            clean_nit = self.customer_nit.replace('-', '').replace(' ', '')
             
-            if self.clean_nit == 'CF':
-                self.customer_name = 'Consumidor Final'
-                self.create_partner = False
-                self.verify_nit = False
-            elif self.clean_nit and len(self.clean_nit) >= 8:
-                # Search for existing partner
-                partner = self.env['res.partner'].search([
-                    ('nit_gt', '=', self.clean_nit)
-                ], limit=1)
-                
-                if partner:
-                    self.partner_id = partner.id
-                    self.customer_name = partner.name
-                    self.create_partner = False
-                else:
-                    self.create_partner = True
-                    
-                self.verify_nit = True
-    
-    def action_set_customer_info(self):
-        """Set customer information on the POS order"""
-        self.ensure_one()
-        
-        # Validation
-        if not self.customer_nit:
-            raise ValidationError(_('Customer NIT is required.'))
-        
-        if not self.customer_name:
-            raise ValidationError(_('Customer name is required.'))
-        
-        # Clean NIT validation
-        if self.clean_nit != 'CF' and len(self.clean_nit) < 8:
-            raise ValidationError(_('Invalid NIT format. Please enter a valid Guatemala NIT.'))
-        
-        try:
-            # Get or create partner if requested
-            partner = self.partner_id
-            
-            if not partner and self.create_partner and self.clean_nit != 'CF':
-                # Create new partner
-                partner = self.env['res.partner'].create({
-                    'name': self.customer_name,
-                    'nit_gt': self.clean_nit,
-                    'is_company': True,
-                    'customer_rank': 1,
-                    'country_id': self.env.ref('base.gt').id,
-                })
-            elif not partner and self.clean_nit == 'CF':
-                # Use or create CF partner
-                partner = self.env['res.partner'].search([
-                    ('nit_gt', '=', 'CF'),
-                    ('is_company', '=', False)
-                ], limit=1)
-                
-                if not partner:
-                    partner = self.env['res.partner'].create({
-                        'name': 'Consumidor Final',
-                        'nit_gt': 'CF',
-                        'is_company': False,
-                        'customer_rank': 1,
-                        'country_id': self.env.ref('base.gt').id,
-                    })
-            
-            # Update POS order
-            update_data = {
-                'customer_nit': self.clean_nit,
-                'customer_name': self.customer_name,
-            }
+            # Search for existing partner
+            partner = self.env['res.partner'].search([
+                ('nit_gt', '=', self.customer_nit)
+            ], limit=1)
             
             if partner:
-                update_data['partner_id'] = partner.id
-            
-            self.order_id.write(update_data)
-            
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('Customer Information Set'),
-                    'message': _('Customer information updated for order %s') % self.order_id.name,
-                    'type': 'success',
-                }
-            }
-            
-        except Exception as e:
-            raise ValidationError(_('Failed to set customer information: %s') % str(e))
+                self.partner_id = partner.id
+                self.customer_name = partner.name
+                self.customer_address = partner.street or ''
     
     def action_verify_nit(self):
         """Verify NIT with SAT"""
         self.ensure_one()
         
-        if not self.show_verification:
-            raise ValidationError(_('NIT verification is not available for this NIT.'))
+        if not self.customer_nit or self.customer_nit == 'CF':
+            raise ValidationError(_('Cannot verify "Consumidor Final" (CF) NIT.'))
         
-        # Open NIT verification wizard
+        # Use NIT verification wizard
         return {
             'type': 'ir.actions.act_window',
             'name': _('Verify NIT'),
@@ -229,48 +149,70 @@ class PosOrderCustomerWizard(models.TransientModel):
             'target': 'new',
             'context': {
                 'default_nit': self.customer_nit,
-                'default_partner_name': self.customer_name,
-                'default_create_partner': True,
-                'default_update_partner': True,
+                'default_partner_id': self.partner_id.id if self.partner_id else False,
+            }
+        }
+    
+    def action_set_customer_info(self):
+        """Set customer information on POS order"""
+        self.ensure_one()
+        
+        if not self.customer_nit:
+            raise ValidationError(_('Customer NIT is required.'))
+        
+        if not self.customer_name:
+            raise ValidationError(_('Customer name is required.'))
+        
+        # Update POS order
+        vals = {
+            'customer_nit': self.customer_nit,
+            'customer_name': self.customer_name,
+        }
+        
+        # Handle partner
+        if self.partner_id:
+            vals['partner_id'] = self.partner_id.id
+        elif self.create_partner and self.customer_nit != 'CF':
+            # Create new partner
+            partner_vals = {
+                'name': self.customer_name,
+                'nit_gt': self.customer_nit,
+                'street': self.customer_address or False,
+                'customer_rank': 1,
+                'is_company': True,  # Assume company if has NIT
+            }
+            partner = self.env['res.partner'].create(partner_vals)
+            vals['partner_id'] = partner.id
+            self.partner_id = partner
+        
+        # Update POS order
+        self.pos_order_id.write(vals)
+        
+        # Show success message
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Success'),
+                'message': _('Customer information updated successfully.'),
+                'type': 'success',
             }
         }
     
     def action_send_to_fel(self):
-        """Set customer info and send order to FEL"""
+        """Set customer info and send to FEL"""
         self.ensure_one()
         
-        # First set customer information
+        # First set customer info
         self.action_set_customer_info()
         
         # Then send to FEL
-        try:
-            self.order_id.send_to_fel()
-            
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('Order Sent to FEL'),
-                    'message': _('Order %s sent to FEL successfully') % self.order_id.name,
-                    'type': 'success',
-                }
-            }
-            
-        except Exception as e:
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('FEL Error'),
-                    'message': _('Failed to send to FEL: %s') % str(e),
-                    'type': 'warning',
-                }
-            }
+        return self.pos_order_id.action_send_to_fel()
 
 
 class PosSessionCloseWizard(models.TransientModel):
     _name = 'pos.session.close.wizard'
-    _description = 'POS Session Close with FEL Check'
+    _description = 'POS Session Close Wizard'
     
     session_id = fields.Many2one(
         'pos.session',
@@ -281,64 +223,40 @@ class PosSessionCloseWizard(models.TransientModel):
     
     pending_fel_count = fields.Integer(
         string='Pending FEL Orders',
-        readonly=True
+        readonly=True,
+        help='Number of orders pending FEL processing'
     )
     
-    process_pending_fel = fields.Boolean(
-        string='Process Pending FEL Orders',
+    process_fel_orders = fields.Boolean(
+        string='Process FEL Orders',
         default=True,
-        help='Process all pending FEL orders before closing the session'
-    )
-    
-    ignore_fel_errors = fields.Boolean(
-        string='Ignore FEL Errors',
-        default=False,
-        help='Close session even if some FEL orders fail'
+        help='Process pending FEL orders before closing'
     )
     
     def action_close_session(self):
-        """Close session with FEL processing"""
+        """Close session with or without processing FEL"""
         self.ensure_one()
         
-        if self.process_pending_fel:
-            # Process pending FEL orders
+        if self.process_fel_orders:
+            # Get pending orders
             pending_orders = self.session_id.order_ids.filtered(
                 lambda o: o.requires_fel and o.fel_status == 'draft'
             )
             
-            success_count = 0
-            error_count = 0
-            
-            for order in pending_orders:
-                try:
-                    # Set default customer info if missing
-                    if not order.customer_nit:
-                        order.write({
-                            'customer_nit': 'CF',
-                            'customer_name': 'Consumidor Final'
-                        })
-                    
-                    # Send to FEL
-                    order.send_to_fel()
-                    if order.fel_status == 'certified':
-                        success_count += 1
-                    else:
-                        error_count += 1
-                        
-                except Exception as e:
-                    error_count += 1
-            
-            # Check if we should proceed with errors
-            if error_count > 0 and not self.ignore_fel_errors:
+            if pending_orders:
+                # Open wizard to process orders
                 return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': _('FEL Processing Incomplete'),
-                        'message': _('%d orders processed successfully, %d errors. Enable "Ignore FEL Errors" to close anyway.') % (success_count, error_count),
-                        'type': 'warning',
+                    'type': 'ir.actions.act_window',
+                    'name': _('Send POS Orders to FEL'),
+                    'res_model': 'fel.pos.send.wizard',
+                    'view_mode': 'form',
+                    'target': 'new',
+                    'context': {
+                        'default_order_ids': [(6, 0, pending_orders.ids)],
+                        'close_session_after': True,
+                        'session_id': self.session_id.id,
                     }
                 }
         
-        # Close the session
+        # Close session normally
         return self.session_id.action_pos_session_close()

@@ -349,22 +349,22 @@ class FelConfig(models.Model):
         help='Detailed health status message'
     )
     
-    # Cost Information (Related from Provider)
-    setup_cost = fields.Monetary(
+    # Cost Information (Related from Provider) - Must be Float to match provider model
+    setup_cost = fields.Float(
         string='Setup Cost',
         related='provider_id.setup_cost',
         readonly=True,
         help='One-time setup cost from provider'
     )
     
-    annual_cost = fields.Monetary(
+    annual_cost = fields.Float(
         string='Annual Cost',
         related='provider_id.annual_cost',
         readonly=True,
         help='Annual cost from provider'
     )
     
-    dte_cost = fields.Monetary(
+    dte_cost = fields.Float(
         string='Cost per DTE',
         related='provider_id.cost_per_dte',
         readonly=True,
