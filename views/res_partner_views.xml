@@ -65,6 +65,7 @@
             
             <!-- Add FEL preferences section after sales & purchase group -->
             <xpath expr="//page[@name='sales_purchases']//group[@name='sale']" position="after">
+                <field name="customer_rank" invisible="1"/>
                 <group string="FEL Preferences" name="fel_preferences"
                        groups="fel_nit_gt_sat.group_fel_user"
                        invisible="customer_rank == 0">
