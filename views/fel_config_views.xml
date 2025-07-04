@@ -80,16 +80,22 @@
                         
                         <page string="Usage &amp; Limits" name="usage">
                             <group>
-                                <group string="DTE Limits">
-                                    <field name="annual_dte_limit" placeholder="1200"/>
-                                    <field name="monthly_dte_limit" placeholder="100"/>
+                                <group string="DTE Limits &amp; Usage">
+                                    <field name="annual_dte_limit" readonly="1"/>
+                                    <field name="annual_dte_count" readonly="1"/>
                                     <field name="dte_usage_percentage" widget="progressbar"/>
                                 </group>
                                 
-                                <group string="Current Usage">
-                                    <field name="annual_dte_count" readonly="1"/>
-                                    <field name="monthly_dte_count" readonly="1"/>
+                                <group string="Costs &amp; Pricing">
+                                    <field name="setup_cost" readonly="1" widget="monetary"/>
+                                    <field name="annual_cost" readonly="1" widget="monetary"/>
+                                    <field name="dte_cost" readonly="1" widget="monetary"/>
                                 </group>
+                            </group>
+                            
+                            <group string="Usage History">
+                                <field name="last_dte_date" readonly="1"/>
+                                <field name="monthly_dte_count" readonly="1"/>
                             </group>
                         </page>
                         

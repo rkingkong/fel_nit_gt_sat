@@ -615,6 +615,52 @@ class FelConfig(models.Model):
             'target': 'current',
             'context': {'show_health_dashboard': True},
         }
+    # Add these methods to the FelConfig class in models/fel_config.py
+
+    def action_view_documents(self):
+        """View all FEL documents for this configuration"""
+        self.ensure_one()
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('FEL Documents'),
+            'res_model': 'fel.document',
+            'view_mode': 'tree,form',
+            'domain': [('company_id', '=', self.company_id.id)],
+            'context': {'default_company_id': self.company_id.id},
+        }
+
+    def action_view_monthly_stats(self):
+        """View monthly statistics for FEL documents"""
+        self.ensure_one()
+        
+        # Calculate date range for current month
+        today = fields.Date.today()
+        month_start = today.replace(day=1)
+        
+        # Get next month's first day
+        if today.month == 12:
+            month_end = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+        else:
+            month_end = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Monthly FEL Documents'),
+            'res_model': 'fel.document',
+            'view_mode': 'tree,form,pivot,graph',
+            'domain': [
+                ('company_id', '=', self.company_id.id),
+                ('generation_date', '>=', month_start),
+                ('generation_date', '<=', month_end),
+            ],
+            'context': {
+                'default_company_id': self.company_id.id,
+                'search_default_group_by_state': 1,
+                'search_default_group_by_document_type': 1,
+            },
+        }
+    
     
     @api.constrains('is_active')
     def _check_unique_active_config(self):
