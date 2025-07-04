@@ -138,33 +138,30 @@
         </field>
     </record>
     
-    <!-- POS Order Tree View Extension -->
     <record id="view_pos_order_tree_fel" model="ir.ui.view">
         <field name="name">pos.order.tree.fel</field>
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
         <field name="arch" type="xml">
             
-            <!-- Add restaurant and FEL columns -->
-            <xpath expr="//field[@name='date_order']" position="after">
+            <!-- Add additional fields inside the tree -->
+            <xpath expr="//tree" position="inside">
                 <field name="table_number" optional="show" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <field name="user_id" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <field name="customer_nit" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-            </xpath>
-            
-            <!-- Add FEL status column -->
-            <xpath expr="//field[@name='state']" position="after">
                 <field name="fel_status" optional="show" widget="badge"
-                       decoration-success="fel_status=='certified'"
-                       decoration-danger="fel_status=='error'"
-                       decoration-warning="fel_status=='cancelled'"
-                       decoration-info="fel_status in ('sending', 'generating')"
-                       groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                    decoration-success="fel_status=='certified'"
+                    decoration-danger="fel_status=='error'"
+                    decoration-warning="fel_status=='cancelled'"
+                    decoration-info="fel_status in ('sending', 'generating')"
+                    groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <field name="fel_uuid" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="can_send_fel" invisible="1"/>
+                <field name="requires_fel" invisible="1"/>
             </xpath>
-            
-            <!-- Add action buttons -->
-            <xpath expr="//field[@name='amount_total']" position="after">
+
+            <!-- Action buttons inside tree -->
+            <xpath expr="//tree" position="inside">
                 <button name="action_send_fel" string="Send FEL" type="object" icon="fa-send"
                         modifiers="{'invisible': [('can_send_fel', '=', False)]}"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
@@ -172,15 +169,10 @@
                         modifiers="{'invisible': [('fel_status', '!=', 'error')]}"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
-            
-            <!-- Hidden fields for logic -->
-            <xpath expr="//field[@name='session_id']" position="after">
-                <field name="can_send_fel" invisible="1"/>
-                <field name="requires_fel" invisible="1"/>
-            </xpath>
-            
+
         </field>
     </record>
+
     
     <!-- POS Order Search View Extension -->
     <record id="view_pos_order_search_fel" model="ir.ui.view">
