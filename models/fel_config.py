@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class FelConfig(models.Model):
     _name = 'fel.config'
+    _inherit = ['mail.thread']
     _description = 'FEL Configuration'
     _rec_name = 'company_id'
     

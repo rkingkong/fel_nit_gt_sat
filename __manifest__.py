@@ -33,6 +33,7 @@
     'license': 'LGPL-3',
     'depends': [
         'base',
+        'mail',
         'account',
         'sale',
         'purchase',
