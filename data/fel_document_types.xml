@@ -18,7 +18,7 @@
             <field name="annual_cost">396.00</field>
             <field name="cost_per_dte">0.33</field>
             <field name="annual_dte_limit">1200</field>
-            <field name="is_active">True</field>
+            <field name="active">True</field>
         </record>
         
         <!-- FEL Document Types -->
