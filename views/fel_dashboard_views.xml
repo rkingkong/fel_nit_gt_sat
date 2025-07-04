@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- FEL Dashboard Server Action -->
-    <record id="action_fel_dashboard" model="ir.actions.client">
+    <!-- FEL Dashboard Client Action (for custom JS dashboard) -->
+    <record id="action_fel_dashboard_client" model="ir.actions.client">
         <field name="name">FEL Dashboard</field>
         <field name="tag">fel_dashboard</field>
         <field name="target">main</field>
     </record>
     
-    <!-- Alternative: Simple Dashboard using existing views -->
-    <record id="action_fel_dashboard_alt" model="ir.actions.act_window">
+    <!-- FEL Dashboard Window Action (using existing views) -->
+    <record id="action_fel_dashboard" model="ir.actions.act_window">
         <field name="name">FEL Guatemala Dashboard</field>
         <field name="res_model">fel.document</field>
         <field name="view_mode">kanban,tree,form,pivot,graph</field>
@@ -98,24 +98,14 @@
                     <i class="fa fa-info-circle"></i> Start by configuring your FEL provider in the Configuration menu.
                 </p>
             </div>
-        </field>
-    </record>
-    
-    <!-- Use the alternative action for now -->
-    <record id="action_fel_dashboard" model="ir.actions.act_window">
-        <field name="name">FEL Guatemala Dashboard</field>
-        <field name="res_model">fel.document</field>
-        <field name="view_mode">kanban,tree,form,pivot,graph</field>
-        <field name="domain">[]</field>
-        <field name="context">{}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
+            
+            <p class="o_view_nocontent_smiling_face" style="display: none;">
                 Welcome to FEL Guatemala
             </p>
-            <p>
+            <p style="display: none;">
                 No FEL documents yet. Start by:
             </p>
-            <ul>
+            <ul style="display: none;">
                 <li>Configuring your FEL provider (INFILE)</li>
                 <li>Creating your first invoice</li>
                 <li>Verifying customer NITs</li>
