@@ -70,7 +70,7 @@
                 <group string="Restaurant Information" 
                        groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <field name="table_number" placeholder="Table #"/>
-                    <field name="waiter_id" domain="[('groups_id', 'in', [ref('point_of_sale.group_pos_user')])]"
+                    <field name="user_id" string="Mesero" readonly="1"
                            options="{'no_create_edit': True}"/>
                 </group>
                 
