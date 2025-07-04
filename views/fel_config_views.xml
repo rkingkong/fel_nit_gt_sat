@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
+
     <!-- FEL Configuration Form View -->
     <record id="view_fel_config_form" model="ir.ui.view">
         <field name="name">fel.config.form</field>
@@ -23,7 +23,7 @@
                             <field name="monthly_dte_count" widget="statinfo" string="DTEs This Month"/>
                         </button>
                     </div>
-                    
+
                     <div class="oe_title">
                         <h1>
                             <field name="company_id" readonly="1" options="{'no_create': True}"/>
@@ -32,7 +32,7 @@
                             <field name="provider_id" placeholder="Select FEL Provider..." options="{'no_create_edit': True}"/>
                         </h3>
                     </div>
-                    
+
                     <group>
                         <group string="Company Information">
                             <field name="nit" placeholder="e.g. 12345678-9"/>
@@ -43,7 +43,7 @@
                             <field name="establishment_classification" placeholder="e.g. 885 for restaurants"/>
                             <field name="establishment_type" placeholder="e.g. 888"/>
                         </group>
-                        
+
                         <group string="Environment">
                             <field name="environment" widget="radio"/>
                             <field name="test_mode" modifiers="{'invisible': [('environment', '=', 'production')]}"/>
@@ -54,7 +54,7 @@
                                    decoration-danger="health_status in ('error','critical')"/>
                         </group>
                     </group>
-                    
+
                     <notebook>
                         <page string="INFILE Configuration" name="infile_config">
                             <group>
@@ -65,7 +65,7 @@
                                     <field name="llave_api" password="True" placeholder="API key from INFILE"/>
                                     <field name="llave_firma_expiry" placeholder="Signature key expiry date"/>
                                 </group>
-                                
+
                                 <group string="API Endpoints">
                                     <field name="api_url" readonly="1"/>
                                     <field name="certification_url" modifiers="{'invisible': [('provider_id', '=', False)]}"/>
@@ -73,7 +73,7 @@
                                 </group>
                             </group>
                         </page>
-                        
+
                         <page string="Address Information" name="address">
                             <group>
                                 <group string="Company Address">
@@ -85,7 +85,7 @@
                                 </group>
                             </group>
                         </page>
-                        
+
                         <page string="Usage &amp; Limits" name="usage">
                             <group>
                                 <group string="DTE Limits &amp; Usage">
@@ -95,14 +95,14 @@
                                     <field name="monthly_dte_limit" placeholder="100"/>
                                     <field name="monthly_dte_count" readonly="1"/>
                                 </group>
-                                
+
                                 <group string="Costs &amp; Pricing">
                                     <field name="setup_cost" widget="monetary"/>
                                     <field name="annual_cost" widget="monetary"/>
                                     <field name="dte_cost" widget="monetary"/>
                                 </group>
                             </group>
-                            
+
                             <group string="Daily Limits">
                                 <field name="daily_limit" readonly="1"/>
                                 <field name="daily_counter" readonly="1"/>
@@ -110,7 +110,7 @@
                                 <field name="last_counter_reset" readonly="1"/>
                             </group>
                         </page>
-                        
+
                         <page string="Auto-Send Settings" name="auto_send">
                             <group>
                                 <group string="Automatic FEL Generation">
@@ -118,7 +118,7 @@
                                     <field name="auto_send_credit_notes"/>
                                     <field name="auto_send_pos_orders"/>
                                 </group>
-                                
+
                                 <group string="Retry Configuration">
                                     <field name="max_retry_attempts"/>
                                     <field name="retry_delay_seconds"/>
@@ -126,12 +126,12 @@
                                     <field name="retry_on_connection_error"/>
                                 </group>
                             </group>
-                            
+
                             <div class="alert alert-info" role="alert">
                                 <strong>Info:</strong> When enabled, FEL documents will be automatically generated and sent when invoices are posted or POS orders are completed.
                             </div>
                         </page>
-                        
+
                         <page string="Status &amp; Errors" name="status">
                             <group>
                                 <group string="Transaction History">
@@ -139,13 +139,13 @@
                                     <field name="last_dte_date" readonly="1"/>
                                     <field name="consecutive_errors" readonly="1"/>
                                 </group>
-                                
+
                                 <group string="Last Error">
                                     <field name="last_error_date" readonly="1"/>
                                     <field name="last_error_message" readonly="1"/>
                                 </group>
                             </group>
-                            
+
                             <field name="health_message" readonly="1" placeholder="No issues detected"/>
                         </page>
                     </notebook>
@@ -158,168 +158,5 @@
             </form>
         </field>
     </record>
-    
-    <!-- FEL Configuration Tree View -->
-    <record id="view_fel_config_tree" model="ir.ui.view">
-        <field name="name">fel.config.tree</field>
-        <field name="model">fel.config</field>
-        <field name="arch" type="xml">
-            <tree string="FEL Configurations" decoration-success="is_active" decoration-muted="not is_active">
-                <field name="company_id"/>
-                <field name="provider_id"/>
-                <field name="nit"/>
-                <field name="tax_regime"/>
-                <field name="environment"/>
-                <field name="is_active"/>
-                <field name="annual_dte_count"/>
-                <field name="annual_dte_limit"/>
-                <field name="dte_usage_percentage"/>
-                <field name="health_status" 
-                       decoration-success="health_status=='healthy'"
-                       decoration-warning="health_status=='warning'"
-                       decoration-danger="health_status in ('error','critical')"/>
-                <button name="test_connection" string="Test" type="object" icon="fa-plug" 
-                        modifiers="{'invisible': [('is_active', '=', False)]}"/>
-            </tree>
-        </field>
-    </record>
-    
-    <!-- FEL Configuration Search View -->
-    <record id="view_fel_config_search" model="ir.ui.view">
-        <field name="name">fel.config.search</field>
-        <field name="model">fel.config</field>
-        <field name="arch" type="xml">
-            <search string="FEL Configurations">
-                <field name="company_id"/>
-                <field name="provider_id"/>
-                <field name="nit"/>
-                <field name="environment"/>
-                <separator/>
-                <filter string="Active" name="active" domain="[('is_active', '=', True)]"/>
-                <filter string="Inactive" name="inactive" domain="[('is_active', '=', False)]"/>
-                <separator/>
-                <filter string="Test Environment" name="test_env" domain="[('environment', '=', 'test')]"/>
-                <filter string="Production Environment" name="prod_env" domain="[('environment', '=', 'production')]"/>
-                <separator/>
-                <filter string="General Regime" name="general" domain="[('tax_regime', '=', 'general')]"/>
-                <filter string="Pequeño Contribuyente" name="pequeno" domain="[('tax_regime', '=', 'pequeno')]"/>
-                <filter string="Special Regime" name="especial" domain="[('tax_regime', '=', 'especial')]"/>
-                <separator/>
-                <filter string="Healthy" name="healthy" domain="[('health_status', '=', 'healthy')]"/>
-                <filter string="Warning" name="warning" domain="[('health_status', '=', 'warning')]"/>
-                <filter string="Error" name="error" domain="[('health_status', 'in', ['error','critical'])]"/>
-                <group expand="0" string="Group By">
-                    <filter string="Company" name="group_company" context="{'group_by': 'company_id'}"/>
-                    <filter string="Provider" name="group_provider" context="{'group_by': 'provider_id'}"/>
-                    <filter string="Environment" name="group_environment" context="{'group_by': 'environment'}"/>
-                    <filter string="Tax Regime" name="group_regime" context="{'group_by': 'tax_regime'}"/>
-                    <filter string="Health Status" name="group_health" context="{'group_by': 'health_status'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
-    
-    <!-- FEL Configuration Kanban View -->
-    <record id="view_fel_config_kanban" model="ir.ui.view">
-        <field name="name">fel.config.kanban</field>
-        <field name="model">fel.config</field>
-        <field name="arch" type="xml">
-            <kanban string="FEL Configurations" class="o_kanban_dashboard">
-                <field name="company_id"/>
-                <field name="provider_id"/>
-                <field name="nit"/>
-                <field name="environment"/>
-                <field name="is_active"/>
-                <field name="annual_dte_count"/>
-                <field name="annual_dte_limit"/>
-                <field name="dte_usage_percentage"/>
-                <field name="health_status"/>
-                <templates>
-                    <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_card #{record.is_active.raw_value ? 'oe_kanban_global_click' : 'oe_kanban_color_7'}">
-                            <div class="o_kanban_card_header">
-                                <div class="o_kanban_card_header_title">
-                                    <div class="o_primary font-weight-bold">
-                                        <field name="company_id"/>
-                                    </div>
-                                    <div class="o_secondary">
-                                        <field name="provider_id"/>
-                                    </div>
-                                </div>
-                                <div class="o_kanban_manage_button_section">
-                                    <a class="o_kanban_manage_toggle_button" href="#">
-                                        <i class="fa fa-ellipsis-v" aria-label="Manage" title="Manage"/>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="container o_kanban_card_content">
-                                <div class="row">
-                                    <div class="col-6 o_kanban_primary_left">
-                                        <div class="mb-1">
-                                            <strong>NIT:</strong> <field name="nit"/>
-                                        </div>
-                                        <div class="mb-1">
-                                            <field name="environment" widget="badge" 
-                                                   decoration-info="environment=='test'"
-                                                   decoration-success="environment=='production'"/>
-                                        </div>
-                                        <div class="mb-1">
-                                            <field name="health_status" 
-                                                   decoration-success="health_status=='healthy'"
-                                                   decoration-warning="health_status=='warning'"
-                                                   decoration-danger="health_status in ('error','critical')"/>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 o_kanban_primary_right">
-                                        <div class="mb-1 text-center">
-                                            <strong class="d-block">DTE Usage</strong>
-                                            <h2 class="mb-0"><t t-esc="record.annual_dte_count.raw_value"/></h2>
-                                            <span class="text-muted">of <t t-esc="record.annual_dte_limit.raw_value"/></span>
-                                        </div>
-                                        <field name="dte_usage_percentage"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="o_kanban_card_manage_pane dropdown-menu" role="menu">
-                                <div class="o_kanban_card_manage_section o_kanban_manage_reports">
-                                    <div role="menuitem">
-                                        <a name="action_view_documents" type="object">View Documents</a>
-                                    </div>
-                                    <div role="menuitem">
-                                        <a name="action_view_monthly_stats" type="object">Monthly Stats</a>
-                                    </div>
-                                </div>
-                                <div class="o_kanban_card_manage_settings row">
-                                    <div role="menuitem" aria-haspopup="true" class="col-6">
-                                        <a name="test_connection" type="object">Test Connection</a>
-                                    </div>
-                                    <div role="menuitem" class="col-6">
-                                        <a type="edit">Configuration</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
-    
-    <!-- FEL Configuration Action -->
-    <record id="action_fel_config" model="ir.actions.act_window">
-        <field name="name">FEL Configuration</field>
-        <field name="res_model">fel.config</field>
-        <field name="view_mode">kanban,tree,form</field>
-        <field name="search_view_id" ref="view_fel_config_search"/>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Configure FEL (Electronic Invoice) settings for your company
-            </p>
-            <p>
-                Set up your FEL provider connection, API credentials, and document generation preferences.
-                This is required to generate electronic invoices for Guatemala.
-            </p>
-        </field>
-    </record>
-    
+
 </odoo>
