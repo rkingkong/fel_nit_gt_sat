@@ -44,6 +44,25 @@ class FelTaxPhrase(models.Model):
         string='Description',
         help='Description of when to use this phrase'
     )
+
+    # ✅ Newly added fields to match the XML definitions
+    apply_to_fact = fields.Boolean(
+        string='Apply to FACT',
+        default=False,
+        help='Apply this phrase to FACT documents'
+    )
+    
+    apply_to_fcam = fields.Boolean(
+        string='Apply to FCAM',
+        default=False,
+        help='Apply this phrase to FCAM documents'
+    )
+    
+    apply_to_fesp = fields.Boolean(
+        string='Apply to FESP',
+        default=False,
+        help='Apply this phrase to FESP documents'
+    )
     
     sequence = fields.Integer(
         string='Sequence',
@@ -57,7 +76,6 @@ class FelTaxPhrase(models.Model):
         help='Whether this phrase is currently active'
     )
     
-    # Company
     company_id = fields.Many2one(
         'res.company',
         string='Company',
@@ -81,6 +99,9 @@ class FelTaxPhrase(models.Model):
                 'phrase_type': '1',
                 'scenario_code': '1',
                 'description': 'Aplicable a facturas con retención definitiva de ISR',
+                'apply_to_fact': True,
+                'apply_to_fcam': True,
+                'apply_to_fesp': True,
             },
             {
                 'name': 'Exento de IVA',
@@ -171,10 +192,8 @@ class FelDocumentPhrase(models.Model):
         
         result = []
         for phrase_rel in phrases:
-            # Check if phrase should be included
             include = phrase_rel.is_mandatory
             
-            # Evaluate additional condition if exists
             if phrase_rel.condition and source_doc:
                 try:
                     include = bool(eval(phrase_rel.condition, {
