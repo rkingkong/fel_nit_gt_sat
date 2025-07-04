@@ -11,17 +11,17 @@
                     <group>
                         <group string="FEL Settings">
                             <field name="use_fel"/>
-                            <field name="fel_auto_generate" attrs="{'invisible': [('use_fel', '=', False)]}"/>
-                            <field name="fel_document_type_id" attrs="{'invisible': [('use_fel', '=', False)], 'required': [('use_fel', '=', True)]}"/>
+                            <field name="fel_auto_generate" modifiers="{'invisible': [('use_fel', '=', False)]}"/>
+                            <field name="fel_document_type_id" modifiers="{'invisible': [('use_fel', '=', False)], 'required': [('use_fel', '=', True)]}"/>
                         </group>
                         <group string="Customer Settings">
-                            <field name="fel_require_customer" attrs="{'invisible': [('use_fel', '=', False)]}"/>
-                            <field name="fel_allow_cf" attrs="{'invisible': [('use_fel', '=', False)]}"/>
+                            <field name="fel_require_customer" modifiers="{'invisible': [('use_fel', '=', False)]}"/>
+                            <field name="fel_allow_cf" modifiers="{'invisible': [('use_fel', '=', False)]}"/>
                         </group>
                     </group>
-                    <group string="Restaurant Settings" attrs="{'invisible': [('module_pos_restaurant', '=', False)]}">
+                    <group string="Restaurant Settings" modifiers="{'invisible': [('module_pos_restaurant', '=', False)]}">
                         <field name="is_restaurant"/>
-                        <field name="require_waiter" attrs="{'invisible': [('is_restaurant', '=', False)]}"/>
+                        <field name="require_waiter" modifiers="{'invisible': [('is_restaurant', '=', False)]}"/>
                     </group>
                 </page>
             </xpath>

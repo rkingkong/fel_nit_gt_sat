@@ -88,7 +88,7 @@
                             
                             <!-- Charts or statistics would go here in future versions -->
                             <div class="alert alert-info" role="alert" 
-                                 attrs="{'invisible': [('document_count', '>', 0)]}">
+                                 modifiers="{'invisible': [('document_count', '>', 0)]}">
                                 <strong>No documents yet:</strong> 
                                 This document type hasn't been used yet. 
                 Statistics will appear here once documents are created.

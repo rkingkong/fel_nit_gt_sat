@@ -15,7 +15,7 @@
                         type="object" 
                         class="oe_stat_button"
                         icon="fa-send"
-                        attrs="{'invisible': ['|', ('can_send_fel', '=', False), ('fel_status', 'in', ['certified', 'sending'])]}"
+                        modifiers="{'invisible': ['|', ('can_send_fel', '=', False), ('fel_status', 'in', ['certified', 'sending'])]}"
                         groups="fel_nit_gt_sat.group_fel_user">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Send to</span>
@@ -28,7 +28,7 @@
                         type="object" 
                         class="oe_stat_button"
                         icon="fa-file-text-o"
-                        attrs="{'invisible': [('fel_document_id', '=', False)]}"
+                        modifiers="{'invisible': [('fel_document_id', '=', False)]}"
                         groups="fel_nit_gt_sat.group_fel_user">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">FEL</span>
@@ -41,7 +41,7 @@
                         type="object" 
                         class="oe_stat_button"
                         icon="fa-refresh"
-                        attrs="{'invisible': [('fel_status', '!=', 'error')]}"
+                        modifiers="{'invisible': [('fel_status', '!=', 'error')]}"
                         groups="fel_nit_gt_sat.group_fel_user">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Retry</span>
@@ -53,7 +53,7 @@
             <!-- Add FEL information after invoice reference -->
             <xpath expr="//field[@name='ref']" position="after">
                 <group string="FEL Information" 
-                       attrs="{'invisible': [('requires_fel', '=', False)]}"
+                       modifiers="{'invisible': [('requires_fel', '=', False)]}"
                        groups="fel_nit_gt_sat.group_fel_user">
                     
                     <!-- FEL Status with color coding -->
@@ -65,24 +65,24 @@
                     
                     <!-- Document type selection -->
                     <field name="fel_document_type_id" 
-                           attrs="{'readonly': [('fel_status', 'in', ['certified', 'sending'])]}"
+                           modifiers="{'readonly': [('fel_status', 'in', ['certified', 'sending'])]}"
                            options="{'no_create_edit': True}"/>
                     
                     <!-- SAT assigned information -->
                     <field name="fel_uuid" readonly="1"
-                           attrs="{'invisible': [('fel_uuid', '=', False)]}"/>
+                           modifiers="{'invisible': [('fel_uuid', '=', False)]}"/>
                     <field name="fel_series" readonly="1"
-                           attrs="{'invisible': [('fel_series', '=', False)]}"/>
+                           modifiers="{'invisible': [('fel_series', '=', False)]}"/>
                     <field name="fel_number" readonly="1"
-                           attrs="{'invisible': [('fel_number', '=', False)]}"/>
+                           modifiers="{'invisible': [('fel_number', '=', False)]}"/>
                     <field name="fel_certification_date" readonly="1"
-                           attrs="{'invisible': [('fel_certification_date', '=', False)]}"/>
+                           modifiers="{'invisible': [('fel_certification_date', '=', False)]}"/>
                     
                     <!-- Customer information for FEL -->
                     <field name="customer_nit" readonly="1"
-                           attrs="{'invisible': [('customer_nit', '=', False)]}"/>
+                           modifiers="{'invisible': [('customer_nit', '=', False)]}"/>
                     <field name="customer_tax_regime" readonly="1"
-                           attrs="{'invisible': [('customer_tax_regime', '=', False)]}"/>
+                           modifiers="{'invisible': [('customer_tax_regime', '=', False)]}"/>
                     
                     <!-- Hidden computed fields -->
                     <field name="requires_fel" invisible="1"/>
@@ -93,18 +93,18 @@
             <!-- Add FEL error message if exists -->
             <xpath expr="//group[@name='header_right_group']" position="after">
                 <div class="alert alert-danger" role="alert" 
-                     attrs="{'invisible': [('fel_error_message', '=', False)]}"
+                     modifiers="{'invisible': [('fel_error_message', '=', False)]}"
                      groups="fel_nit_gt_sat.group_fel_user">
                     <strong>FEL Error:</strong>
                     <field name="fel_error_message" readonly="1"/>
                 </div>
                 
                 <div class="alert alert-success" role="alert" 
-                     attrs="{'invisible': [('fel_status', '!=', 'certified')]}"
+                     modifiers="{'invisible': [('fel_status', '!=', 'certified')]}"
                      groups="fel_nit_gt_sat.group_fel_user">
                     <strong>FEL Certified:</strong> 
                     This invoice has been successfully certified by SAT.
-                    <span attrs="{'invisible': [('fel_uuid', '=', False)]}">
+                    <span modifiers="{'invisible': [('fel_uuid', '=', False)]}">
                         UUID: <field name="fel_uuid" readonly="1"/>
                     </span>
                 </div>
@@ -134,10 +134,10 @@
             <!-- Add action buttons -->
             <xpath expr="//field[@name='amount_total']" position="after">
                 <button name="action_send_fel" string="Send FEL" type="object" icon="fa-send"
-                        attrs="{'invisible': [('can_send_fel', '=', False)]}"
+                        modifiers="{'invisible': [('can_send_fel', '=', False)]}"
                         groups="fel_nit_gt_sat.group_fel_user"/>
                 <button name="retry_fel" string="Retry" type="object" icon="fa-refresh"
-                        attrs="{'invisible': [('fel_status', '!=', 'error')]}"
+                        modifiers="{'invisible': [('fel_status', '!=', 'error')]}"
                         groups="fel_nit_gt_sat.group_fel_user"/>
             </xpath>
             

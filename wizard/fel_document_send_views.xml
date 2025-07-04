@@ -53,7 +53,7 @@
                         </page>
                         
                         <page string="Validation Results" name="validation" 
-                              attrs="{'invisible': [('validation_complete', '=', False)]}">
+                              modifiers="{'invisible': [('validation_complete', '=', False)]}">
                             <group>
                                 <group string="Validation Summary">
                                     <field name="validation_complete" readonly="1" invisible="1"/>
@@ -66,7 +66,7 @@
                         </page>
                         
                         <page string="Processing Status" name="status" 
-                              attrs="{'invisible': [('processing_started', '=', False)]}">
+                              modifiers="{'invisible': [('processing_started', '=', False)]}">
                             <group>
                                 <group string="Progress">
                                     <field name="processing_started" readonly="1" invisible="1"/>
@@ -83,7 +83,7 @@
                     
                     <!-- Warnings and Information -->
                     <div class="alert alert-warning" role="alert" 
-                         attrs="{'invisible': [('invalid_documents', '=', 0)]}">
+                         modifiers="{'invisible': [('invalid_documents', '=', 0)]}">
                         <strong>⚠️ Validation Warnings:</strong>
                         <p><field name="invalid_documents" readonly="1"/> documents have validation errors and cannot be sent.</p>
                         <p>Please review the validation results and fix any issues before proceeding.</p>
@@ -101,7 +101,7 @@
                     
                     <!-- Restaurant-specific info -->
                     <div class="alert alert-success" role="alert" 
-                         attrs="{'invisible': [('has_pos_orders', '=', False)]}">
+                         modifiers="{'invisible': [('has_pos_orders', '=', False)]}">
                         <strong>🍽️ Restaurant Orders Detected:</strong>
                         <p>This batch includes POS orders from your restaurant operations.</p>
                         <p>Make sure all customer information is complete before sending to FEL.</p>
@@ -153,7 +153,7 @@
                     <button name="action_load_invoices" string="Load Invoices" type="object" class="btn-info"/>
                     
                     <!-- Loaded invoices -->
-                    <field name="loaded_invoice_ids" attrs="{'invisible': [('loaded_invoice_ids', '=', [])]}" nolabel="1">
+                    <field name="loaded_invoice_ids" modifiers="{'invisible': [('loaded_invoice_ids', '=', [])]}" nolabel="1">
                         <tree string="Invoices to Process" create="false" delete="false">
                             <field name="name"/>
                             <field name="partner_id"/>
@@ -218,7 +218,7 @@
                     <button name="action_load_orders" string="Load Orders" type="object" class="btn-info"/>
                     
                     <!-- Order summary -->
-                    <group string="Order Summary" attrs="{'invisible': [('orders_loaded', '=', False)]}">
+                    <group string="Order Summary" modifiers="{'invisible': [('orders_loaded', '=', False)]}">
                         <group>
                             <field name="orders_loaded" readonly="1" invisible="1"/>
                             <field name="total_orders" readonly="1"/>
@@ -233,7 +233,7 @@
                     </group>
                     
                     <!-- Loaded orders -->
-                    <field name="loaded_order_ids" attrs="{'invisible': [('loaded_order_ids', '=', [])]}" nolabel="1">
+                    <field name="loaded_order_ids" modifiers="{'invisible': [('loaded_order_ids', '=', [])]}" nolabel="1">
                         <tree string="Restaurant Orders" create="false" delete="false">
                             <field name="name"/>
                             <field name="table_number"/>
@@ -247,7 +247,7 @@
                     </field>
                     
                     <div class="alert alert-warning" role="alert" 
-                         attrs="{'invisible': [('orders_without_customer', '=', 0)]}">
+                         modifiers="{'invisible': [('orders_without_customer', '=', 0)]}">
                         <strong>⚠️ Missing Customer Information:</strong>
                         <p><field name="orders_without_customer" readonly="1"/> orders don't have customer information.</p>
                         <p>You can:</p>
