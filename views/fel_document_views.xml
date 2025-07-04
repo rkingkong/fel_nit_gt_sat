@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
+
     <!-- FEL Document Form View -->
     <record id="view_fel_document_form" model="ir.ui.view">
         <field name="name">fel.document.form</field>
@@ -36,7 +36,7 @@
                             </div>
                         </button>
                     </div>
-                    
+
                     <div class="oe_title">
                         <h1>
                             <field name="name" readonly="1"/>
@@ -45,18 +45,16 @@
                             <field name="document_type_id" readonly="1"/>
                         </h3>
                     </div>
-                    
-                    <!-- Alert for errors -->
+
                     <div class="alert alert-danger" role="alert" modifiers="{'invisible': [('state', '!=', 'error')]}">
                         <strong>Error:</strong> <field name="error_message" readonly="1"/>
                     </div>
-                    
-                    <!-- Success info for certified documents -->
+
                     <div class="alert alert-success" role="alert" modifiers="{'invisible': [('state', '!=', 'certified')]}">
                         <strong>Certified:</strong> Document successfully certified by SAT
                         <span modifiers="{'invisible': [('uuid', '=', False)]}"> - UUID: <field name="uuid" readonly="1"/></span>
                     </div>
-                    
+
                     <group>
                         <group string="Document Information">
                             <field name="partner_id" readonly="1"/>
@@ -64,7 +62,7 @@
                             <field name="invoice_id" readonly="1" modifiers="{'invisible': [('invoice_id', '=', False)]}"/>
                             <field name="pos_order_id" readonly="1" modifiers="{'invisible': [('pos_order_id', '=', False)]}"/>
                         </group>
-                        
+
                         <group string="SAT Information">
                             <field name="uuid" readonly="1"/>
                             <field name="series" readonly="1"/>
@@ -72,7 +70,7 @@
                             <field name="certification_date" readonly="1"/>
                         </group>
                     </group>
-                    
+
                     <notebook>
                         <page string="XML Content" name="xml_content">
                             <group>
@@ -83,35 +81,35 @@
                             </group>
                             <field name="xml_content" widget="ace" options="{'mode': 'xml'}" readonly="1"/>
                         </page>
-                        
+
                         <page string="Files" name="files">
                             <group>
                                 <group string="XML File">
                                     <field name="xml_file" filename="xml_filename" readonly="1"/>
                                     <field name="xml_filename" readonly="1"/>
                                 </group>
-                                
+
                                 <group string="PDF File">
                                     <field name="pdf_file" filename="pdf_filename" readonly="1"/>
                                     <field name="pdf_filename" readonly="1"/>
                                 </group>
                             </group>
                         </page>
-                        
+
                         <page string="Provider Response" name="provider_response" 
                               modifiers="{'invisible': [('provider_response', '=', False)]}">
                             <group>
                                 <field name="provider_response" widget="ace" options="{'mode': 'json'}" readonly="1"/>
                             </group>
                         </page>
-                        
+
                         <page string="SAT Response" name="sat_response" 
                               modifiers="{'invisible': [('sat_response', '=', False)]}">
                             <group>
                                 <field name="sat_response" widget="ace" options="{'mode': 'json'}" readonly="1"/>
                             </group>
                         </page>
-                        
+
                         <page string="Amounts" name="amounts">
                             <group>
                                 <group string="Document Totals">
@@ -131,185 +129,5 @@
             </form>
         </field>
     </record>
-    
-    <!-- FEL Document Tree View -->
-    <record id="view_fel_document_tree" model="ir.ui.view">
-        <field name="name">fel.document.tree</field>
-        <field name="model">fel.document</field>
-        <field name="arch" type="xml">
-            <tree string="FEL Documents" decoration-success="state=='certified'" 
-                  decoration-danger="state=='error'" decoration-warning="state=='cancelled'"
-                  decoration-info="state in ('generating','sending')">
-                <field name="name"/>
-                <field name="document_type_id"/>
-                <field name="partner_id"/>
-                <field name="invoice_id"/>
-                <field name="pos_order_id"/>
-                <field name="uuid"/>
-                <field name="state" widget="badge" 
-                       decoration-success="state=='certified'"
-                       decoration-danger="state=='error'"
-                       decoration-warning="state=='cancelled'"
-                       decoration-info="state in ('generating','sending')"/>
-                <field name="generation_date"/>
-                <field name="certification_date"/>
-                <field name="company_id" groups="base.group_multi_company"/>
-                <button name="action_generate_xml" string="Generate" type="object" icon="fa-cog"
-                        modifiers="{'invisible': [('state', '!=', 'draft')]}"/>
-                <button name="action_send_to_provider" string="Send" type="object" icon="fa-send"
-                        modifiers="{'invisible': [('state', '!=', 'generated')]}"/>
-                <button name="retry_processing" string="Retry" type="object" icon="fa-refresh"
-                        modifiers="{'invisible': [('state', '!=', 'error')]}"/>
-                <button name="action_download_xml" string="XML" type="object" icon="fa-download"
-                        modifiers="{'invisible': [('xml_file', '=', False)]}"/>
-            </tree>
-        </field>
-    </record>
-    
-    <!-- FEL Document Search View -->
-    <record id="view_fel_document_search" model="ir.ui.view">
-        <field name="name">fel.document.search</field>
-        <field name="model">fel.document</field>
-        <field name="arch" type="xml">
-            <search string="FEL Documents">
-                <field name="name"/>
-                <field name="document_type_id"/>
-                <field name="partner_id"/>
-                <field name="uuid"/>
-                <field name="invoice_id"/>
-                <field name="pos_order_id"/>
-                <separator/>
-                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
-                <filter string="Generated" name="generated" domain="[('state', '=', 'generated')]"/>
-                <filter string="Certified" name="certified" domain="[('state', '=', 'certified')]"/>
-                <filter string="Error" name="error" domain="[('state', '=', 'error')]"/>
-                <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
-                <separator/>
-                <filter string="Invoices" name="invoices" domain="[('invoice_id', '!=', False)]"/>
-                <filter string="POS Orders" name="pos_orders" domain="[('pos_order_id', '!=', False)]"/>
-                <separator/>
-                <filter string="Today" name="today" domain="[('create_date', '>=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
-                <filter string="This Week" name="this_week" domain="[('create_date', '>=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
-                <filter string="This Month" name="this_month" domain="[('create_date', '>=', datetime.datetime.combine(context_today().replace(day=1), datetime.time(0,0,0)))]"/>
-                <group expand="0" string="Group By">
-                    <filter string="Document Type" name="group_doc_type" context="{'group_by': 'document_type_id'}"/>
-                    <filter string="Customer" name="group_partner" context="{'group_by': 'partner_id'}"/>
-                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
-                    <filter string="Company" name="group_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
-                    <filter string="Generation Date" name="group_generation_date" context="{'group_by': 'generation_date:day'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
-    
-    <!-- FEL Document Kanban View -->
-    <record id="view_fel_document_kanban" model="ir.ui.view">
-        <field name="name">fel.document.kanban</field>
-        <field name="model">fel.document</field>
-        <field name="arch" type="xml">
-            <kanban string="FEL Documents" class="o_kanban_dashboard">
-                <field name="name"/>
-                <field name="document_type_id"/>
-                <field name="partner_id"/>
-                <field name="state"/>
-                <field name="uuid"/>
-                <field name="generation_date"/>
-                <field name="certification_date"/>
-                <templates>
-                    <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_card #{record.state.raw_value == 'certified' ? 'oe_kanban_color_2' : record.state.raw_value == 'error' ? 'oe_kanban_color_1' : 'oe_kanban_color_0'}">
-                            <div class="oe_kanban_content">
-                                <div class="o_kanban_record_top">
-                                    <div class="o_kanban_record_headings">
-                                        <strong class="o_kanban_record_title">
-                                            <field name="name"/>
-                                        </strong>
-                                        <div class="o_kanban_record_subtitle">
-                                            <field name="partner_id"/>
-                                        </div>
-                                    </div>
-                                    <div class="o_kanban_record_top_right">
-                                        <span t-attf-class="badge #{record.state.raw_value == 'certified' ? 'badge-success' : record.state.raw_value == 'error' ? 'badge-danger' : 'badge-info'}">
-                                            <field name="state"/>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="o_kanban_record_body">
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <span><field name="document_type_id"/></span>
-                                        </div>
-                                    </div>
-                                    <div class="row" t-if="record.uuid.raw_value">
-                                        <div class="col-12">
-                                            <small>UUID: <field name="uuid"/></small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_left">
-                                        <span t-if="record.certification_date.raw_value">
-                                            Certified: <field name="certification_date"/>
-                                        </span>
-                                        <span t-elif="record.generation_date.raw_value">
-                                            Generated: <field name="generation_date"/>
-                                        </span>
-                                    </div>
-                                    <div class="oe_kanban_bottom_right">
-                                        <a name="action_download_xml" type="object" t-if="record.state.raw_value in ['generated', 'certified']">
-                                            <i class="fa fa-download" title="Download XML"/>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
-    
-    <!-- FEL Document Action -->
-    <record id="action_fel_document" model="ir.actions.act_window">
-        <field name="name">FEL Documents</field>
-        <field name="res_model">fel.document</field>
-        <field name="view_mode">kanban,tree,form</field>
-        <field name="search_view_id" ref="view_fel_document_search"/>
-        <field name="context">{'search_default_today': 1}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                No FEL documents found
-            </p>
-            <p>
-                FEL documents are automatically created when you send invoices or POS orders to the FEL provider.
-                You can also manually create and manage FEL documents from here.
-            </p>
-        </field>
-    </record>
-    
-    <!-- FEL Documents by State Actions -->
-    <record id="action_fel_document_draft" model="ir.actions.act_window">
-        <field name="name">Draft FEL Documents</field>
-        <field name="res_model">fel.document</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('state', '=', 'draft')]</field>
-        <field name="context">{'search_default_draft': 1}</field>
-    </record>
-    
-    <record id="action_fel_document_error" model="ir.actions.act_window">
-        <field name="name">FEL Documents with Errors</field>
-        <field name="res_model">fel.document</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('state', '=', 'error')]</field>
-        <field name="context">{'search_default_error': 1}</field>
-    </record>
-    
-    <record id="action_fel_document_certified" model="ir.actions.act_window">
-        <field name="name">Certified FEL Documents</field>
-        <field name="res_model">fel.document</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('state', '=', 'certified')]</field>
-        <field name="context">{'search_default_certified': 1}</field>
-    </record>
-    
+
 </odoo>
