@@ -18,6 +18,10 @@ class FelTaxPhrase(models.Model):
     help='Indicates if this document type is active'
     )
     
+    document_phrase_ids = fields.One2many(
+        'fel.document.phrase', 'tax_phrase_id', string='Document Phrases'
+    )
+    
     name = fields.Char(
         string='Name',
         required=True,
