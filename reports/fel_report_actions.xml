@@ -131,23 +131,23 @@
             <xpath expr="//search" position="inside">
                 <separator/>
                 <filter string="Today" name="today"
-                        domain="[('create_date', '>=', datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')),
-                                 ('create_date', '<=', datetime.datetime.now().strftime('%Y-%m-%d 23:59:59'))]"/>
+                        domain="[('create_date', '&gt;=', datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')),
+                                 ('create_date', '&lt;=', datetime.datetime.now().strftime('%Y-%m-%d 23:59:59'))]"/>
                 <filter string="Yesterday" name="yesterday"
-                        domain="[('create_date', '>=', (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')),
-                                 ('create_date', '<=', (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d 23:59:59'))]"/>
+                        domain="[('create_date', '&gt;=', (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')),
+                                 ('create_date', '&lt;=', (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d 23:59:59'))]"/>
                 <filter string="This Week" name="this_week"
-                        domain="[('create_date', '>=', (datetime.datetime.now() - datetime.timedelta(days=datetime.datetime.now().weekday())).strftime('%Y-%m-%d 00:00:00'))]"/>
+                        domain="[('create_date', '&gt;=', (datetime.datetime.now() - datetime.timedelta(days=datetime.datetime.now().weekday())).strftime('%Y-%m-%d 00:00:00'))]"/>
                 <filter string="Last Week" name="last_week"
-                        domain="[('create_date', '>=', (datetime.datetime.now() - datetime.timedelta(days=datetime.datetime.now().weekday() + 7)).strftime('%Y-%m-%d 00:00:00')),
-                                 ('create_date', '<', (datetime.datetime.now() - datetime.timedelta(days=datetime.datetime.now().weekday())).strftime('%Y-%m-%d 00:00:00'))]"/>
+                        domain="[('create_date', '&gt;=', (datetime.datetime.now() - datetime.timedelta(days=datetime.datetime.now().weekday() + 7)).strftime('%Y-%m-%d 00:00:00')),
+                                 ('create_date', '&lt;', (datetime.datetime.now() - datetime.timedelta(days=datetime.datetime.now().weekday())).strftime('%Y-%m-%d 00:00:00'))]"/>
                 <filter string="This Month" name="this_month"
-                        domain="[('create_date', '>=', datetime.datetime.now().strftime('%Y-%m-01'))]"/>
+                        domain="[('create_date', '&gt;=', datetime.datetime.now().strftime('%Y-%m-01'))]"/>
                 <filter string="Last Month" name="last_month"
-                        domain="[('create_date', '>=', (datetime.datetime.now().replace(day=1) - datetime.timedelta(days=1)).strftime('%Y-%m-01')),
-                                 ('create_date', '<', datetime.datetime.now().strftime('%Y-%m-01'))]"/>
+                        domain="[('create_date', '&gt;=', (datetime.datetime.now().replace(day=1) - datetime.timedelta(days=1)).strftime('%Y-%m-01')),
+                                 ('create_date', '&lt;', datetime.datetime.now().strftime('%Y-%m-01'))]"/>
                 <filter string="This Year" name="this_year"
-                        domain="[('create_date', '>=', datetime.datetime.now().strftime('%Y-01-01'))]"/>
+                        domain="[('create_date', '&gt;=', datetime.datetime.now().strftime('%Y-01-01'))]"/>
                 <separator/>
                 <filter string="Group by Month" name="group_by_month"
                         context="{'group_by': 'create_date:month'}"/>

@@ -15,7 +15,7 @@
                         type="object" 
                         class="oe_stat_button"
                         icon="fa-check-circle"
-                        attrs="{'invisible': [('can_verify_nit', '=', False)]}"
+                        invisible="can_verify_nit != True"
                         groups="fel_nit_gt_sat.group_fel_nit_verifier">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Verify</span>
@@ -27,18 +27,18 @@
             <!-- Add NIT field after vat -->
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="nit_gt" placeholder="e.g. 12345678-9 or CF" 
-                       attrs="{'readonly': [('is_fel_verified', '=', True)]}"/>
+                       readonly="is_fel_verified == True"/>
                 <field name="display_nit" readonly="1" 
-                       attrs="{'invisible': [('display_nit', '=', False)]}"/>
+                       invisible="not display_nit"/>
                 <field name="dpi_gt" placeholder="e.g. 1234567890123"
-                       attrs="{'invisible': [('is_company', '=', True)]}"/>
+                       invisible="is_company == True"/>
                 <field name="tax_regime_gt"/>
             </xpath>
             
             <!-- Add FEL verification status after category_id -->
             <xpath expr="//field[@name='category_id']" position="after">
                 <group string="FEL Information" 
-                       attrs="{'invisible': [('nit_gt', '=', False)]}"
+                       invisible="not nit_gt"
                        groups="fel_nit_gt_sat.group_fel_user">
                     
                     <!-- Verification status with color indicators -->
@@ -50,17 +50,17 @@
                     
                     <field name="is_fel_verified" readonly="1"/>
                     <field name="fel_verification_date" readonly="1"
-                           attrs="{'invisible': [('fel_verification_date', '=', False)]}"/>
+                           invisible="not fel_verification_date"/>
                     
                     <!-- SAT registered information -->
                     <field name="sat_name" readonly="1"
-                           attrs="{'invisible': [('sat_name', '=', False)]}"/>
+                           invisible="not sat_name"/>
                     <field name="sat_status" readonly="1"
-                           attrs="{'invisible': [('sat_status', '=', False)]}"/>
+                           invisible="not sat_status"/>
                     
                     <!-- Verification result message -->
                     <field name="fel_verification_result" readonly="1" widget="text"
-                           attrs="{'invisible': [('fel_verification_result', '=', False)]}"/>
+                           invisible="not fel_verification_result"/>
                 </group>
             </xpath>
             
@@ -68,7 +68,7 @@
             <xpath expr="//page[@name='sales_purchases']//group[@name='sale']" position="after">
                 <group string="FEL Preferences" name="fel_preferences"
                        groups="fel_nit_gt_sat.group_fel_user"
-                       attrs="{'invisible': [('customer_rank', '=', 0)]}">
+                       invisible="customer_rank == 0">
                     <field name="default_fel_document_type_id" 
                            domain="[('is_invoice', '=', True)]"
                            options="{'no_create_edit': True}"/>
