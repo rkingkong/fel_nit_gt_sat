@@ -78,7 +78,7 @@
                             </group>
                         </page>
                         
-                        <page string="Usage & Limits" name="usage">
+                        <page string="Usage &amp; Limits" name="usage">
                             <group>
                                 <group string="DTE Limits">
                                     <field name="annual_dte_limit" placeholder="1200"/>
