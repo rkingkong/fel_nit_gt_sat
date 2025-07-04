@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
     <!-- Bulk FEL Document Send Wizard -->
@@ -53,7 +53,7 @@
                         </page>
                         
                         <page string="Validation Results" name="validation" 
-                              invisible="validation_complete == False">
+                              modifiers="{'invisible': [('validation_complete', '=', False)]}">
                             <group>
                                 <group string="Validation Summary">
                                     <field name="validation_complete" readonly="1" invisible="1"/>
@@ -66,7 +66,7 @@
                         </page>
                         
                         <page string="Processing Status" name="status" 
-                              invisible="processing_started == False">
+                              modifiers="{'invisible': [('processing_started', '=', False)]}">
                             <group>
                                 <group string="Progress">
                                     <field name="processing_started" readonly="1" invisible="1"/>
@@ -101,7 +101,7 @@
                     
                     <!-- Restaurant-specific info -->
                     <div class="alert alert-success" role="alert" 
-                         invisible="has_pos_orders == False">
+                         modifiers="{'invisible': [('has_pos_orders', '=', False)]}">
                         <strong>🍽️ Restaurant Orders Detected:</strong>
                         <p>This batch includes POS orders from your restaurant operations.</p>
                         <p>Make sure all customer information is complete before sending to FEL.</p>
@@ -218,7 +218,7 @@
                     <button name="action_load_orders" string="Load Orders" type="object" class="btn-info"/>
                     
                     <!-- Order summary -->
-                    <group string="Order Summary" invisible="orders_loaded == False">
+                    <group string="Order Summary" modifiers="{'invisible': [('orders_loaded', '=', False)]}">
                         <group>
                             <field name="orders_loaded" readonly="1" invisible="1"/>
                             <field name="total_orders" readonly="1"/>

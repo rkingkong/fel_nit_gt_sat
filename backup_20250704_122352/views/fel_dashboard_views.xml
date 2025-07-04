@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- FEL Dashboard Client Action (for custom JS dashboard) -->
+    <record id="action_fel_dashboard_client" model="ir.actions.client">
+        <field name="name">FEL Dashboard</field>
+        <field name="tag">fel_dashboard</field>
+        <field name="target">main</field>
+    </record>
+    
+    <!-- FEL Dashboard Window Action (using existing views) -->
+    <record id="action_fel_dashboard" model="ir.actions.act_window">
+        <field name="name">FEL Guatemala Dashboard</field>
+        <field name="res_model">fel.document</field>
+        <field name="view_mode">kanban,tree,form,pivot,graph</field>
+        <field name="context">{
+            'search_default_group_fel_status': 1,
+            'search_default_last_30_days': 1
+        }</field>
+        <field name="help" type="html">
+            <style>
+                .o_fel_dashboard_tiles {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 16px;
+                    margin-bottom: 24px;
+                }
+                .o_fel_tile {
+                    flex: 1;
+                    min-width: 200px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    padding: 16px;
+                    text-align: center;
+                    border: 1px solid #dee2e6;
+                }
+                .o_fel_tile h3 {
+                    margin: 0 0 8px 0;
+                    color: #495057;
+                    font-size: 14px;
+                }
+                .o_fel_tile .o_fel_number {
+                    font-size: 32px;
+                    font-weight: bold;
+                    color: #007bff;
+                }
+                .o_fel_quick_links {
+                    margin-top: 24px;
+                }
+                .o_fel_quick_links h4 {
+                    margin-bottom: 12px;
+                }
+                .o_fel_quick_links a {
+                    display: inline-block;
+                    margin: 4px 8px;
+                    padding: 8px 16px;
+                    background: #007bff;
+                    color: white;
+                    border-radius: 4px;
+                    text-decoration: none;
+                }
+                .o_fel_quick_links a:hover {
+                    background: #0056b3;
+                }
+            </style>
+            
+            <div class="o_fel_dashboard_container">
+                <h2>Welcome to FEL Guatemala</h2>
+                <p>Electronic Invoice Integration for Guatemala SAT</p>
+                
+                <div class="o_fel_dashboard_tiles">
+                    <div class="o_fel_tile">
+                        <h3>Documents Today</h3>
+                        <div class="o_fel_number">0</div>
+                    </div>
+                    <div class="o_fel_tile">
+                        <h3>Pending Certification</h3>
+                        <div class="o_fel_number">0</div>
+                    </div>
+                    <div class="o_fel_tile">
+                        <h3>This Month</h3>
+                        <div class="o_fel_number">0</div>
+                    </div>
+                    <div class="o_fel_tile">
+                        <h3>Error Rate</h3>
+                        <div class="o_fel_number">0%</div>
+                    </div>
+                </div>
+                
+                <div class="o_fel_quick_links">
+                    <h4>Quick Actions</h4>
+                    <a href="#" class="o_fel_action" data-action="fel_nit_gt_sat.action_fel_nit_verification_wizard">Verify NIT</a>
+                    <a href="#" class="o_fel_action" data-action="fel_nit_gt_sat.action_fel_pending_invoices">Process Pending Invoices</a>
+                    <a href="#" class="o_fel_action" data-action="fel_nit_gt_sat.action_fel_config">FEL Configuration</a>
+                </div>
+                
+                <p class="text-muted mt-4">
+                    <i class="fa fa-info-circle"></i> Start by configuring your FEL provider in the Configuration menu.
+                </p>
+            </div>
+            
+            <p class="o_view_nocontent_smiling_face" style="display: none;">
+                Welcome to FEL Guatemala
+            </p>
+            <p style="display: none;">
+                No FEL documents yet. Start by:
+            </p>
+            <ul style="display: none;">
+                <li>Configuring your FEL provider (INFILE)</li>
+                <li>Creating your first invoice</li>
+                <li>Verifying customer NITs</li>
+            </ul>
+        </field>
+    </record>
+    
+</odoo>

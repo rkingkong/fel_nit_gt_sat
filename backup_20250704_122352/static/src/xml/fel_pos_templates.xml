@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    
+    <!-- FEL Customer Info Popup -->
+    <t t-name="FelCustomerPopupWidget">
+        <div class="modal-dialog">
+            <div class="popup popup-text">
+                <p class="title">
+                    <t t-esc="widget.options.title || 'Customer Information for FEL'"/>
+                </p>
+                <div class="body">
+                    <div class="fel-customer-form">
+                        <div class="form-group">
+                            <label>NIT:</label>
+                            <input type="text" class="form-control customer-nit" 
+                                   placeholder="12345678-9 or CF"
+                                   autocomplete="off"/>
+                            <small class="form-text text-muted">
+                                Enter customer NIT or 'CF' for Consumidor Final
+                            </small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Customer Name:</label>
+                            <input type="text" class="form-control customer-name" 
+                                   placeholder="Customer name"
+                                   autocomplete="off"/>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>🇬🇹 Guatemala FEL Requirements:</strong>
+                            <ul class="mb-0">
+                                <li>All sales require customer NIT for electronic invoicing</li>
+                                <li>Use 'CF' for walk-in customers (Consumidor Final)</li>
+                                <li>NITs will be verified with SAT automatically</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="button cancel">
+                        Cancel
+                    </div>
+                    <div class="button confirm">
+                        Confirm
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+    
+    <!-- Waiter Selection Popup for Restaurant -->
+    <t t-name="WaiterSelectionPopupWidget">
+        <div class="modal-dialog">
+            <div class="popup popup-selection">
+                <p class="title">
+                    <t t-esc="widget.options.title || 'Select Waiter'"/>
+                </p>
+                <div class="body">
+                    <div class="waiter-list selection-list">
+                        <!-- Waiters will be rendered dynamically -->
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="button cancel">
+                        Cancel
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+    
+    <!-- FEL Action Button -->
+    <t t-name="FelActionButton">
+        <div class='control-button'>
+            <i class='fa fa-file-text-o'/> FEL Info
+        </div>
+    </t>
+    
+    <!-- Order Receipt Extension with FEL Info -->
+    <t t-extend="OrderReceipt">
+        <t t-jquery=".pos-receipt-contact" t-operation="after">
+            <t t-if="order.customer_nit">
+                <div class="fel-info">
+                    <div>NIT: <t t-esc="order.customer_nit"/></div>
+                    <div>Nombre: <t t-esc="order.customer_name"/></div>
+                </div>
+            </t>
+        </t>
+        
+        <t t-jquery=".receipt-orderlines" t-operation="before">
+            <t t-if="order.table_number">
+                <div class="receipt-table">
+                    Mesa: <t t-esc="order.table_number"/>
+                </div>
+            </t>
+            <t t-if="order.waiter_name">
+                <div class="receipt-waiter">
+                    Mesero: <t t-esc="order.waiter_name"/>
+                </div>
+            </t>
+        </t>
+    </t>
+    
+    <!-- Order Widget Extension to show FEL Status -->
+    <t t-extend="OrderWidget">
+        <t t-jquery=".order-info" t-operation="append">
+            <t t-if="order">
+                <t t-if="order.customer_nit">
+                    <div class="fel-status">
+                        <span class="label">FEL:</span>
+                        <span class="value">
+                            <t t-esc="order.customer_nit"/> - 
+                            <t t-esc="order.customer_name"/>
+                        </span>
+                    </div>
+                </t>
+                <t t-if="order.table_number">
+                    <div class="table-info">
+                        <span class="label">Mesa:</span>
+                        <span class="value"><t t-esc="order.table_number"/></span>
+                    </div>
+                </t>
+                <t t-if="order.waiter_name">
+                    <div class="waiter-info">
+                        <span class="label">Mesero:</span>
+                        <span class="value"><t t-esc="order.waiter_name"/></span>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </t>
+    
+</templates>

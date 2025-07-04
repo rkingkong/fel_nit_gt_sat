@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
     <!-- NIT Verification Wizard Form View -->
@@ -11,22 +11,22 @@
                     <!-- Verify button -->
                     <button name="action_verify_nit" string="Verify with SAT" type="object" 
                             class="btn-primary"
-                            invisible="verification_state != 'draft' or can_verify == False"/>
+                            modifiers="{'invisible': ['|', ('verification_state', '!=', 'draft'), ('can_verify', '=', False)]}"/>
                     
                     <!-- Update partner button -->
                     <button name="action_update_partner" string="Update Partner" type="object" 
                             class="btn-success"
-                            invisible="is_verified == False or update_partner == False"/>
+                            modifiers="{'invisible': ['|', ('is_verified', '=', False), ('update_partner', '=', False)]}"/>
                     
                     <!-- View partner button -->
                     <button name="action_view_partner" string="View Partner" type="object" 
                             class="btn-secondary"
-                            invisible="partner_id == False"/>
+                            modifiers="{'invisible': [('partner_id', '=', False)]}"/>
                     
                     <!-- Verify another button -->
                     <button name="action_verify_another" string="Verify Another" type="object" 
                             class="btn-primary"
-                            invisible="verification_state != 'verified'"/>
+                            modifiers="{'invisible': [('verification_state', '!=', 'verified')]}"/>
                     
                     <!-- Status bar -->
                     <field name="verification_state" widget="statusbar" 
@@ -36,16 +36,16 @@
                 <sheet>
                     <div class="oe_title">
                         <h1>
-                            <span invisible="verification_state != 'draft'">
+                            <span modifiers="{'invisible': [('verification_state', '!=', 'draft')]}">
                                 🇬🇹 Verify NIT with SAT
                             </span>
-                            <span invisible="verification_state != 'verifying'">
+                            <span modifiers="{'invisible': [('verification_state', '!=', 'verifying')]}">
                                 🔄 Verifying NIT...
                             </span>
-                            <span invisible="verification_state != 'verified'">
+                            <span modifiers="{'invisible': [('verification_state', '!=', 'verified')]}">
                                 ✅ NIT Verification Results
                             </span>
-                            <span invisible="verification_state != 'error'">
+                            <span modifiers="{'invisible': [('verification_state', '!=', 'error')]}">
                                 ❌ Verification Error
                             </span>
                         </h1>
@@ -53,38 +53,38 @@
                     
                     <!-- Success alert -->
                     <div class="alert alert-success" role="alert" 
-                         invisible="is_verified == False">
+                         modifiers="{'invisible': [('is_verified', '=', False)]}">
                         <strong>✓ NIT Verified Successfully!</strong>
                         The NIT has been verified with Guatemala's SAT (Superintendencia de Administración Tributaria).
                     </div>
                     
                     <!-- Error alert -->
                     <div class="alert alert-danger" role="alert" 
-                         invisible="verification_state != 'error' or verification_message == False">
+                         modifiers="{'invisible': ['|', ('verification_state', '!=', 'error'), ('verification_message', '=', False)]}">
                         <strong>✗ Verification Failed</strong><br/>
                         <field name="verification_message" readonly="1"/>
                     </div>
                     
                     <!-- Warning for CF -->
                     <div class="alert alert-warning" role="alert" 
-                         invisible="clean_nit != 'CF'">
+                         modifiers="{'invisible': [('clean_nit', '!=', 'CF')]}">
                         <strong>Consumidor Final (CF)</strong><br/>
                         CF cannot be verified as it represents anonymous consumers for retail transactions.
                     </div>
                     
                     <!-- Input Section -->
                     <group string="NIT Information" 
-                           invisible="verification_state in ['verifying']">
+                           modifiers="{'invisible': [('verification_state', 'in', ['verifying'])]}">
                         <group>
                             <field name="nit" placeholder="e.g. 12345678-9 or CF for Consumidor Final"
-                                   readonly="verification_state in ['verifying', 'verified']"/>
+                                   modifiers="{'readonly': [('verification_state', 'in', ['verifying', 'verified'])]}"/>
                             <field name="clean_nit" readonly="1" 
-                                   invisible="clean_nit == False"
+                                   modifiers="{'invisible': [('clean_nit', '=', False)]}"
                                    string="Formatted NIT"/>
                             <field name="partner_id" 
                                    domain="[('customer_rank', '>', 0)]"
                                    options="{'no_create_edit': True}"
-                                   readonly="verification_state in ['verifying']"/>
+                                   modifiers="{'readonly': [('verification_state', 'in', ['verifying'])]}"/>
                         </group>
                         
                         <!-- Hidden computed fields -->
@@ -93,7 +93,7 @@
                     </group>
                     
                     <!-- Loading indicator -->
-                    <div class="text-center" invisible="verification_state != 'verifying'">
+                    <div class="text-center" modifiers="{'invisible': [('verification_state', '!=', 'verifying')]}">
                         <i class="fa fa-spinner fa-spin fa-3x text-primary"/>
                         <h3 class="text-muted mt-3">Verifying NIT with SAT...</h3>
                         <p class="text-muted">Please wait while we verify the NIT with Guatemala's tax authority (SAT).</p>
@@ -101,9 +101,9 @@
                     </div>
                     
                     <!-- Verification Results -->
-                    <notebook invisible="verification_state != 'verified'">
+                    <notebook modifiers="{'invisible': [('verification_state', '!=', 'verified')]}">
                         <page string="SAT Information" name="sat_info" 
-                              invisible="is_verified == False">
+                              modifiers="{'invisible': [('is_verified', '=', False)]}">
                             <group>
                                 <group string="Registered Information">
                                     <field name="sat_name" readonly="1" string="Official Name"/>
@@ -118,13 +118,13 @@
                             </group>
                             
                             <group string="Registered Address Information" 
-                                   invisible="sat_address == False">
+                                   modifiers="{'invisible': [('sat_address', '=', False)]}">
                                 <field name="sat_address" readonly="1" widget="text" nolabel="1"/>
                             </group>
                             
                             <!-- Tax Regime Explanation -->
                             <div class="alert alert-info" role="alert" 
-                                 invisible="tax_regime == False">
+                                 modifiers="{'invisible': [('tax_regime', '=', False)]}">
                                 <strong>Tax Regime Information:</strong>
                                 <ul class="mb-0">
                                     <li t-if="widget.tax_regime === 'general'"><strong>Régimen General:</strong> Standard taxpayers (most companies)</li>
@@ -138,13 +138,13 @@
                             <group>
                                 <group string="Partner Options">
                                     <field name="update_partner" 
-                                           readonly="partner_id == False"/>
+                                           modifiers="{'readonly': [('partner_id', '=', False)]}"/>
                                     <field name="create_partner" 
-                                           invisible="partner_id != False"/>
+                                           modifiers="{'invisible': [('partner_id', '!=', False)]}"/>
                                 </group>
                                 
                                 <group string="Partner Information" 
-                                       invisible="show_partner_creation == False">
+                                       modifiers="{'invisible': [('show_partner_creation', '=', False)]}">
                                     <field name="partner_name" 
                                            modifiers="{'required': [('create_partner', '=', True), ('partner_id', '=', False)]}"
                                            placeholder="Enter customer name"/>
@@ -152,7 +152,7 @@
                             </group>
                             
                             <div class="alert alert-info" role="alert" 
-                                 invisible="update_partner == False">
+                                 modifiers="{'invisible': [('update_partner', '=', False)]}">
                                 <strong>Partner Update Preview:</strong>
                                 <ul class="mb-0">
                                     <li>NIT will be set to: <strong><field name="clean_nit" readonly="1"/></strong></li>
@@ -167,7 +167,7 @@
                     
                 </sheet>
                 
-                <footer invisible="verification_state in ['draft', 'verifying']">
+                <footer modifiers="{'invisible': [('verification_state', 'in', ['draft', 'verifying'])]}">
                     <button string="Close" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
@@ -267,7 +267,7 @@
                             class="btn-primary"/>
                     <button name="action_verify_nit" string="Verify NIT" type="object" 
                             class="btn-secondary"
-                            invisible="customer_nit == False or customer_nit == 'CF'"/>
+                            modifiers="{'invisible': ['|', ('customer_nit', '=', False), ('customer_nit', '=', 'CF')]}"/>
                     <button name="action_send_to_fel" string="Set Info &amp; Send to FEL" type="object" 
                             class="btn-success"/>
                 </header>
@@ -289,7 +289,7 @@
                             <field name="customer_nit" placeholder="Enter NIT or CF for Consumidor Final"/>
                             <field name="customer_name" placeholder="Customer full name"/>
                             <field name="clean_nit" readonly="1" 
-                                   invisible="clean_nit == False"
+                                   modifiers="{'invisible': [('clean_nit', '=', False)]}"
                                    string="Formatted NIT"/>
                         </group>
                     </group>
@@ -298,7 +298,7 @@
                         <group string="Options">
                             <field name="create_partner"/>
                             <field name="verify_nit" 
-                                   invisible="show_verification == False"/>
+                                   modifiers="{'invisible': [('show_verification', '=', False)]}"/>
                         </group>
                         
                         <group string="Status">
@@ -309,7 +309,7 @@
                     
                     <!-- Existing Customer Selection -->
                     <group string="Or Select Existing Customer" 
-                           invisible="partner_id != False">
+                           modifiers="{'invisible': [('partner_id', '!=', False)]}">
                         <field name="partner_id" 
                                domain="[('customer_rank', '>', 0)]"
                                options="{'no_create_edit': True}"

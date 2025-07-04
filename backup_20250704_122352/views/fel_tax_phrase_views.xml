@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tax Phrase Form View -->
+    <record id="view_fel_tax_phrase_form" model="ir.ui.view">
+        <field name="name">fel.tax.phrase.form</field>
+        <field name="model">fel.tax.phrase</field>
+        <field name="arch" type="xml">
+            <form string="Tax Phrase">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="e.g., Sujeto a pagos trimestrales ISR"/>
+                            <field name="phrase_type"/>
+                            <field name="scenario_code"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="description" placeholder="When and how to use this phrase..."/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Document Types" name="documents">
+                            <field name="document_phrase_ids">
+                                <tree editable="bottom">
+                                    <field name="document_type_id"/>
+                                    <field name="is_mandatory"/>
+                                    <field name="sequence"/>
+                                    <field name="condition" placeholder="e.g., invoice.amount_total > 2500"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Tax Phrase Tree View -->
+    <record id="view_fel_tax_phrase_tree" model="ir.ui.view">
+        <field name="name">fel.tax.phrase.tree</field>
+        <field name="model">fel.tax.phrase</field>
+        <field name="arch" type="xml">
+            <tree string="Tax Phrases" decoration-muted="not active">
+                <field name="phrase_type"/>
+                <field name="scenario_code"/>
+                <field name="name"/>
+                <field name="active"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Tax Phrase Search View -->
+    <record id="view_fel_tax_phrase_search" model="ir.ui.view">
+        <field name="name">fel.tax.phrase.search</field>
+        <field name="model">fel.tax.phrase</field>
+        <field name="arch" type="xml">
+            <search string="Tax Phrases">
+                <field name="name"/>
+                <field name="phrase_type"/>
+                <field name="scenario_code"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Type 1 - ISR" name="type_1" domain="[('phrase_type', '=', '1')]"/>
+                <filter string="Type 5 - Special" name="type_5" domain="[('phrase_type', '=', '5')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Phrase Type" name="group_type" context="{'group_by': 'phrase_type'}"/>
+                    <filter string="Company" name="group_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action for Tax Phrases -->
+    <record id="action_fel_tax_phrases" model="ir.actions.act_window">
+        <field name="name">Tax Phrases</field>
+        <field name="res_model">fel.tax.phrase</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Tax Phrase
+            </p>
+            <p>
+                Tax phrases (frases tributarias) are required by SAT for different document types and tax scenarios.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Add to FEL Configuration Menu -->
+    <menuitem id="menu_fel_tax_phrases"
+              name="Tax Phrases"
+              parent="fel_nit_gt_sat.menu_fel_config_section"
+              action="action_fel_tax_phrases"
+              sequence="40"
+              groups="fel_nit_gt_sat.group_fel_manager"/>
+</odoo>

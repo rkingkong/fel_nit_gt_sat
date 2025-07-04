@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <!-- FEL Document Form View -->
@@ -9,27 +9,27 @@
             <form string="FEL Document">
                 <header>
                     <button name="action_generate_xml" string="Generate XML" type="object" class="btn-primary"
-                            invisible="state not in ['draft']"/>
+                            modifiers="{'invisible': [('state', 'not in', ['draft'])]}"/>
                     <button name="action_send_to_provider" string="Send to Provider" type="object" class="btn-primary"
-                            invisible="state not in ['generated']"/>
+                            modifiers="{'invisible': [('state', 'not in', ['generated'])]}"/>
                     <button name="retry_processing" string="Retry" type="object" class="btn-warning"
-                            invisible="state != 'error'"/>
+                            modifiers="{'invisible': [('state', '!=', 'error')]}"/>
                     <button name="cancel_document" string="Cancel" type="object" class="btn-danger"
-                            invisible="state != 'certified'"
+                            modifiers="{'invisible': [('state', '!=', 'certified')]}"
                             confirm="Are you sure you want to cancel this certified FEL document?"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,generating,generated,sending,certified"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_download_xml" type="object" class="oe_stat_button" icon="fa-download"
-                                invisible="xml_file == False">
+                                modifiers="{'invisible': [('xml_file', '=', False)]}">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">Download</span>
                                 <span class="o_stat_text">XML</span>
                             </div>
                         </button>
                         <button name="action_download_pdf" type="object" class="oe_stat_button" icon="fa-file-pdf-o"
-                                invisible="pdf_file == False">
+                                modifiers="{'invisible': [('pdf_file', '=', False)]}">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">Download</span>
                                 <span class="o_stat_text">PDF</span>
@@ -46,21 +46,21 @@
                         </h3>
                     </div>
 
-                    <div class="alert alert-danger" role="alert" invisible="state != 'error'">
+                    <div class="alert alert-danger" role="alert" modifiers="{'invisible': [('state', '!=', 'error')]}">
                         <strong>Error:</strong> <field name="error_message" readonly="1"/>
                     </div>
 
-                    <div class="alert alert-success" role="alert" invisible="state != 'certified'">
+                    <div class="alert alert-success" role="alert" modifiers="{'invisible': [('state', '!=', 'certified')]}">
                         <strong>Certified:</strong> Document successfully certified by SAT
-                        <span invisible="uuid == False"> - UUID: <field name="uuid" readonly="1"/></span>
+                        <span modifiers="{'invisible': [('uuid', '=', False)]}"> - UUID: <field name="uuid" readonly="1"/></span>
                     </div>
 
                     <group>
                         <group string="Document Information">
                             <field name="partner_id" readonly="1"/>
                             <field name="company_id" readonly="1"/>
-                            <field name="invoice_id" readonly="1" invisible="invoice_id == False"/>
-                            <field name="pos_order_id" readonly="1" invisible="pos_order_id == False"/>
+                            <field name="invoice_id" readonly="1" modifiers="{'invisible': [('invoice_id', '=', False)]}"/>
+                            <field name="pos_order_id" readonly="1" modifiers="{'invisible': [('pos_order_id', '=', False)]}"/>
                         </group>
 
                         <group string="SAT Information">
@@ -97,14 +97,14 @@
                         </page>
 
                         <page string="Provider Response" name="provider_response" 
-                              invisible="provider_response == False">
+                              modifiers="{'invisible': [('provider_response', '=', False)]}">
                             <group>
                                 <field name="provider_response" widget="ace" options="{'mode': 'json'}" readonly="1"/>
                             </group>
                         </page>
 
                         <page string="SAT Response" name="sat_response" 
-                              invisible="sat_response == False">
+                              modifiers="{'invisible': [('sat_response', '=', False)]}">
                             <group>
                                 <field name="sat_response" widget="ace" options="{'mode': 'json'}" readonly="1"/>
                             </group>
