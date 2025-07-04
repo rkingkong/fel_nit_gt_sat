@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'FEL Guatemala - Factura Electrónica en Línea',
-    'version': '17.0.1.0.0',
+    'version': '17.0.3.0.0',
     'category': 'Accounting/Localizations',
     'summary': 'Guatemala Electronic Invoice (FEL) Integration with SAT',
     'description': """
@@ -45,7 +45,7 @@
         'security/fel_security.xml',
         'security/ir.model.access.csv',
         'data/fel_document_types.xml',
-        'views/fel_dashboard_views.xml'
+        'views/fel_dashboard_views.xml',
         'views/fel_config_views.xml',
         'views/fel_document_views.xml',
         'views/fel_tax_phrase_views.xml',

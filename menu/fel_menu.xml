@@ -13,7 +13,7 @@
               name="Dashboard" 
               parent="menu_fel_main" 
               sequence="10"
-              action="action_fel_dashboard"
+              action="action_fel_invoice_dashboard"
               groups="fel_nit_gt_sat.group_fel_user"/>
     
     <!-- Documents Section -->
