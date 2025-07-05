@@ -99,8 +99,8 @@
                 <field name="fel_uuid" string="FEL UUID" groups="fel_nit_gt_sat.group_fel_user"/>
             </xpath>
 
-            <!-- Add FEL filters -->
-            <xpath expr="//filter[@name='late']" position="after">
+            <!-- Add FEL filters after existing filters -->
+            <xpath expr="//search" position="inside">
                 <separator groups="fel_nit_gt_sat.group_fel_user"/>
                 <filter string="Requires FEL" name="requires_fel" 
                         domain="[('requires_fel', '=', True)]"
@@ -114,10 +114,8 @@
                 <filter string="FEL Errors" name="fel_errors" 
                         domain="[('fel_status', '=', 'error')]"
                         groups="fel_nit_gt_sat.group_fel_user"/>
-            </xpath>
-
-            <!-- Add FEL grouping -->
-            <xpath expr="//filter[@name='group_by_partner_id']" position="after">
+                <separator groups="fel_nit_gt_sat.group_fel_user"/>
+                <!-- Add FEL grouping -->
                 <filter string="FEL Status" name="group_fel_status" 
                         context="{'group_by': 'fel_status'}"
                         groups="fel_nit_gt_sat.group_fel_user"/>
