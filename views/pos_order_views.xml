@@ -183,8 +183,8 @@
                 <field name="user_id" string="POS User" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
-            <!-- Add FEL filters -->
-            <xpath expr="//filter[@name='invoiced']" position="after">
+            <!-- Add FEL filters inside search view -->
+            <xpath expr="//search" position="inside">
                 <separator groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="Requires FEL" name="requires_fel" 
                         domain="[('requires_fel', '=', True)]"
@@ -205,17 +205,19 @@
                 <filter string="Consumidor Final" name="consumidor_final" 
                         domain="['|', ('customer_nit', '=', 'CF'), ('customer_nit', '=', False)]"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-            </xpath>
-            
-            <!-- Add FEL grouping -->
-            <xpath expr="//filter[@name='session']" position="after">
-                <filter string="FEL Status" name="group_fel_status" 
-                        context="{'group_by': 'fel_status'}"
-                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <filter string="Table" name="group_table" 
-                        context="{'group_by': 'table_number'}"
-                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <filter string="User" name="group_user" context="{'group_by': 'user_id'}" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <!-- Add FEL grouping -->
+                <separator groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <group expand="0" string="Group By">
+                    <filter string="FEL Status" name="group_fel_status" 
+                            context="{'group_by': 'fel_status'}"
+                            groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                    <filter string="Table" name="group_table" 
+                            context="{'group_by': 'table_number'}"
+                            groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                    <filter string="User" name="group_user" 
+                            context="{'group_by': 'user_id'}" 
+                            groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                </group>
             </xpath>
             
         </field>
