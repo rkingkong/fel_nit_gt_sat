@@ -223,57 +223,6 @@
         </field>
     </record>
     
-    <!-- POS Config Form View Extension for FEL -->
-    <record id="view_pos_config_form_fel" model="ir.ui.view">
-        <field name="name">pos.config.form.fel</field>
-        <field name="model">pos.config</field>
-        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
-        <field name="arch" type="xml">
-            
-            <!-- Add FEL configuration section -->
-            <xpath expr="//page[@name='payment']" position="after">
-                <page string="FEL Configuration" name="fel_config" 
-                      groups="fel_nit_gt_sat.group_fel_restaurant_user">
-                    <group>
-                        <group string="FEL Settings">
-                            <field name="use_fel"/>
-                            <field name="fel_auto_generate" invisible="use_fel == False"/>
-                            <field name="fel_document_type_id" 
-                                   invisible="use_fel == False"
-                                   domain="[('is_invoice', '=', True)]"
-                                   options="{'no_create_edit': True}"/>
-                        </group>
-                        
-                        <group string="Customer Requirements">
-                            <field name="fel_require_customer" invisible="use_fel == False"/>
-                            <field name="fel_allow_cf" invisible="use_fel == False"/>
-                        </group>
-                    </group>
-                    
-                    <group string="Restaurant Settings" 
-                           invisible="use_fel == False">
-                        <group>
-                            <field name="is_restaurant"/>
-                            <field name="require_waiter" invisible="is_restaurant == False"/>
-                        </group>
-                    </group>
-                    
-                    <div class="alert alert-info" role="alert" 
-                         invisible="use_fel == False">
-                        <strong>FEL Configuration for Restaurant:</strong>
-                        <ul class="mb-0">
-                            <li><strong>Use FEL:</strong> Enable FEL document generation for this POS</li>
-                            <li><strong>Auto Generate:</strong> Automatically send orders to FEL when completed</li>
-                            <li><strong>Require Customer:</strong> Force customer information for all orders</li>
-                            <li><strong>Allow CF:</strong> Allow "Consumidor Final" for walk-in customers</li>
-                        </ul>
-                    </div>
-                </page>
-            </xpath>
-            
-        </field>
-    </record>
-    
     <!-- FEL POS Orders Dashboard Action -->
     <record id="action_fel_pos_orders" model="ir.actions.act_window">
         <field name="name">FEL POS Orders</field>
@@ -291,24 +240,6 @@
             <p>
                 Here you can view and manage all restaurant orders that require FEL processing.
                 Completed orders can be sent to the FEL provider for certification with SAT.
-            </p>
-        </field>
-    </record>
-    
-    <!-- POS Config FEL Action -->
-    <record id="action_pos_config_fel" model="ir.actions.act_window">
-        <field name="name">POS FEL Configuration</field>
-        <field name="res_model">pos.config</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[]</field>
-        <field name="context">{'search_default_use_fel': 1}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Configure FEL for your POS
-            </p>
-            <p>
-                Set up FEL (Electronic Invoice) configuration for your Point of Sale systems.
-                This is required for restaurant operations in Guatemala.
             </p>
         </field>
     </record>
