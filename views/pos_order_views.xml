@@ -8,6 +8,17 @@
         <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
         <field name="arch" type="xml">
             
+            <!-- Add hidden fields first (accessible to all users for conditions) -->
+            <xpath expr="//sheet" position="before">
+                <field name="fel_status" invisible="1"/>
+                <field name="fel_uuid" invisible="1"/>
+                <field name="fel_document_id" invisible="1"/>
+                <field name="fel_error_message" invisible="1"/>
+                <field name="fel_certification_date" invisible="1"/>
+                <field name="can_send_fel" invisible="1"/>
+                <field name="requires_fel" invisible="1"/>
+            </xpath>
+            
             <!-- Add FEL buttons to button box -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_send_fel" 
@@ -73,7 +84,7 @@
                        invisible="requires_fel == False"
                        groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     
-                    <!-- FEL Status with color coding -->
+                    <!-- FEL Status with color coding (visible version) -->
                     <field name="fel_status" widget="badge"
                            decoration-success="fel_status=='certified'"
                            decoration-danger="fel_status=='error'"
@@ -85,41 +96,36 @@
                            readonly="fel_status in ['certified', 'sending']"
                            options="{'no_create_edit': True}"/>
                     
-                    <!-- FEL document link -->
+                    <!-- FEL document link (visible version) -->
                     <field name="fel_document_id" 
                            readonly="1"
                            invisible="fel_document_id == False"/>
                     
-                    <!-- Error message -->
+                    <!-- Error message (visible version) -->
                     <field name="fel_error_message" 
                            readonly="1"
                            invisible="fel_error_message == False"
                            widget="text"/>
                     
-                    <!-- FEL UUID -->
+                    <!-- FEL UUID (visible version) -->
                     <field name="fel_uuid" 
                            readonly="1" 
                            invisible="fel_uuid == False"/>
                     
-                    <!-- Date fields -->
+                    <!-- Date fields (visible version) -->
                     <field name="fel_certification_date" 
                            readonly="1"
                            invisible="fel_certification_date == False"/>
                 </group>
             </xpath>
             
-            <!-- Add computed fields (invisible) -->
-            <xpath expr="//field[@name='company_id']" position="after">
-                <field name="can_send_fel" invisible="1"/>
-                <field name="requires_fel" invisible="1"/>
-            </xpath>
-            
             <!-- Add FEL status in header -->
             <xpath expr="//div[@name='button_box']" position="before">
                 <div class="oe_button_box text-center mb-2" 
-                     invisible="fel_status == False">
+                     invisible="fel_status == False"
+                     groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <span invisible="fel_uuid == False">
-                        UUID: <field name="fel_uuid" readonly="1"/>
+                        UUID: <field name="fel_uuid" readonly="1" nolabel="1"/>
                     </span>
                 </div>
             </xpath>
@@ -132,6 +138,12 @@
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
         <field name="arch" type="xml">
+            
+            <!-- Add hidden fields for conditions -->
+            <xpath expr="//tree" position="inside">
+                <field name="can_send_fel" invisible="1"/>
+                <field name="requires_fel" invisible="1"/>
+            </xpath>
             
             <!-- Insert all custom fields directly inside <tree> -->
             <xpath expr="//tree" position="inside">
@@ -151,8 +163,6 @@
                 <button name="retry_fel" string="Retry" type="object" icon="fa-refresh"
                         invisible="fel_status != 'error'"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="can_send_fel" invisible="1"/>
-                <field name="requires_fel" invisible="1"/>
             </xpath>
 
         </field>
@@ -311,55 +321,6 @@
             'search_default_today': 1,
             'search_default_group_table': 1
         }</field>
-    </record>
-    
-    <!-- Context Actions for Bulk FEL Processing -->
-    <record id="action_send_selected_pos_to_fel" model="ir.actions.server">
-        <field name="name">Send Selected to FEL</field>
-        <field name="model_id" ref="point_of_sale.model_pos_order"/>
-        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_restaurant_user'))]"/>
-        <field name="code">
-# Send selected POS orders to FEL
-sent_count = 0
-error_count = 0
-
-for order in records.filtered(lambda o: o.can_send_fel):
-    try:
-        order.send_to_fel()
-        if order.fel_status == 'certified':
-            sent_count += 1
-    except Exception as e:
-        error_count += 1
-        
-if sent_count > 0:
-    env.user.notify_success(f'Successfully sent {sent_count} orders to FEL')
-if error_count > 0:
-    env.user.notify_warning(f'{error_count} orders could not be sent to FEL')
-        </field>
-    </record>
-    
-    <record id="action_set_customer_info_bulk" model="ir.actions.server">
-        <field name="name">Set Customer Info</field>
-        <field name="model_id" ref="point_of_sale.model_pos_order"/>
-        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_restaurant_user'))]"/>
-        <field name="code">
-# Open wizard to set customer info for multiple orders
-if len(records) == 1:
-    action = records.set_customer_info_wizard()
-else:
-    # For multiple records, set all to CF
-    records.write({
-        'customer_nit': 'CF',
-        'customer_name': 'Consumidor Final'
-    })
-    env.user.notify_success(f'Set {len(records)} orders to Consumidor Final')
-        </field>
     </record>
     
 </odoo>
