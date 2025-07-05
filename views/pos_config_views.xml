@@ -6,24 +6,30 @@
         <field name="model">pos.config</field>
         <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
-                <page string="FEL Integration" name="fel_integration">
-                    <group>
-                        <group string="FEL Settings">
-                            <field name="use_fel"/>
-                            <field name="fel_auto_generate" invisible="use_fel == False"/>
-                            <field name="fel_document_type_id" modifiers="{'invisible': [('use_fel', '=', False)], 'required': [('use_fel', '=', True)]}"/>
-                        </group>
-                        <group string="Customer Settings">
-                            <field name="fel_require_customer" invisible="use_fel == False"/>
-                            <field name="fel_allow_cf" invisible="use_fel == False"/>
-                        </group>
+            <!-- Add FEL fields after the name field which should always exist -->
+            <xpath expr="//field[@name='name']" position="after">
+                <separator string="FEL Integration Settings" colspan="4"/>
+                <group col="4" colspan="4">
+                    <group string="FEL Configuration">
+                        <field name="use_fel"/>
+                        <field name="fel_auto_generate" invisible="use_fel == False"/>
+                        <field name="fel_document_type_id" 
+                               invisible="use_fel == False"
+                               required="use_fel == True"
+                               options="{'no_create_edit': True}"
+                               domain="[('is_invoice', '=', True)]"/>
                     </group>
-                    <group string="Restaurant Settings" invisible="module_pos_restaurant == False">
+                    <group string="Customer Requirements">
+                        <field name="fel_require_customer" invisible="use_fel == False"/>
+                        <field name="fel_allow_cf" invisible="use_fel == False"/>
+                    </group>
+                </group>
+                <group string="Restaurant Settings" colspan="4">
+                    <group>
                         <field name="is_restaurant"/>
                         <field name="require_waiter" invisible="is_restaurant == False"/>
                     </group>
-                </page>
+                </group>
             </xpath>
         </field>
     </record>
