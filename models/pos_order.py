@@ -79,11 +79,13 @@ class PosOrder(models.Model):
     requires_fel = fields.Boolean(
         string='Requires FEL',
         compute='_compute_requires_fel',
+        store=True,
         help='Whether this order requires FEL processing'
     )
     
     can_send_fel = fields.Boolean(
         string='Can Send FEL',
+        store=True,
         compute='_compute_can_send_fel',
         help='Whether this order can be sent to FEL'
     )
@@ -107,7 +109,7 @@ class PosOrder(models.Model):
     )
 
     
-    @api.depends('state', 'config_id')
+    @api.depends('state', 'config_id', 'config_id.use_fel' ,'company_id', 'company_id.country_id')
     def _compute_requires_fel(self):
         """Determine if order requires FEL processing"""
         for order in self:

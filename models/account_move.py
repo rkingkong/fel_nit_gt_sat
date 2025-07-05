@@ -82,12 +82,14 @@ class AccountMove(models.Model):
     requires_fel = fields.Boolean(
         string='Requires FEL',
         compute='_compute_requires_fel',
+        store = True,
         help='Whether this invoice requires FEL processing'
     )
     
     can_send_fel = fields.Boolean(
         string='Can Send FEL',
         compute='_compute_can_send_fel',
+        store = True,
         help='Whether this invoice can be sent to FEL'
     )
     
@@ -97,7 +99,7 @@ class AccountMove(models.Model):
         help='Generated XML content for debugging'
     )
     
-    @api.depends('move_type', 'state', 'partner_id')
+    @api.depends('move_type', 'state', 'partner_id', 'partner_id.country_id')
     def _compute_requires_fel(self):
         """Determine if invoice requires FEL processing"""
         for move in self:
