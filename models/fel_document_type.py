@@ -24,6 +24,8 @@ class FelDocumentType(models.Model):
         help='Código interno del documento según SAT'
     )
 
+    is_other = fields.Boolean(string="Other Document Type", default=False)
+    
     # Basic Information
     name = fields.Char(
         string='Document Name', 
