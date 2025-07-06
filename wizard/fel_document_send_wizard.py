@@ -153,6 +153,45 @@ class FelDocumentSendWizard(models.TransientModel):
         help='Whether any documents are from POS orders'
     )
     
+    
+    auto_verify_nits = fields.Boolean(
+        string='Auto-Verify NITs',
+        default=False,
+        help='Automatically verify NITs before sending.'
+    )
+
+    skip_verified_only = fields.Boolean(
+        string='Skip Verified Only',
+        default=True,
+        help='Only send documents for verified partners.'
+    )
+
+    create_missing_partners = fields.Boolean(
+        string='Create Missing Partners',
+        default=True,
+        help='Automatically create partners if they are missing.'
+    )
+
+    loaded_invoice_ids = fields.Many2many(
+        'account.move',
+        string='Loaded Invoices',
+        help='Invoices loaded via filter for review before sending.'
+    )
+
+    def action_load_invoices(self):
+        """Load invoices based on filters."""
+        domain = [('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted')]
+        if self.date_from:
+            domain.append(('invoice_date', '>=', self.date_from))
+        if self.date_to:
+            domain.append(('invoice_date', '<=', self.date_to))
+        if self.partner_ids:
+            domain.append(('partner_id', 'in', self.partner_ids.ids))
+
+        invoices = self.env['account.move'].search(domain)
+        self.loaded_invoice_ids = [(6, 0, invoices.ids)]
+
+    
     @api.depends('document_ids')
     def _compute_document_summary(self):
         """Compute document summary statistics"""
