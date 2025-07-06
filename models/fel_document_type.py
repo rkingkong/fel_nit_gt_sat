@@ -96,7 +96,7 @@ class FelDocumentType(models.Model):
     def get_required_phrases(self):
         """Get all required tax phrases for this document type"""
         self.ensure_one()
-        return self.document_phrase_ids.filtered(lambda p: p.is_mandatory and p.tax_phrase_id.is_active)
+        return self.document_phrase_ids.filtered(lambda p: p.is_mandatory and p.tax_phrase_id.active)
         
     # Document Type Classification
     is_invoice = fields.Boolean(
