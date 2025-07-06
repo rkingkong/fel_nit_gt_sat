@@ -125,6 +125,92 @@
         </field>
     </record>
     
-    <!-- Skip POS Config view for now - we'll add it separately if needed -->
+    <!-- POS Config Form View Extension for FEL -->
+    <record id="view_pos_config_form_fel" model="ir.ui.view">
+        <field name="name">pos.config.form.fel</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add FEL configuration in the settings container -->
+            <xpath expr="//div[@class='row mt16 o_settings_container'][last()]" position="after">
+                <div class="row mt16 o_settings_container" groups="fel_nit_gt_sat.group_fel_restaurant_user">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="use_fel"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="use_fel" string="Electronic Invoice (FEL)"/>
+                            <div class="text-muted">
+                                Enable Guatemala Electronic Invoice integration
+                            </div>
+                            <div class="content-group mt16" invisible="not use_fel">
+                                <div class="row mt8">
+                                    <label for="fel_auto_generate" class="col-lg-4 o_light_label"/>
+                                    <field name="fel_auto_generate"/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="fel_document_type_id" class="col-lg-4 o_light_label"/>
+                                    <field name="fel_document_type_id" 
+                                           domain="[('active', '=', True)]"
+                                           options="{'no_create': True}"/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="fel_allow_consumidor_final" class="col-lg-4 o_light_label"/>
+                                    <field name="fel_allow_consumidor_final"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="is_restaurant"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="is_restaurant" string="Restaurant Mode"/>
+                            <div class="text-muted">
+                                Enable restaurant features (tables, waiters)
+                            </div>
+                            <div class="content-group mt16" invisible="not is_restaurant">
+                                <div class="row mt8">
+                                    <label for="require_waiter" class="col-lg-4 o_light_label"/>
+                                    <field name="require_waiter"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+            
+        </field>
+    </record>
+    
+    <!-- Action to send multiple POS orders to FEL -->
+    <record id="action_send_pos_orders_to_fel" model="ir.actions.server">
+        <field name="name">Send to FEL</field>
+        <field name="model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_restaurant_user'))]"/>
+        <field name="code">
+# Send selected POS orders to FEL
+sent_count = 0
+error_count = 0
+
+for order in records.filtered(lambda o: o.can_send_fel):
+    try:
+        order.action_send_fel()
+        if order.fel_status == 'certified':
+            sent_count += 1
+    except Exception as e:
+        error_count += 1
+        
+if sent_count > 0:
+    env.user.notify_success(f'Successfully sent {sent_count} orders to FEL')
+if error_count > 0:
+    env.user.notify_warning(f'{error_count} orders could not be sent to FEL')
+        </field>
+    </record>
 
 </odoo>
