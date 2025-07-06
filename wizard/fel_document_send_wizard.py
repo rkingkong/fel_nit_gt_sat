@@ -10,6 +10,26 @@ class FelDocumentSendWizard(models.TransientModel):
     _name = 'fel.document.send.wizard'
     _description = 'FEL Document Send Wizard'
     
+    
+    auto_verify_nits = fields.Boolean(
+        string='Auto-Verify NITs',
+        default=False,
+        help='Automatically verify NITs before sending.'
+    )
+
+    skip_verified_only = fields.Boolean(
+        string='Skip Verified Only',
+        default=True,
+        help='Only send documents for verified partners.'
+    )
+
+    create_missing_partners = fields.Boolean(
+        string='Create Missing Partners',
+        default=True,
+        help='Automatically create partners if they are missing.'
+    )
+
+    
     invoice_ids = fields.Many2many(
         'account.move',
         string='Invoices',
