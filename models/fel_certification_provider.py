@@ -8,28 +8,32 @@ _logger = logging.getLogger(__name__)
 
 class FelCertificationProvider(models.Model):
     _name = 'fel.certification.provider'
+    _inherit = ['mail.thread', 'mail.activity.mixin']  # Add this line
     _description = 'FEL Certification Provider'
     _rec_name = 'name'
     _order = 'sequence, name'
     
     #check for active provider
     active = fields.Boolean(
-    string="Active",
-    default=True,
-    help="Indicates if this provider is currently active."
+        string="Active",
+        default=True,
+        help="Indicates if this provider is currently active.",
+        tracking=True  # Add tracking for audit trail
     )
 
     # Basic Information
     name = fields.Char(
         string='Provider Name', 
         required=True,
-        help='Name of the FEL certification provider'
+        help='Name of the FEL certification provider',
+        tracking=True  # Add tracking
     )
     
     code = fields.Char(
         string='Provider Code', 
         required=True,
-        help='Unique code for the provider (e.g., infile, guatefact, etc.)'
+        help='Unique code for the provider (e.g., infile, guatefact, etc.)',
+        tracking=True  # Add tracking
     )
     
     description = fields.Text(
@@ -110,7 +114,8 @@ class FelCertificationProvider(models.Model):
     is_active = fields.Boolean(
         string='Active',
         default=True,
-        help='Whether this provider is currently active'
+        help='Whether this provider is currently active',
+        tracking=True  # Add tracking
     )
     
     # Pricing Information (from INFILE proposal)
