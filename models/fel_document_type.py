@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class FelDocumentType(models.Model):
     _name = 'fel.document.type'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'FEL Document Type'
     _rec_name = 'name'
     _order = 'sequence, name'
@@ -23,6 +24,7 @@ class FelDocumentType(models.Model):
     name = fields.Char(
         string='Document Name', 
         required=True,
+        tracking=True,
         help='Full name of the document type (e.g., Factura, Nota de Crédito)'
     )
     
