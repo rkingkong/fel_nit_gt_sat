@@ -31,7 +31,8 @@ class FelNitVerificationWizard(models.TransientModel):
     ], string="Tax Regime", readonly=True, help="Tax regime as per SAT classification")
     
     nit_gt = fields.Char(string="NIT", readonly=True, help="NIT as per SAT classification")
-    
+    tax_regime_description = fields.Text(string="Tax Regime Description", readonly=True)
+
     
     # Input fields
     nit = fields.Char(string='NIT to Verify', required=True)
