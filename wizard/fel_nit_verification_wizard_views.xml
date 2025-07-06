@@ -126,11 +126,8 @@
                             <div class="alert alert-info" role="alert" 
                                  invisible="tax_regime == False">
                                 <strong>Tax Regime Information:</strong>
-                                <ul class="mb-0">
-                                    <li t-if="widget.tax_regime === 'general'"><strong>Régimen General:</strong> Standard taxpayers (most companies)</li>
-                                    <li t-if="widget.tax_regime === 'pequeno'"><strong>Pequeño Contribuyente:</strong> Small taxpayers with limited annual income</li>
-                                    <li t-if="widget.tax_regime === 'especial'"><strong>Régimen Especial:</strong> Special regime taxpayers (specific industries)</li>
-                                </ul>
+                                <field name="regime_description" widget="text" readonly="1" nolabel="1"/>
+
                             </div>
                         </page>
                         
