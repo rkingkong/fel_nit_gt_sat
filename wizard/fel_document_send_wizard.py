@@ -41,6 +41,14 @@ class FelDocumentSendWizard(models.TransientModel):
         domain="[('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted')]",
     )
     
+    orders_without_customer = fields.Integer(string="Orders Without Customer")
+    
+    orders_with_customer = fields.Integer(string="Orders With Customer")
+    orders_with_errors = fields.Integer(string="Orders With Errors")
+    orders_with_pos = fields.Integer(string="Orders with POS")
+    orders_with_fel_document = fields.Integer(string="Orders with FEL Document")
+    orders_with_fel_document_error = fields.Integer(string="Orders with FEL Document Error")
+    
     generate_pdf = fields.Boolean(string="Generate PDF", default=False)
     
     date_from = fields.Date(string="Start Date")
