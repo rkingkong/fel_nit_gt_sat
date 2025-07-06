@@ -25,6 +25,8 @@ class FelDocumentType(models.Model):
     )
 
     is_other = fields.Boolean(string="Other Document Type", default=False)
+    usage_notes = fields.Text(string="Usage Notes", help="Add any specific notes about when and how to use this document type.")
+    
     
     # Basic Information
     name = fields.Char(
