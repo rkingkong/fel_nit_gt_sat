@@ -12,7 +12,22 @@ class FelDocumentSendWizard(models.TransientModel):
     
     
     generate_pdf = fields.Boolean(string="Generate PDF", default=False)
-
+    date_from = fields.Date(string="Start Date")
+    date_to = fields.Date(string="End Date", help="End date for filtering documents")
+    fel_provider = fields.Selection([
+        ('sat', 'SAT'),
+        ('other', 'Other Provider'),
+    ], string='FEL Provider', default='sat',
+       help='Select the FEL provider to send documents to') 
+    
+    # Configuration
+    fel_config_id = fields.Many2one(
+        'fel.config',
+        string='FEL Configuration',
+        required=True,
+        help='FEL configuration to use for sending documents'
+    )
+    
     # Document Selection
     document_ids = fields.Many2many(
         'fel.document',
