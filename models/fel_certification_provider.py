@@ -69,6 +69,12 @@ class FelCertificationProvider(models.Model):
         help='Password to decrypt the certificate file'
     )
 
+    additional_config = fields.Text(
+        string='Additional Configuration',
+        help='JSON-formatted configuration for advanced provider options'
+    )
+
+
     #check for active provider
     active = fields.Boolean(
         string="Active",
