@@ -99,10 +99,12 @@
                         <page string="Statistics" name="statistics">
                             <group>
                                 <group string="Usage Statistics">
-                                    <!-- These would be computed fields in future versions -->
-                                    <label string="Active Configurations" class="o_form_label"/>
+                                    <!-- Fixed: Changed from label to div structure -->
                                     <div>
-                                        <span class="text-muted">Statistics will be available in future versions</span>
+                                        <strong>Active Configurations</strong>
+                                        <div>
+                                            <span class="text-muted">Statistics will be available in future versions</span>
+                                        </div>
                                     </div>
                                 </group>
                             </group>
