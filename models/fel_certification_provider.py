@@ -24,6 +24,12 @@ class FelCertificationProvider(models.Model):
     default='test',
     required=True
     )
+
+    username = fields.Char(string='Username')
+    password = fields.Char(string='Password')
+    api_token = fields.Char(string='API Token')
+    timeout = fields.Integer(string='Timeout')
+    website = fields.Char(string='Website')
     
     #check for active provider
     active = fields.Boolean(
