@@ -13,6 +13,12 @@ class FelCertificationProvider(models.Model):
     _rec_name = 'name'
     _order = 'sequence, name'
     
+    api_url = fields.Char(
+    string='API URL',
+    help='General API URL for the certification provider'
+    )
+
+    
     #check for active provider
     active = fields.Boolean(
         string="Active",
