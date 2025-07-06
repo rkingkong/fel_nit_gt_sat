@@ -13,6 +13,18 @@ class FelDocumentType(models.Model):
     _rec_name = 'name'
     _order = 'sequence, name'
     
+    
+    requires_reference_doc = fields.Boolean(
+        string="Requires Reference Document",
+        help="Indicates whether a reference document is required for this type (e.g., credit note, debit note)."
+    )
+
+    
+    xml_template_name = fields.Char(
+        string="XML Template Name",
+        help="Technical name of the XML template to be used, e.g., 'fel_fact_template'"
+    )
+
     active = fields.Boolean(
     string='Active',
     default=True,
