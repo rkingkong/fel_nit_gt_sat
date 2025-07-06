@@ -9,6 +9,7 @@
         <field name="arch" type="xml">
             
             <!-- Add ALL hidden fields first (accessible to all users for conditions) -->
+            <!-- IMPORTANT: These fields must be defined in the model or as related fields -->
             <xpath expr="//sheet" position="before">
                 <field name="fel_status" invisible="1"/>
                 <field name="fel_uuid" invisible="1"/>
@@ -19,6 +20,7 @@
                 <field name="requires_fel" invisible="1"/>
                 <field name="use_fel" invisible="1"/>
                 <field name="is_restaurant" invisible="1"/>
+                <field name="config_id" invisible="1"/>
             </xpath>
             
             <!-- Add FEL buttons to button box -->
@@ -105,6 +107,7 @@
                 <field name="requires_fel" invisible="1"/>
                 <field name="use_fel" invisible="1"/>
                 <field name="is_restaurant" invisible="1"/>
+                <field name="config_id" invisible="1"/>
             </xpath>
             
             <!-- Then add visible fields -->

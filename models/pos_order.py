@@ -1,65 +1,80 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class PosOrder(models.Model):
     _inherit = 'pos.order'
     
-    # FEL Integration Fields
+    # FEL related fields
+    fel_status = fields.Selection([
+        ('draft', 'Draft'),
+        ('generating', 'Generating'),
+        ('sending', 'Sending'),
+        ('certified', 'Certified'),
+        ('cancelled', 'Cancelled'),
+        ('error', 'Error'),
+    ], string='FEL Status', default='draft', readonly=True)
+    
     fel_document_id = fields.Many2one(
         'fel.document',
         string='FEL Document',
         readonly=True,
-        help='Generated FEL document for this POS order'
+        ondelete='restrict'
     )
     
     fel_uuid = fields.Char(
         string='FEL UUID',
         readonly=True,
-        help='UUID assigned by SAT for the FEL document'
+        help='Unique identifier from SAT'
     )
     
     fel_series = fields.Char(
         string='FEL Series',
         readonly=True,
-        help='Series assigned by SAT'
+        help='Document series from SAT'
     )
     
     fel_number = fields.Char(
         string='FEL Number',
         readonly=True,
-        help='Number assigned by SAT'
+        help='Document number from SAT'
     )
     
-    fel_document_type_id = fields.Many2one(
-        'fel.document.type',
-        string='FEL Document Type',
-        help='Type of FEL document to generate'
+    fel_xml_file = fields.Binary(
+        string='FEL XML',
+        readonly=True,
+        attachment=True
     )
     
-    fel_status = fields.Selection([
-        ('draft', 'Draft'),
-        ('generating', 'Generating'),
-        ('sending', 'Sending'),
-        ('sent', 'Sent'),
-        ('certified', 'Certified'),
-        ('error', 'Error'),
-        ('cancelled', 'Cancelled'),
-    ], string='FEL Status', default='draft', readonly=True,
-       help='Current FEL processing status')
+    fel_xml_filename = fields.Char(
+        string='XML Filename',
+        readonly=True
+    )
+    
+    fel_pdf_file = fields.Binary(
+        string='FEL PDF',
+        readonly=True,
+        attachment=True
+    )
+    
+    fel_pdf_filename = fields.Char(
+        string='PDF Filename',
+        readonly=True
+    )
     
     fel_error_message = fields.Text(
-        string='FEL Error Message',
+        string='FEL Error',
         readonly=True,
-        help='Error message if FEL processing failed'
+        help='Last error message from FEL processing'
     )
     
     fel_certification_date = fields.Datetime(
-        string='FEL Certification Date',
+        string='Certification Date',
         readonly=True,
         help='Date when certified by SAT'
     )
@@ -88,6 +103,22 @@ class PosOrder(models.Model):
         store=True,
         compute='_compute_can_send_fel',
         help='Whether this order can be sent to FEL'
+    )
+    
+    # Related field to access POS config's use_fel
+    use_fel = fields.Boolean(
+        string='Use FEL',
+        related='config_id.use_fel',
+        readonly=True,
+        help='Indicates if this POS is configured to use FEL'
+    )
+    
+    # Related field to access POS config's is_restaurant
+    is_restaurant = fields.Boolean(
+        string='Is Restaurant',
+        related='config_id.is_restaurant',
+        readonly=True,
+        help='Indicates if this POS is configured as restaurant'
     )
     
     # Restaurant specific fields
@@ -162,205 +193,108 @@ class PosOrder(models.Model):
                         ('is_active', '=', True)
                     ], limit=1)
                     
-                    if fel_config and fel_config.auto_send_pos_orders:
+                    if fel_config and order.config_id.fel_auto_generate:
                         try:
-                            order.send_to_fel()
+                            order.action_send_fel()
                         except Exception as e:
-                            _logger.error(f"Auto-send FEL failed for POS order {order.name}: {str(e)}")
+                            _logger.error(f"Auto-send FEL failed for order {order.name}: {str(e)}")
         
         return result
     
     def _set_default_fel_document_type(self):
-        """Set default FEL document type based on customer"""
-        self.ensure_one()
-        
-        if not self.fel_document_type_id:
-            # Determine customer tax regime
-            tax_regime = 'general'  # Default
-            
-            if self.partner_id and self.partner_id.tax_regime_gt:
-                tax_regime = self.partner_id.tax_regime_gt
-            elif self.customer_nit == 'CF':
-                tax_regime = 'general'  # CF uses general regime documents
-            
-            # Get appropriate document type
-            doc_type_model = self.env['fel.document.type']
-            if tax_regime == 'pequeno':
-                doc_type = doc_type_model.get_document_type_by_code('FPEQ')
-            elif tax_regime == 'especial':
-                doc_type = doc_type_model.get_document_type_by_code('FESP')
-            else:
-                doc_type = doc_type_model.get_document_type_by_code('FACT')
-            
-            if doc_type:
-                self.fel_document_type_id = doc_type.id
+        """Set default FEL document type based on configuration"""
+        for order in self:
+            if not order.fel_document_id and order.config_id.fel_document_type_id:
+                # Create FEL document with default type
+                fel_doc = self.env['fel.document'].create({
+                    'document_type_id': order.config_id.fel_document_type_id.id,
+                    'pos_order_id': order.id,
+                    'partner_id': order.partner_id.id,
+                    'amount_total': order.amount_total,
+                })
+                order.fel_document_id = fel_doc
     
-    def send_to_fel(self):
-        """Send POS order to FEL provider"""
+    def action_send_fel(self):
+        """Send order to FEL for certification"""
         self.ensure_one()
         
-        # Validations
         if not self.can_send_fel:
-            raise ValidationError(_('This order cannot be sent to FEL. Please check the requirements.'))
+            raise UserError(_('This order cannot be sent to FEL at this time.'))
         
-        if not self.fel_document_type_id:
-            raise ValidationError(_('FEL Document Type is required.'))
+        # Check for required customer information
+        if not self.customer_nit and not self.partner_id.nit_gt:
+            # Open wizard to set customer info
+            return self.set_customer_info_wizard()
         
-        # Prepare customer information
-        customer_nit = self._get_customer_nit()
-        customer_name = self._get_customer_name()
-        
-        if not customer_nit:
-            raise ValidationError(_('Customer NIT is required for FEL. Please set customer information.'))
+        # Update status
+        self.fel_status = 'generating'
         
         try:
-            # Get FEL configuration
-            fel_config = self.env['fel.config'].get_active_config(self.company_id.id)
+            # Generate and send FEL document
+            if not self.fel_document_id:
+                self._set_default_fel_document_type()
             
-            # Check DTE limits
-            if fel_config.annual_dte_count >= fel_config.annual_dte_limit:
-                raise ValidationError(_('Annual DTE limit (%s) has been reached. Please contact your FEL provider.') % fel_config.annual_dte_limit)
+            # Prepare FEL document data
+            self.fel_document_id.write({
+                'customer_nit': self.customer_nit or self.partner_id.nit_gt or 'CF',
+                'customer_name': self.customer_name or self.partner_id.name or 'Consumidor Final',
+            })
             
-            # Get or create partner for the customer
-            partner = self._get_or_create_customer_partner(customer_nit, customer_name)
-            
-            # Create or get existing FEL document
-            fel_doc = self.fel_document_id
-            if not fel_doc:
-                fel_doc = self.env['fel.document'].create({
-                    'pos_order_id': self.id,
-                    'partner_id': partner.id,
-                    'document_type_id': self.fel_document_type_id.id,
-                    'company_id': self.company_id.id,
-                })
-                self.fel_document_id = fel_doc.id
-            
-            # Update status
-            self.fel_status = 'generating'
-            
-            # Generate XML
-            fel_doc.generate_xml()
-            
-            # Send to provider
+            # Send to FEL
             self.fel_status = 'sending'
-            fel_doc.send_to_provider()
+            self.fel_document_id.action_send()
             
-            # Update order with results
-            if fel_doc.state == 'certified':
+            # Update with results
+            if self.fel_document_id.state == 'certified':
                 self.write({
                     'fel_status': 'certified',
-                    'fel_uuid': fel_doc.uuid,
-                    'fel_series': fel_doc.series,
-                    'fel_number': fel_doc.number,
-                    'fel_certification_date': fel_doc.certification_date,
+                    'fel_uuid': self.fel_document_id.uuid,
+                    'fel_series': self.fel_document_id.series,
+                    'fel_number': self.fel_document_id.number,
+                    'fel_certification_date': self.fel_document_id.certification_date,
+                    'fel_xml_file': self.fel_document_id.xml_file,
+                    'fel_xml_filename': self.fel_document_id.xml_filename,
+                    'fel_pdf_file': self.fel_document_id.pdf_file,
+                    'fel_pdf_filename': self.fel_document_id.pdf_filename,
                 })
                 
-                # Increment DTE counter
-                fel_config.increment_dte_count()
-                
+                # Show success message
                 return {
                     'type': 'ir.actions.client',
                     'tag': 'display_notification',
                     'params': {
                         'title': _('FEL Success'),
-                        'message': _('Order %s sent to FEL successfully. UUID: %s') % (self.name, fel_doc.uuid),
+                        'message': _('Order certified successfully. UUID: %s') % self.fel_uuid,
                         'type': 'success',
+                        'sticky': False,
                     }
                 }
             else:
-                self.write({
-                    'fel_status': 'error',
-                    'fel_error_message': fel_doc.error_message,
-                })
-                raise ValidationError(_('FEL processing failed: %s') % fel_doc.error_message)
+                raise UserError(self.fel_document_id.error_message or _('FEL certification failed'))
                 
         except Exception as e:
             self.write({
                 'fel_status': 'error',
-                'fel_error_message': str(e),
+                'fel_error_message': str(e)
             })
-            _logger.error(f"FEL processing failed for POS order {self.name}: {str(e)}")
-            raise ValidationError(_('Failed to send to FEL: %s') % str(e))
+            raise UserError(_('FEL Error: %s') % str(e))
     
-    def _get_customer_nit(self):
-        """Get customer NIT for FEL"""
+    def retry_fel(self):
+        """Retry FEL certification after error"""
         self.ensure_one()
+        if self.fel_status != 'error':
+            raise UserError(_('Can only retry orders with errors.'))
         
-        # Priority order: custom NIT, partner NIT, or CF
-        if self.customer_nit:
-            return self.customer_nit
-        elif self.partner_id and self.partner_id.nit_gt:
-            return self.partner_id.nit_gt
-        else:
-            return 'CF'  # Consumidor Final
+        # Reset status and try again
+        self.fel_status = 'draft'
+        self.fel_error_message = False
+        return self.action_send_fel()
     
-    def _get_customer_name(self):
-        """Get customer name for FEL"""
+    def action_view_fel_document(self):
+        """View related FEL document"""
         self.ensure_one()
-        
-        # Priority order: custom name, partner name, or default
-        if self.customer_name:
-            return self.customer_name
-        elif self.partner_id and self.partner_id.name:
-            return self.partner_id.name
-        else:
-            return 'Consumidor Final'
-    
-    def _get_or_create_customer_partner(self, nit, name):
-        """Get or create partner for customer"""
-        self.ensure_one()
-        
-        # If already has a partner, use it
-        if self.partner_id:
-            return self.partner_id
-        
-        # For CF, use the default customer
-        if nit == 'CF':
-            cf_partner = self.env['res.partner'].search([
-                ('nit_gt', '=', 'CF'),
-                ('is_company', '=', False)
-            ], limit=1)
-            
-            if not cf_partner:
-                cf_partner = self.env['res.partner'].create({
-                    'name': 'Consumidor Final',
-                    'nit_gt': 'CF',
-                    'is_company': False,
-                    'customer_rank': 1,
-                    'country_id': self.env.ref('base.gt').id,
-                })
-            
-            return cf_partner
-        
-        # Search for existing partner with this NIT
-        partner = self.env['res.partner'].search([
-            ('nit_gt', '=', nit)
-        ], limit=1)
-        
-        if partner:
-            return partner
-        
-        # Create new partner
-        partner = self.env['res.partner'].create({
-            'name': name,
-            'nit_gt': nit,
-            'is_company': True,
-            'customer_rank': 1,
-            'country_id': self.env.ref('base.gt').id,
-        })
-        
-        return partner
-    
-    def action_send_fel(self):
-        """Action to send order to FEL - can be called from buttons"""
-        return self.send_to_fel()
-    
-    def view_fel_document(self):
-        """View the FEL document"""
-        self.ensure_one()
-        
         if not self.fel_document_id:
-            raise ValidationError(_('No FEL document found for this order.'))
+            raise UserError(_('No FEL document found for this order.'))
         
         return {
             'type': 'ir.actions.act_window',
@@ -368,128 +302,107 @@ class PosOrder(models.Model):
             'res_model': 'fel.document',
             'res_id': self.fel_document_id.id,
             'view_mode': 'form',
-            'target': 'new',
+            'target': 'current',
         }
-    
-    def action_view_fel_document(self):
-        """Action to view FEL document - can be called from buttons"""
-        return self.view_fel_document()
-    
-    def retry_fel(self):
-        """Retry FEL processing after fixing errors"""
-        self.ensure_one()
-        
-        if self.fel_status not in ['error']:
-            raise ValidationError(_('FEL can only be retried for orders with errors.'))
-        
-        # Reset status and retry
-        self.write({
-            'fel_status': 'draft',
-            'fel_error_message': False,
-        })
-        
-        return self.send_to_fel()
     
     def set_customer_info_wizard(self):
         """Open wizard to set customer information"""
         self.ensure_one()
         
+        # Create wizard with current values
+        wizard = self.env['pos.order.customer.wizard'].create({
+            'order_id': self.id,
+            'customer_nit': self.customer_nit or self.partner_id.nit_gt or '',
+            'customer_name': self.customer_name or self.partner_id.name or '',
+        })
+        
         return {
             'type': 'ir.actions.act_window',
             'name': _('Set Customer Information'),
             'res_model': 'pos.order.customer.wizard',
+            'res_id': wizard.id,
             'view_mode': 'form',
             'target': 'new',
-            'context': {
-                'default_order_id': self.id,
-                'default_customer_nit': self.customer_nit,
-                'default_customer_name': self.customer_name,
-            }
         }
     
-    @api.onchange('customer_nit')
-    def _onchange_customer_nit(self):
-        """Auto-fill customer name when NIT changes"""
-        if self.customer_nit and self.customer_nit != 'CF':
-            # Search for existing partner
-            partner = self.env['res.partner'].search([
-                ('nit_gt', '=', self.customer_nit)
-            ], limit=1)
-            
-            if partner:
-                self.customer_name = partner.name
-                self.partner_id = partner.id
-
-
-class PosConfig(models.Model):
-    _inherit = 'pos.config'
-    
-    # FEL Configuration for POS
-    use_fel = fields.Boolean(
-        string='Use FEL',
-        help='Enable FEL (Electronic Invoice) for this POS'
-    )
-    
-    fel_auto_generate = fields.Boolean(
-        string='Auto Generate FEL',
-        help='Automatically generate FEL documents when orders are completed',
-        default=False
-    )
-    
-    fel_document_type_id = fields.Many2one(
-        'fel.document.type',
-        string='Default FEL Document Type',
-        help='Default document type for this POS'
-    )
-    
-    fel_require_customer = fields.Boolean(
-        string='Require Customer Info',
-        help='Require customer information for all orders',
-        default=False
-    )
-    
-    fel_allow_cf = fields.Boolean(
-        string='Allow Consumidor Final',
-        help='Allow orders without specific customer (CF)',
-        default=True
-    )
-    
-    # Restaurant specific
-    is_restaurant = fields.Boolean(
-        string='Is Restaurant',
-        help='Enable restaurant-specific features'
-    )
-    
-    require_waiter = fields.Boolean(
-        string='Require Waiter',
-        help='Require waiter selection for orders'
-    )
-
-
-class PosSession(models.Model):
-    _inherit = 'pos.session'
-    
-    def action_pos_session_close(self):
-        """Override to process pending FEL documents before closing"""
+    def action_print_fel(self):
+        """Print FEL document"""
+        self.ensure_one()
+        if not self.fel_pdf_file:
+            raise UserError(_('No FEL PDF available to print.'))
         
-        # Process any pending FEL orders before closing
-        if self.config_id.use_fel:
-            pending_orders = self.order_ids.filtered(
-                lambda o: o.requires_fel and o.fel_status == 'draft'
-            )
-            
-            if pending_orders:
-                # Ask user if they want to process pending FEL orders
-                return {
-                    'type': 'ir.actions.act_window',
-                    'name': _('Pending FEL Orders'),
-                    'res_model': 'pos.session.close.wizard',
-                    'view_mode': 'form',
-                    'target': 'new',
-                    'context': {
-                        'default_session_id': self.id,
-                        'pending_fel_count': len(pending_orders),
-                    }
-                }
+        # Return PDF as download
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/pos.order/%s/fel_pdf_file/%s?download=true' % (
+                self.id, self.fel_pdf_filename
+            ),
+            'target': 'self',
+        }
+    
+    def action_download_fel_xml(self):
+        """Download FEL XML file"""
+        self.ensure_one()
+        if not self.fel_xml_file:
+            raise UserError(_('No FEL XML available to download.'))
         
-        return super().action_pos_session_close()
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/pos.order/%s/fel_xml_file/%s?download=true' % (
+                self.id, self.fel_xml_filename
+            ),
+            'target': 'self',
+        }
+    
+    @api.model
+    def _process_pending_fel_orders(self):
+        """Cron job to process pending FEL orders"""
+        # Find orders that need FEL processing
+        pending_orders = self.search([
+            ('requires_fel', '=', True),
+            ('fel_status', '=', 'draft'),
+            ('state', 'in', ['paid', 'done', 'invoiced']),
+        ])
+        
+        for order in pending_orders:
+            try:
+                if order.can_send_fel:
+                    order.action_send_fel()
+            except Exception as e:
+                _logger.error(f"Failed to process FEL for order {order.name}: {str(e)}")
+                order.write({
+                    'fel_status': 'error',
+                    'fel_error_message': str(e)
+                })
+    
+    def _prepare_invoice_vals(self):
+        """Add FEL information to invoice when created from POS order"""
+        vals = super()._prepare_invoice_vals()
+        
+        if self.fel_status == 'certified':
+            vals.update({
+                'fel_uuid': self.fel_uuid,
+                'fel_series': self.fel_series,
+                'fel_number': self.fel_number,
+                'fel_certification_date': self.fel_certification_date,
+            })
+        
+        return vals
+
+    def set_customer_nit_cf(self):
+        """Quick action to set customer as Consumidor Final"""
+        self.write({
+            'customer_nit': 'CF',
+            'customer_name': 'Consumidor Final'
+        })
+        
+    def set_customer_from_partner(self):
+        """Set customer info from selected partner"""
+        if self.partner_id:
+            if not self.partner_id.nit_gt:
+                raise UserError(_('Selected customer does not have a NIT configured.'))
+            
+            self.customer_nit = self.partner_id.nit_gt
+            self.customer_name = self.partner_id.name
+        else:
+            raise UserError(_('Please select a customer first.'))
