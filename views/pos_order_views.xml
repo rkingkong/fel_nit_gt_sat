@@ -148,8 +148,9 @@
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
-            <!-- Add FEL grouping -->
-            <xpath expr="//group" position="inside">
+            <!-- Add FEL grouping after the last element in search view -->
+            <xpath expr="//search" position="inside">
+                <separator/>
                 <filter string="FEL Status" name="group_fel_status" 
                         context="{'group_by': 'fel_status'}"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
@@ -170,7 +171,7 @@
         <field name="arch" type="xml">
             
             <!-- Add FEL configuration section -->
-            <xpath expr="//page[@name='payment']" position="after">
+            <xpath expr="//notebook" position="inside">
                 <page string="FEL Configuration" name="fel_config" 
                       groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <group>
