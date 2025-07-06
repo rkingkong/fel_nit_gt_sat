@@ -32,9 +32,13 @@ class FelDocumentSendWizard(models.TransientModel):
     
     invoice_ids = fields.Many2many(
         'account.move',
+        'fel_wizard_invoice_rel',  # 👈 unique name
+        'wizard_id',
+        'invoice_id',
+        _description='Invoices to send to FEL',
+        help='Select invoices to send to the Fiscal Electronic Ledger (FEL).',
         string='Invoices',
         domain="[('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted')]",
-        help='Select invoices to send to FEL'
     )
     
     generate_pdf = fields.Boolean(string="Generate PDF", default=False)
@@ -174,8 +178,10 @@ class FelDocumentSendWizard(models.TransientModel):
 
     loaded_invoice_ids = fields.Many2many(
         'account.move',
+        'fel_wizard_loaded_invoice_rel',  # 👈 another unique name
+        'wizard_id',
+        'invoice_id',
         string='Loaded Invoices',
-        help='Invoices loaded via filter for review before sending.'
     )
 
     def action_load_invoices(self):
