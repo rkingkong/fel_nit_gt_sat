@@ -37,39 +37,33 @@
                     <div class="oe_title">
                         <h1>
                             <span invisible="verification_state != 'draft'">
-                                🇬🇹 Verify NIT with SAT
+                                🇬🇹 Verify NIT
                             </span>
                             <span invisible="verification_state != 'verifying'">
-                                🔄 Verifying NIT...
+                                🔄 Verifying...
                             </span>
                             <span invisible="verification_state != 'verified'">
-                                ✅ NIT Verification Results
-                            </span>
-                            <span invisible="verification_state != 'error'">
-                                ❌ Verification Error
+                                ✅ Verification Complete
                             </span>
                         </h1>
                     </div>
                     
-                    <!-- Success alert -->
-                    <div class="alert alert-success" role="alert" 
-                         invisible="is_verified == False">
-                        <strong>✓ NIT Verified Successfully!</strong>
-                        The NIT has been verified with Guatemala's SAT (Superintendencia de Administración Tributaria).
-                    </div>
-                    
-                    <!-- Error alert -->
+                    <!-- Alert Messages -->
                     <div class="alert alert-danger" role="alert" 
-                         invisible="verification_state != 'error' or verification_message == False">
-                        <strong>✗ Verification Failed</strong><br/>
-                        <field name="verification_message" readonly="1"/>
+                         invisible="not error_message">
+                        <field name="error_message" readonly="1" nolabel="1"/>
                     </div>
                     
-                    <!-- Warning for CF -->
+                    <div class="alert alert-success" role="alert" 
+                         invisible="not is_verified">
+                        <strong>✅ NIT Verified Successfully!</strong>
+                        <div>SAT has confirmed this NIT is valid and active.</div>
+                    </div>
+                    
                     <div class="alert alert-warning" role="alert" 
-                         invisible="clean_nit != 'CF'">
-                        <strong>Consumidor Final (CF)</strong><br/>
-                        CF cannot be verified as it represents anonymous consumers for retail transactions.
+                         invisible="is_verified or not clean_nit or clean_nit == 'CF' or verification_state != 'verified'">
+                        <strong>⚠️ NIT Not Found</strong>
+                        <div>This NIT was not found in SAT's database or is inactive.</div>
                     </div>
                     
                     <!-- Input Section -->
@@ -94,7 +88,7 @@
                     
                     <!-- Loading indicator -->
                     <div class="text-center" invisible="verification_state != 'verifying'">
-                        <i class="fa fa-spinner fa-spin fa-3x text-primary"/>
+                        <i class="fa fa-spinner fa-spin fa-3x text-primary" title="Loading..."/>
                         <h3 class="text-muted mt-3">Verifying NIT with SAT...</h3>
                         <p class="text-muted">Please wait while we verify the NIT with Guatemala's tax authority (SAT).</p>
                         <p class="text-muted"><small>This may take a few seconds depending on SAT's response time.</small></p>
@@ -103,31 +97,24 @@
                     <!-- Verification Results -->
                     <notebook invisible="verification_state != 'verified'">
                         <page string="SAT Information" name="sat_info" 
-                              invisible="is_verified == False">
+                              invisible="not is_verified">
                             <group>
-                                <group string="Registered Information">
-                                    <field name="sat_name" readonly="1" string="Official Name"/>
-                                    <field name="tax_regime" readonly="1" string="Tax Regime"/>
-                                    <field name="sat_status" readonly="1" string="Registration Status"/>
+                                <group string="Taxpayer Information">
+                                    <field name="sat_name" readonly="1"/>
+                                    <field name="clean_nit" readonly="1" string="NIT"/>
+                                    <field name="sat_status" readonly="1"/>
+                                    <field name="verification_date" readonly="1"/>
                                 </group>
-                                
-                                <group string="Verification Details">
-                                    <field name="is_verified" readonly="1" widget="boolean" string="Successfully Verified"/>
-                                    <field name="verification_message" readonly="1" widget="text" string="SAT Response"/>
+                                <group string="Additional Details">
+                                    <field name="sat_address" readonly="1" invisible="not sat_address"/>
+                                    <field name="tax_regime" readonly="1" invisible="not tax_regime"/>
                                 </group>
                             </group>
                             
-                            <group string="Registered Address Information" 
-                                   invisible="sat_address == False">
-                                <field name="sat_address" readonly="1" widget="text" nolabel="1"/>
-                            </group>
-                            
-                            <!-- Tax Regime Explanation -->
+                            <separator string="Tax Regime Details" invisible="not tax_regime_description"/>
                             <div class="alert alert-info" role="alert" 
-                                 invisible="tax_regime == False">
-                                <strong>Tax Regime Information:</strong>
-                                <field name="regime_description" widget="text" readonly="1" nolabel="1"/>
-
+                                 invisible="not tax_regime_description">
+                                <field name="tax_regime_description" widget="text" readonly="1" nolabel="1"/>
                             </div>
                         </page>
                         
@@ -143,7 +130,7 @@
                                 <group string="Partner Information" 
                                        invisible="show_partner_creation == False">
                                     <field name="partner_name" 
-                                           modifiers="{'required': [('create_partner', '=', True), ('partner_id', '=', False)]}"
+                                           required="create_partner == True and partner_id == False"
                                            placeholder="Enter customer name"/>
                                 </group>
                             </group>
@@ -152,9 +139,9 @@
                                  invisible="update_partner == False">
                                 <strong>Partner Update Preview:</strong>
                                 <ul class="mb-0">
-                                    <li>NIT will be set to: <strong><field name="clean_nit" readonly="1"/></strong></li>
-                                    <li t-if="context.get('sat_name')">Name will be updated to: <strong><field name="sat_name" readonly="1"/></strong></li>
-                                    <li t-if="context.get('tax_regime')">Tax regime will be set to: <strong><field name="tax_regime" readonly="1"/></strong></li>
+                                    <li>NIT will be set to: <strong><field name="clean_nit" readonly="1" nolabel="1"/></strong></li>
+                                    <li invisible="not sat_name">Name will be updated to: <strong><field name="sat_name" readonly="1" nolabel="1"/></strong></li>
+                                    <li invisible="not tax_regime">Tax regime will be set to: <strong><field name="tax_regime" readonly="1" nolabel="1"/></strong></li>
                                     <li>Verification status will be marked as verified</li>
                                     <li>Verification date will be set to current date/time</li>
                                 </ul>
@@ -186,220 +173,27 @@
                 Use this wizard to verify customer NITs (Número de Identificación Tributaria) 
                 with Guatemala's SAT (Superintendencia de Administración Tributaria).
             </p>
-        </field>
-    </record>
-    
-    <!-- Batch NIT Verification Wizard -->
-    <record id="view_fel_batch_nit_verification_form" model="ir.ui.view">
-        <field name="name">fel.batch.nit.verification.form</field>
-        <field name="model">fel.nit.verification.wizard</field>
-        <field name="arch" type="xml">
-            <form string="Batch NIT Verification">
-                <header>
-                    <button name="action_batch_verify_all" string="Start Verification" type="object" 
-                            class="btn-primary"/>
-                </header>
-                
-                <sheet>
-                    <div class="oe_title">
-                        <h1>🇬🇹 Batch NIT Verification</h1>
-                        <h3>Verify multiple customer NITs with SAT automatically</h3>
-                    </div>
-                    
-                    <group>
-                        <group string="Verification Options">
-                            <field name="update_partner" default="1"/>
-                            <field name="create_partner"/>
-                        </group>
-                    </group>
-                    
-                    <div class="alert alert-info" role="alert">
-                        <strong>🔄 Batch Verification Process:</strong>
-                        <ul class="mb-0">
-                            <li>All customers with NITs will be verified with SAT</li>
-                            <li>Partner information will be updated with verification results</li>
-                            <li>Tax regimes will be automatically set based on SAT data</li>
-                            <li>Invalid NITs will be flagged for manual review</li>
-                            <li>This process may take several minutes depending on the number of customers</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="alert alert-warning" role="alert">
-                        <strong>⚠️ Important Notes:</strong>
-                        <ul class="mb-0">
-                            <li>This process requires internet connection to SAT</li>
-                            <li>Rate limiting may apply depending on your FEL provider</li>
-                            <li>"Consumidor Final" (CF) customers will be skipped</li>
-                            <li>You can monitor progress in the system logs</li>
-                        </ul>
-                    </div>
-                </sheet>
-                
-                <footer>
-                    <button string="Start Batch Verification" name="action_batch_verify_all" type="object" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
-            </form>
+            <p>
+                <i class="fa fa-lightbulb-o"/> <b>Tips:</b>
+                <ul>
+                    <li>Enter the NIT in format: 12345678-9</li>
+                    <li>Use "CF" for Consumidor Final (walk-in customers)</li>
+                    <li>The system will automatically verify with SAT's database</li>
+                    <li>Verified information can be automatically applied to the partner record</li>
+                </ul>
+            </p>
         </field>
     </record>
     
     <!-- Batch NIT Verification Action -->
-    <record id="action_fel_batch_nit_verification" model="ir.actions.act_window">
-        <field name="name">Batch NIT Verification</field>
-        <field name="res_model">fel.nit.verification.wizard</field>
-        <field name="view_id" ref="view_fel_batch_nit_verification_form"/>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-        <field name="context">{'default_update_partner': True}</field>
-    </record>
-    
-    <!-- Customer Info Wizard for POS Orders -->
-    <record id="view_pos_customer_info_wizard_form" model="ir.ui.view">
-        <field name="name">pos.order.customer.wizard.form</field>
-        <field name="model">pos.order.customer.wizard</field>
-        <field name="arch" type="xml">
-            <form string="Set Customer Information for FEL">
-                <header>
-                    <button name="action_set_customer_info" string="Set Customer Info" type="object" 
-                            class="btn-primary"/>
-                    <button name="action_verify_nit" string="Verify NIT" type="object" 
-                            class="btn-secondary"
-                            invisible="customer_nit == False or customer_nit == 'CF'"/>
-                    <button name="action_send_to_fel" string="Set Info &amp; Send to FEL" type="object" 
-                            class="btn-success"/>
-                </header>
-                
-                <sheet>
-                    <div class="oe_title">
-                        <h1>🍽️ Customer Information for FEL</h1>
-                        <h3>Set customer details for electronic invoice generation</h3>
-                    </div>
-                    
-                    <group>
-                        <group string="Order Information">
-                            <field name="order_id" readonly="1"/>
-                            <field name="order_name" readonly="1"/>
-                            <field name="order_amount" readonly="1" widget="monetary"/>
-                        </group>
-                        
-                        <group string="Customer Details">
-                            <field name="customer_nit" placeholder="Enter NIT or CF for Consumidor Final"/>
-                            <field name="customer_name" placeholder="Customer full name"/>
-                            <field name="clean_nit" readonly="1" 
-                                   invisible="clean_nit == False"
-                                   string="Formatted NIT"/>
-                        </group>
-                    </group>
-                    
-                    <group>
-                        <group string="Options">
-                            <field name="create_partner"/>
-                            <field name="verify_nit" 
-                                   invisible="show_verification == False"/>
-                        </group>
-                        
-                        <group string="Status">
-                            <field name="is_consumidor_final" readonly="1" widget="boolean"/>
-                            <field name="show_verification" readonly="1" invisible="1"/>
-                        </group>
-                    </group>
-                    
-                    <!-- Existing Customer Selection -->
-                    <group string="Or Select Existing Customer" 
-                           invisible="partner_id != False">
-                        <field name="partner_id" 
-                               domain="[('customer_rank', '>', 0)]"
-                               options="{'no_create_edit': True}"
-                               placeholder="Search for existing customer..."/>
-                    </group>
-                    
-                    <div class="alert alert-info" role="alert">
-                        <strong>💡 Customer Information Guide:</strong>
-                        <ul class="mb-0">
-                            <li><strong>NIT:</strong> Enter customer's tax ID or "CF" for walk-in customers (Consumidor Final)</li>
-                            <li><strong>Name:</strong> Customer's full name as it appears on their tax registration</li>
-                            <li><strong>Create Partner:</strong> Automatically create a customer record for future orders</li>
-                            <li><strong>Verify NIT:</strong> Check with SAT to ensure the NIT is valid and active</li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Guatemala specific help -->
-                    <div class="alert alert-success" role="alert" t-if="context.get('show_guatemala_help')">
-                        <strong>🇬🇹 Guatemala FEL Requirements:</strong>
-                        <ul class="mb-0">
-                            <li>All restaurant orders must have FEL (Electronic Invoice) documents</li>
-                            <li>NITs must be verified with SAT for business customers</li>
-                            <li>Use "CF" for individual consumers who don't have a NIT</li>
-                            <li>Document will be automatically sent to SAT after order completion</li>
-                        </ul>
-                    </div>
-                </sheet>
-                
-                <footer>
-                    <button string="Set Customer Information" name="action_set_customer_info" type="object" class="btn-primary"/>
-                    <button string="Set Info &amp; Send to FEL" name="action_send_to_fel" type="object" class="btn-success"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
-            </form>
-        </field>
-    </record>
-    
-    <!-- POS Customer Info Wizard Action -->
-    <record id="action_pos_customer_info_wizard" model="ir.actions.act_window">
-        <field name="name">Set Customer Information</field>
-        <field name="res_model">pos.order.customer.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-        <field name="context">{
-            'show_guatemala_help': True
-        }</field>
-    </record>
-    
-    <!-- Quick NIT Verification from Partner Form -->
-    <record id="action_partner_quick_nit_verify" model="ir.actions.act_window">
-        <field name="name">Verify NIT with SAT</field>
-        <field name="res_model">fel.nit.verification.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-        <field name="context">{
-            'default_partner_id': active_id,
-            'default_nit': active_id and env['res.partner'].browse(active_id).nit_gt,
-            'default_update_partner': True
-        }</field>
-    </record>
-    
-    <!-- Context action for partner verification -->
-    <record id="action_verify_partner_nit_context" model="ir.actions.server">
-        <field name="name">Verify NIT with SAT</field>
-        <field name="model_id" ref="base.model_res_partner"/>
-        <field name="binding_model_id" ref="base.model_res_partner"/>
-        <field name="binding_view_types">form</field>
+    <record id="action_batch_nit_verification" model="ir.actions.server">
+        <field name="name">Batch Verify NITs</field>
+        <field name="model_id" ref="model_res_partner"/>
+        <field name="binding_model_id" ref="model_res_partner"/>
+        <field name="binding_view_types">list</field>
         <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_nit_verifier'))]"/>
         <field name="code">
-if record.nit_gt:
-    action = {
-        'type': 'ir.actions.act_window',
-        'name': 'Verify NIT with SAT',
-        'res_model': 'fel.nit.verification.wizard',
-        'view_mode': 'form',
-        'target': 'new',
-        'context': {
-            'default_partner_id': record.id,
-            'default_nit': record.nit_gt,
-            'default_update_partner': True,
-        }
-    }
-else:
-    action = {
-        'type': 'ir.actions.client',
-        'tag': 'display_notification',
-        'params': {
-            'title': 'No NIT Found',
-            'message': 'This partner does not have a NIT to verify.',
-            'type': 'warning',
-        }
-    }
+            action = env['fel.nit.verification.wizard'].action_batch_verify(records.ids)
         </field>
     </record>
     

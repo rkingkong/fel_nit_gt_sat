@@ -46,84 +46,56 @@
                         <span class="o_stat_text">Document</span>
                     </div>
                 </button>
-                
-                <button name="retry_fel" 
-                        string="Retry FEL" 
-                        type="object" 
-                        class="oe_stat_button"
-                        icon="fa-refresh"
-                        invisible="fel_status != 'error'"
-                        groups="fel_nit_gt_sat.group_fel_restaurant_user">
-                    <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">Retry</span>
-                        <span class="o_stat_text">FEL</span>
-                    </div>
-                </button>
             </xpath>
             
-            <!-- Add restaurant information -->
-            <xpath expr="//group[@name='order_fields']" position="after">
-                <group name="restaurant_info" string="Restaurant Information" 
-                       invisible="session_id.config_id.is_restaurant == False"
-                       groups="fel_nit_gt_sat.group_fel_restaurant_user">
-                    <field name="table_number" placeholder="Table #"/>
-                    <field name="user_id" string="Mesero" readonly="1"
-                           options="{'no_create_edit': True}"/>
-                </group>
-                
-                <!-- Customer Information for FEL -->
-                <group string="Customer Information (FEL)" 
-                       invisible="requires_fel == False"
-                       groups="fel_nit_gt_sat.group_fel_restaurant_user">
-                    <field name="customer_nit" placeholder="NIT or CF for Consumidor Final"/>
-                    <field name="customer_name" placeholder="Customer name"/>
-                </group>
-                
-                <!-- FEL Status Information -->
-                <group string="FEL Information" 
-                       invisible="requires_fel == False"
-                       groups="fel_nit_gt_sat.group_fel_restaurant_user">
+            <!-- Add FEL tab to notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="FEL Information" name="fel_info" 
+                      groups="fel_nit_gt_sat.group_fel_restaurant_user">
+                    <group string="FEL Status" invisible="requires_fel == False">
+                        <group>
+                            <field name="fel_status" widget="badge" 
+                                   decoration-success="fel_status == 'certified'"
+                                   decoration-danger="fel_status == 'error'"
+                                   decoration-info="fel_status in ['sending', 'generating']"/>
+                            <field name="fel_uuid" readonly="1" invisible="fel_uuid == False"/>
+                            <field name="fel_error_message" readonly="1" 
+                                   invisible="fel_error_message == False"/>
+                        </group>
+                        <group>
+                            <field name="fel_certification_date" readonly="1" 
+                                   invisible="fel_certification_date == False"/>
+                            <field name="fel_document_id" readonly="1" 
+                                   invisible="fel_document_id == False"/>
+                            <field name="fel_document_type_id" readonly="fel_status in ['certified', 'sending']"/>
+                        </group>
+                    </group>
                     
-                    <!-- FEL Status with color coding (visible version) -->
-                    <field name="fel_status" widget="badge"
-                           decoration-success="fel_status=='certified'"
-                           decoration-danger="fel_status=='error'"
-                           decoration-warning="fel_status=='cancelled'"
-                           decoration-info="fel_status in ('sending', 'generating')"/>
+                    <group string="Customer Information">
+                        <group>
+                            <field name="customer_nit" readonly="fel_status in ['certified', 'sending']"/>
+                            <field name="customer_name" readonly="fel_status in ['certified', 'sending']"/>
+                        </group>
+                        <group>
+                            <field name="partner_id" readonly="fel_status in ['certified', 'sending']"/>
+                        </group>
+                    </group>
                     
-                    <!-- Document type selection -->
-                    <field name="fel_document_type_id" 
-                           readonly="fel_status in ['certified', 'sending']"
-                           options="{'no_create_edit': True}"/>
-                    
-                    <!-- FEL document link (visible version) -->
-                    <field name="fel_document_id" 
-                           readonly="1"
-                           invisible="fel_document_id == False"/>
-                    
-                    <!-- Error message (visible version) -->
-                    <field name="fel_error_message" 
-                           readonly="1"
-                           invisible="fel_error_message == False"
-                           widget="text"/>
-                    
-                    <!-- FEL UUID (visible version) -->
-                    <field name="fel_uuid" 
-                           readonly="1" 
-                           invisible="fel_uuid == False"/>
-                    
-                    <!-- Date fields (visible version) -->
-                    <field name="fel_certification_date" 
-                           readonly="1"
-                           invisible="fel_certification_date == False"/>
-                </group>
+                    <group string="Restaurant Information" invisible="session_id.config_id.is_restaurant == False">
+                        <group>
+                            <field name="table_number" readonly="1"/>
+                            <field name="waiter_id" readonly="1" invisible="is_restaurant == False"/>
+                            <field name="waiter_name" readonly="1" invisible="is_restaurant == False"/>
+                        </group>
+                    </group>
+                </page>
             </xpath>
             
-            <!-- Add FEL status in header -->
-            <xpath expr="//div[@name='button_box']" position="before">
-                <div class="oe_button_box text-center mb-2" 
-                     invisible="fel_status == False"
-                     groups="fel_nit_gt_sat.group_fel_restaurant_user">
+            <!-- Show FEL info in header when certified -->
+            <xpath expr="//div[@name='button_box']" position="after">
+                <div class="alert alert-success mb-0" role="alert" 
+                     invisible="fel_status != 'certified'">
+                    <i class="fa fa-check-circle"/> FEL Certified - 
                     <span invisible="fel_uuid == False">
                         UUID: <field name="fel_uuid" readonly="1" nolabel="1"/>
                     </span>
@@ -143,6 +115,8 @@
             <xpath expr="//tree" position="inside">
                 <field name="can_send_fel" invisible="1"/>
                 <field name="requires_fel" invisible="1"/>
+                <field name="use_fel" invisible="1"/>
+                <field name="is_restaurant" invisible="1"/>
             </xpath>
             
             <!-- Insert all custom fields directly inside <tree> -->
@@ -183,8 +157,8 @@
                 <field name="user_id" string="POS User" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
-            <!-- Add FEL filters inside search view -->
-            <xpath expr="//search" position="inside">
+            <!-- Add FEL filters -->
+            <xpath expr="//filter[@name='invoiced']" position="after">
                 <separator groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="Requires FEL" name="requires_fel" 
                         domain="[('requires_fel', '=', True)]"
@@ -205,19 +179,69 @@
                 <filter string="Consumidor Final" name="consumidor_final" 
                         domain="['|', ('customer_nit', '=', 'CF'), ('customer_nit', '=', False)]"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <!-- Add FEL grouping -->
-                <separator groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <group expand="0" string="Group By">
-                    <filter string="FEL Status" name="group_fel_status" 
-                            context="{'group_by': 'fel_status'}"
-                            groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                    <filter string="Table" name="group_table" 
-                            context="{'group_by': 'table_number'}"
-                            groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                    <filter string="User" name="group_user" 
-                            context="{'group_by': 'user_id'}" 
-                            groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                </group>
+            </xpath>
+            
+            <!-- Add FEL grouping -->
+            <xpath expr="//filter[@name='session']" position="after">
+                <filter string="FEL Status" name="group_fel_status" 
+                        context="{'group_by': 'fel_status'}"
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <filter string="Table" name="group_table" 
+                        context="{'group_by': 'table_number'}"
+                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <filter string="User" name="group_user" context="{'group_by': 'user_id'}" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+            </xpath>
+            
+        </field>
+    </record>
+    
+    <!-- POS Config Form View Extension for FEL -->
+    <record id="view_pos_config_form_fel" model="ir.ui.view">
+        <field name="name">pos.config.form.fel</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add FEL configuration section -->
+            <xpath expr="//page[@name='payment']" position="after">
+                <page string="FEL Configuration" name="fel_config" 
+                      groups="fel_nit_gt_sat.group_fel_restaurant_user">
+                    <group>
+                        <group string="FEL Settings">
+                            <field name="use_fel"/>
+                            <field name="fel_auto_generate" invisible="use_fel == False"/>
+                            <field name="fel_document_type_id" 
+                                   invisible="use_fel == False"
+                                   required="use_fel == True"
+                                   domain="[('is_invoice', '=', True)]"
+                                   options="{'no_create_edit': True}"/>
+                        </group>
+                        
+                        <group string="Customer Requirements">
+                            <field name="fel_require_customer" invisible="use_fel == False"/>
+                            <field name="fel_allow_cf" invisible="use_fel == False"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Restaurant Settings" 
+                           invisible="use_fel == False">
+                        <group>
+                            <field name="is_restaurant"/>
+                            <field name="require_waiter" invisible="is_restaurant == False"/>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-info" role="alert" 
+                         invisible="use_fel == False">
+                        <strong>FEL Configuration for Restaurant:</strong>
+                        <ul class="mb-0">
+                            <li><strong>Use FEL:</strong> Enable FEL document generation for this POS</li>
+                            <li><strong>Auto Generate:</strong> Automatically send orders to FEL when completed</li>
+                            <li><strong>Require Customer:</strong> Force customer information for all orders</li>
+                            <li><strong>Allow CF:</strong> Allow "Consumidor Final" for walk-in customers</li>
+                        </ul>
+                    </div>
+                </page>
             </xpath>
             
         </field>
@@ -241,19 +265,24 @@
                 Here you can view and manage all restaurant orders that require FEL processing.
                 Completed orders can be sent to the FEL provider for certification with SAT.
             </p>
+            <p>
+                <b>Tips for Restaurant Operations:</b>
+                <ul>
+                    <li>Orders marked as paid will automatically require FEL</li>
+                    <li>Use "CF" for walk-in customers (Consumidor Final)</li>
+                    <li>Table and waiter information is tracked for each order</li>
+                    <li>Batch send multiple orders at once using the action menu</li>
+                </ul>
+            </p>
         </field>
     </record>
     
-    <!-- Restaurant Daily Orders Action -->
-    <record id="action_restaurant_daily_orders" model="ir.actions.act_window">
-        <field name="name">Today's Restaurant Orders</field>
-        <field name="res_model">pos.order</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('create_date', '>=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]</field>
-        <field name="context">{
-            'search_default_today': 1,
-            'search_default_group_table': 1
-        }</field>
-    </record>
+    <!-- Menu item for FEL POS Orders -->
+    <menuitem id="menu_fel_pos_orders"
+              name="POS Orders"
+              parent="fel_nit_gt_sat.menu_fel_documents"
+              action="action_fel_pos_orders"
+              sequence="30"
+              groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
     
 </odoo>

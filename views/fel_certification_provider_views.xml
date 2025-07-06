@@ -8,117 +8,98 @@
         <field name="arch" type="xml">
             <form string="FEL Certification Provider">
                 <header>
-                    <button name="test_connection" string="Test Connection" type="object" class="btn-primary"
-                            invisible="api_base_url == False"/>
-                    <field name="is_active" widget="boolean_toggle"/>
+                    <button name="test_connection" string="Test Connection" type="object" 
+                            class="btn-primary" invisible="is_active == False"/>
+                    <field name="is_active" widget="statusbar_toggle"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="is_active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" 
+                            invisible="is_active == True"/>
                     <div class="oe_title">
                         <h1>
-                            <field name="name" placeholder="e.g. INFILE, S.A."/>
+                            <field name="name" placeholder="Provider Name"/>
                         </h1>
-                        <h3>
-                            <field name="code" placeholder="e.g. infile" class="text-lowercase"/>
-                        </h3>
+                        <div class="o_row">
+                            <field name="code" placeholder="Code (e.g., INFILE)"/>
+                        </div>
                     </div>
-                    
                     <group>
-                        <group string="Basic Information">
-                            <field name="website" widget="url" placeholder="https://www.provider.com"/>
-                            <field name="api_base_url" placeholder="https://api.provider.com"/>
-                            <field name="api_version" placeholder="1.0"/>
+                        <group string="General Information">
+                            <field name="website" widget="url" placeholder="https://www.example.com"/>
+                            <field name="api_url" placeholder="https://api.example.com"/>
+                            <field name="environment" widget="radio_button"/>
                         </group>
-                        
-                        <group string="Contact Information">
-                            <field name="contact_name" placeholder="Contact person"/>
-                            <field name="contact_email" widget="email" placeholder="contact@provider.com"/>
-                            <field name="contact_phone" placeholder="+502 2208-2208"/>
+                        <group string="API Configuration">
+                            <field name="username"/>
+                            <field name="password" password="True"/>
+                            <field name="api_token" password="True"/>
+                            <field name="timeout" widget="integer"/>
                         </group>
                     </group>
-                    
                     <notebook>
-                        <page string="Supported Features" name="features">
+                        <page string="Contact Information" name="contact">
                             <group>
-                                <group string="Core Features">
+                                <group string="Contact Details">
+                                    <field name="contact_name"/>
+                                    <field name="contact_email" widget="email"/>
+                                    <field name="contact_phone" widget="phone"/>
+                                </group>
+                                <group string="Support Information">
+                                    <field name="support_email" widget="email"/>
+                                    <field name="support_phone" widget="phone"/>
+                                    <field name="support_hours" placeholder="e.g., Mon-Fri 8AM-5PM"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Capabilities" name="capabilities">
+                            <group>
+                                <group string="Supported Features">
                                     <field name="supports_nit_verification"/>
                                     <field name="supports_xml_generation"/>
                                     <field name="supports_digital_signature"/>
                                     <field name="supports_pdf_generation"/>
                                 </group>
+                                <group string="Document Types">
+                                    <field name="supported_document_types" widget="many2many_tags"/>
+                                </group>
                             </group>
-                            
-                            <div class="alert alert-info" role="alert">
-                                <strong>Feature Support:</strong>
-                                <ul class="mb-0">
-                                    <li><strong>NIT Verification:</strong> Can verify customer NITs with SAT</li>
-                                    <li><strong>XML Generation:</strong> Generates FEL-compliant XML documents</li>
-                                    <li><strong>Digital Signature:</strong> Signs documents with digital certificates</li>
-                                    <li><strong>PDF Generation:</strong> Creates printable PDF versions</li>
-                                </ul>
-                            </div>
                         </page>
-                        
-                        <page string="Pricing Information" name="pricing">
+                        <page string="Pricing" name="pricing">
                             <group>
-                                <group string="Costs (GTQ)">
+                                <group string="Cost Structure">
+                                    <field name="currency_id"/>
                                     <field name="setup_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                    <field name="cost_per_dte" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <field name="annual_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="cost_per_dte" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                </group>
+                                <group string="Limits">
                                     <field name="annual_dte_limit"/>
+                                    <field name="daily_dte_limit"/>
+                                    <field name="credit_days"/>
                                 </group>
                             </group>
-                            
-                            <!-- INFILE pricing example -->
-                            <div class="alert alert-success" role="alert" 
-                                 invisible="code != 'infile'">
-                                <strong>INFILE Pricing (from proposal):</strong>
-                                <ul class="mb-0">
-                                    <li>Setup: Q. 995.00 (one-time)</li>
-                                    <li>Cost per DTE: Q. 0.33</li>
-                                    <li>Annual quota: 1,200 DTEs</li>
-                                    <li>Annual cost: Q. 396.00</li>
-                                </ul>
-                            </div>
                         </page>
-                        
-                        <page string="API Configuration" name="api_config">
-                            <group>
-                                <group string="Environment URLs">
-                                    <field name="test_api_url" placeholder="https://test-api.provider.com"/>
-                                    <field name="production_api_url" placeholder="https://api.provider.com"/>
-                                </group>
+                        <page string="Technical Details" name="technical">
+                            <group string="Certificate Configuration">
+                                <field name="certificate_file" filename="certificate_filename"/>
+                                <field name="certificate_filename" invisible="1"/>
+                                <field name="certificate_password" password="True" 
+                                       invisible="certificate_file == False"/>
                             </group>
-                            
-                            <div class="alert alert-warning" role="alert">
-                                <strong>API Configuration:</strong>
-                                These URLs will be used by FEL configurations to connect to this provider.
-                                Make sure the URLs are correct and accessible.
-                            </div>
-                        </page>
-                        
-                        <page string="Statistics" name="statistics">
-                            <group>
-                                <group string="Usage Statistics">
-                                    <!-- Fixed: Changed from label to div structure -->
-                                    <div>
-                                        <strong>Active Configurations</strong>
-                                        <div>
-                                            <span class="text-muted">Statistics will be available in future versions</span>
-                                        </div>
-                                    </div>
-                                </group>
-                            </group>
+                            <separator string="Additional Configuration"/>
+                            <field name="additional_config" widget="ace" options="{'mode': 'json'}"/>
                         </page>
                     </notebook>
-                    
-                    <!-- Hidden currency field for monetary widgets -->
-                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="message_ids"/>
+                    </div>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" groups="base.group_user"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
             </form>
         </field>
     </record>
@@ -128,11 +109,9 @@
         <field name="name">fel.certification.provider.tree</field>
         <field name="model">fel.certification.provider</field>
         <field name="arch" type="xml">
-            <tree string="FEL Certification Providers" 
-                  decoration-success="is_active" 
-                  decoration-muted="not is_active">
+            <tree string="FEL Certification Providers">
                 <field name="name"/>
-                <field name="code" class="text-uppercase"/>
+                <field name="code"/>
                 <field name="website" widget="url"/>
                 <field name="contact_phone"/>
                 <field name="contact_email" widget="email"/>
@@ -216,7 +195,7 @@
                                     <div class="o_kanban_record_top_right">
                                         <div class="o_dropdown_kanban dropdown">
                                             <a class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" href="#" role="button">
-                                                <span class="fa fa-ellipsis-v"/>
+                                                <span class="fa fa-ellipsis-v" title="More options"/>
                                             </a>
                                             <div class="dropdown-menu" role="menu">
                                                 <a name="test_connection" type="object" class="dropdown-item">Test Connection</a>
@@ -236,40 +215,27 @@
                                     <!-- Contact Information -->
                                     <div class="row" t-if="record.contact_name.raw_value">
                                         <div class="col-12">
-                                            <i class="fa fa-user"/> <field name="contact_name"/>
+                                            <i class="fa fa-user" title="Contact Name"/> <field name="contact_name"/>
                                         </div>
                                     </div>
                                     <div class="row" t-if="record.contact_email.raw_value">
                                         <div class="col-12">
-                                            <i class="fa fa-envelope"/> <field name="contact_email"/>
+                                            <i class="fa fa-envelope" title="Contact Email"/> <field name="contact_email"/>
                                         </div>
                                     </div>
                                     <div class="row" t-if="record.contact_phone.raw_value">
                                         <div class="col-12">
-                                            <i class="fa fa-phone"/> <field name="contact_phone"/>
+                                            <i class="fa fa-phone" title="Contact Phone"/> <field name="contact_phone"/>
                                         </div>
                                     </div>
                                     
-                                    <!-- Features -->
+                                    <!-- Capabilities -->
                                     <div class="row mt-2">
                                         <div class="col-12">
-                                            <small class="text-muted">Features: </small>
-                                            <span t-if="record.supports_nit_verification.raw_value" 
-                                                  class="badge badge-success mr-1" title="NIT Verification">NIT</span>
-                                            <span t-if="record.supports_xml_generation.raw_value" 
-                                                  class="badge badge-info mr-1" title="XML Generation">XML</span>
-                                            <span t-if="record.supports_digital_signature.raw_value" 
-                                                  class="badge badge-warning mr-1" title="Digital Signature">Signature</span>
-                                            <span t-if="record.supports_pdf_generation.raw_value" 
-                                                  class="badge badge-secondary mr-1" title="PDF Generation">PDF</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Pricing -->
-                                    <div class="row mt-2" t-if="record.cost_per_dte.raw_value">
-                                        <div class="col-12">
-                                            <small class="text-muted">Cost per DTE: </small>
-                                            <strong>Q<t t-esc="record.cost_per_dte.raw_value"/></strong>
+                                            <span class="badge badge-success" t-if="record.supports_nit_verification.raw_value">NIT Verification</span>
+                                            <span class="badge badge-info" t-if="record.supports_xml_generation.raw_value">XML Generation</span>
+                                            <span class="badge badge-warning" t-if="record.supports_digital_signature.raw_value">Digital Signature</span>
+                                            <span class="badge badge-secondary" t-if="record.supports_pdf_generation.raw_value">PDF Generation</span>
                                         </div>
                                     </div>
                                 </div>
@@ -306,66 +272,14 @@
                 electronic invoice processing with Guatemala's SAT.
             </p>
             <p>
-                Popular providers include:
+                <b>Popular providers include:</b>
                 <ul>
-                    <li><strong>INFILE, S.A.</strong> - Full-service FEL provider</li>
-                    <li><strong>GUATEFACT</strong> - Alternative FEL provider</li>
-                    <li><strong>DIGIFACT</strong> - Digital invoice solutions</li>
+                    <li>INFILE, S.A.</li>
+                    <li>MegaPrint</li>
+                    <li>DocuPrint</li>
+                    <li>And others...</li>
                 </ul>
             </p>
-        </field>
-    </record>
-    
-    <!-- Quick Create INFILE Provider Action -->
-    <record id="action_create_infile_provider" model="ir.actions.server">
-        <field name="name">Create INFILE Provider</field>
-        <field name="model_id" ref="model_fel_certification_provider"/>
-        <field name="state">code</field>
-        <field name="code">
-# Create INFILE provider with data from proposal
-provider = env['fel.certification.provider'].get_infile_provider()
-action = {
-    'type': 'ir.actions.act_window',
-    'name': 'INFILE Provider',
-    'res_model': 'fel.certification.provider',
-    'res_id': provider.id,
-    'view_mode': 'form',
-    'target': 'current',
-}
-        </field>
-    </record>
-    
-    <!-- Context Actions -->
-    <record id="action_activate_providers" model="ir.actions.server">
-        <field name="name">Activate Providers</field>
-        <field name="model_id" ref="model_fel_certification_provider"/>
-        <field name="binding_model_id" ref="model_fel_certification_provider"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_manager'))]"/>
-        <field name="code">
-records.write({'is_active': True})
-        </field>
-    </record>
-    
-    <record id="action_test_provider_connections" model="ir.actions.server">
-        <field name="name">Test Connections</field>
-        <field name="model_id" ref="model_fel_certification_provider"/>
-        <field name="binding_model_id" ref="model_fel_certification_provider"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_manager'))]"/>
-        <field name="code">
-tested_count = 0
-for provider in records.filtered('is_active'):
-    try:
-        provider.test_connection()
-        tested_count += 1
-    except Exception as e:
-        pass
-
-if tested_count > 0:
-    env.user.notify_success(f'Tested {tested_count} provider connections')
         </field>
     </record>
     
