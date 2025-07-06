@@ -18,28 +18,27 @@
                 <field name="table_number" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
-            <!-- Add FEL information page in the notebook -->
-            <xpath expr="//notebook" position="inside">
-                <page string="FEL Information" name="fel_info" groups="fel_nit_gt_sat.group_fel_restaurant_user">
-                    <group>
-                        <group string="FEL Status">
-                            <field name="fel_status" widget="badge"/>
-                            <field name="fel_document_id" readonly="1"/>
-                            <field name="fel_uuid" readonly="1"/>
-                            <field name="fel_certification_date" readonly="1"/>
-                        </group>
-                        <group string="Restaurant Info">
-                            <field name="is_restaurant"/>
-                            <field name="use_fel"/>
-                            <field name="requires_fel"/>
-                            <field name="can_send_fel"/>
-                        </group>
+            <!-- Add FEL information page in the title -->
+            <xpath expr="//div[@id='title']" position="after">
+                <group string="FEL Information" groups="fel_nit_gt_sat.group_fel_restaurant_user">
+                    <group string="FEL Status">
+                        <field name="fel_status" widget="badge"/>
+                        <field name="fel_document_id" readonly="1"/>
+                        <field name="fel_uuid" readonly="1"/>
+                        <field name="fel_certification_date" readonly="1"/>
+                    </group>
+                    <group string="Restaurant Info">
+                        <field name="is_restaurant"/>
+                        <field name="use_fel"/>
+                        <field name="requires_fel"/>
+                        <field name="can_send_fel"/>
                     </group>
                     <group string="FEL Error" invisible="not fel_error_message">
                         <field name="fel_error_message" readonly="1" nolabel="1" colspan="2"/>
                     </group>
-                </page>
+                </group>
             </xpath>
+
             
             <!-- Add FEL alert after the button_box div -->
             <xpath expr="//div[@name='button_box']" position="after">
