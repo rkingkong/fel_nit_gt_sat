@@ -83,7 +83,10 @@
                         
                         <!-- Hidden computed fields -->
                         <field name="can_verify" invisible="1"/>
+                        <field name="is_verified" invisible="1"/>
+                        <field name="update_partner" invisible="1"/>
                         <field name="show_partner_creation" invisible="1"/>
+                        <field name="partner_id" invisible="1"/>
                     </group>
                     
                     <!-- Loading indicator -->
