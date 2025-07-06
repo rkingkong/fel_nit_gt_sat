@@ -7,11 +7,11 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class FelDocumentSendWizard(models.TransientModel):
-    _name = 'fel.document.send.wizard'
+    _name = 'fel.document.send.wizard'  # Keep this one
     _description = 'FEL Document Send Wizard'
     
+    # All the existing fields remain the same...
     valid_orders = fields.Integer(string="Valid Orders", readonly=True)
-    
     invalid_orders = fields.Integer(string="Invalid Orders", readonly=True)
     
     loaded_order_ids = fields.Many2many(
@@ -36,16 +36,14 @@ class FelDocumentSendWizard(models.TransientModel):
         default=True,
         help='Automatically create partners if they are missing.'
     )
-
     
     invoice_ids = fields.Many2many(
         'account.move',
-        'fel_send_wizard_invoice_rel', # 👈 unique name
+        'fel_send_wizard_invoice_rel',
         'wizard_id',
         'invoice_id',
-        _description='Invoices to send to FEL',
+        string='Invoices to send to FEL',
         help='Select invoices to send to the Fiscal Electronic Ledger (FEL).',
-        string='Invoices',
         domain="[('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted')]",
     )
     
@@ -55,53 +53,19 @@ class FelDocumentSendWizard(models.TransientModel):
     )
     
     orders_with_customer = fields.Integer(string="Orders With Customer", readonly=True)
-    
     orders_with_errors = fields.Integer(string="Orders With Errors", readonly=True)
     orders_with_pos = fields.Integer(string="Orders with POS", readonly=True)
     orders_with_fel_document = fields.Integer(string="Orders with FEL Document", readonly=True)
     orders_with_fel_document_error = fields.Integer(string="Orders with FEL Document Error", readonly=True)
-    
     orders_with_fel_document_sent = fields.Integer(string="Orders with FEL Document Sent", readonly=True)
-    
     orders_with_fel_document_not_sent = fields.Integer(string="Orders with FEL Document Not Sent", readonly=True)
     orders_with_fel_document_pending = fields.Integer(string="Orders with FEL Document Pending", readonly=True)
     orders_with_fel_document_verified = fields.Integer(string="Orders with FEL Document Verified", readonly=True)
     orders_with_fel_document_not_verified = fields.Integer(string="Orders with FEL Document Not Verified", readonly=True)
-    orders_with_fel_document_error_verified = fields.Integer(string="Orders with FEL Document Error Verified", readonly=True)
-    orders_with_fel_document_error_not_verified = fields.Integer(string="Orders with FEL Document Error Not Verified", readonly=True)
-    orders_with_fel_document_error_sent = fields.Integer(string="Orders with FEL Document Error Sent", readonly=True)
-    orders_with_fel_document_error_not_sent = fields.Integer(string="Orders with FEL Document Error Not Sent", readonly=True)
-    orders_with_fel_document_error_pending = fields.Integer(string="Orders with FEL Document Error Pending", readonly=True)
-    orders_with_fel_document_error_verified = fields.Integer(string="Orders with FEL Document Error Verified", readonly=True)
-    orders_with_fel_document_error_not_verified = fields.Integer(string="Orders with FEL Document Error Not Verified", readonly=True)
-    orders_with_fel_document_error_sent_verified = fields.Integer(string="Orders with FEL Document Error Sent Verified", readonly=True)
-    orders_with_fel_document_error_sent_not_verified = fields.Integer(string="Orders with FEL Document Error Sent Not Verified", readonly=True)
-    orders_with_fel_document_error_not_sent_verified = fields.Integer(string="Orders with FEL Document Error Not Sent Verified", readonly=True)
-    orders_with_fel_document_error_not_sent_not_verified = fields.Integer(string="Orders with FEL Document Error Not Sent Not Verified", readonly=True)
-    orders_with_fel_document_error_pending_verified = fields.Integer(string="Orders with FEL Document Error Pending Verified", readonly=True)
-    orders_with_fel_document_error_pending_not_verified = fields.Integer(string="Orders with FEL Document Error Pending Not Verified", readonly=True)
-    orders_with_fel_document_error_verified_sent = fields.Integer(string="Orders with FEL Document Error Verified Sent", readonly=True)
-    orders_with_fel_document_error_verified_not_sent = fields.Integer(string="Orders with FEL Document Error Verified Not Sent", readonly=True)
-    orders_with_fel_document_error_not_verified_sent = fields.Integer(string="Orders with FEL Document Error Not Verified Sent", readonly=True)
-    orders_with_fel_document_error_not_verified_not_sent = fields.Integer(string="Orders with FEL Document Error Not Verified Not Sent", readonly=True)
-    orders_with_fel_document_error_pending_sent = fields.Integer(string="Orders with FEL Document Error Pending Sent", readonly=True)
-    orders_with_fel_document_error_pending_not_sent = fields.Integer(string="Orders with FEL Document Error Pending Not Sent", readonly=True)
-    orders_with_fel_document_error_pending_verified = fields.Integer(string="Orders with FEL Document Error Pending Verified", readonly=True)
-    orders_with_fel_document_error_pending_not_verified = fields.Integer(string="Orders with FEL Document Error Pending Not Verified", readonly=True)
-    orders_with_fel_document_error_verified_pending = fields.Integer(string="Orders with FEL Document Error Verified Pending", readonly=True)
-    orders_with_fel_document_error_not_verified_pending = fields.Integer(string="Orders with FEL Document Error Not Verified Pending", readonly=True)
-    orders_with_fel_document_error_verified_sent_pending = fields.Integer(string="Orders with FEL Document Error Verified Sent Pending", readonly=True)
-    orders_with_fel_document_error_not_verified_sent_pending = fields.Integer(string="Orders with FEL Document Error Not Verified Sent Pending", readonly=True)
-    orders_with_fel_document_error_verified_not_sent_pending = fields.Integer(string="Orders with FEL Document Error Verified Not Sent Pending", readonly=True)
-    orders_with_fel_document_error_not_verified_not_sent_pending = fields.Integer(string="Orders with FEL Document Error Not Verified Not Sent Pending", readonly=True)
-    
     
     generate_pdf = fields.Boolean(string="Generate PDF", default=False)
-    
     date_from = fields.Date(string="Start Date")
-    
     date_to = fields.Date(string="End Date", help="End date for filtering documents")
-    
     partner_ids = fields.Many2many('res.partner', string='Customers')
     
     fel_provider = fields.Selection([
@@ -212,28 +176,9 @@ class FelDocumentSendWizard(models.TransientModel):
         help='Whether any documents are from POS orders'
     )
     
-    
-    auto_verify_nits = fields.Boolean(
-        string='Auto-Verify NITs',
-        default=False,
-        help='Automatically verify NITs before sending.'
-    )
-
-    skip_verified_only = fields.Boolean(
-        string='Skip Verified Only',
-        default=True,
-        help='Only send documents for verified partners.'
-    )
-
-    create_missing_partners = fields.Boolean(
-        string='Create Missing Partners',
-        default=True,
-        help='Automatically create partners if they are missing.'
-    )
-
     loaded_invoice_ids = fields.Many2many(
         'account.move',
-        'fel_send_wizard_loaded_inv_rel',  # 👈 another unique name
+        'fel_send_wizard_loaded_inv_rel',
         'wizard_id',
         'invoice_id',
         string='Loaded Invoices',
@@ -251,7 +196,6 @@ class FelDocumentSendWizard(models.TransientModel):
 
         invoices = self.env['account.move'].search(domain)
         self.loaded_invoice_ids = [(6, 0, invoices.ids)]
-
     
     @api.depends('document_ids')
     def _compute_document_summary(self):
@@ -283,8 +227,11 @@ class FelDocumentSendWizard(models.TransientModel):
         for wizard in self:
             try:
                 # Get FEL configuration to get cost per DTE
-                fel_config = self.env['fel.config'].get_active_config()
-                wizard.cost_per_dte = fel_config.dte_cost or 0.33
+                fel_config = self.env['fel.config'].search([
+                    ('company_id', '=', self.env.company.id),
+                    ('is_active', '=', True)
+                ], limit=1)
+                wizard.cost_per_dte = fel_config.dte_cost if fel_config else 0.33
                 wizard.estimated_cost = wizard.valid_documents * wizard.cost_per_dte
             except:
                 wizard.cost_per_dte = 0.33
@@ -333,7 +280,7 @@ class FelDocumentSendWizard(models.TransientModel):
                 
                 # Send document
                 doc.action_generate_xml()
-                doc.action_send_to_provider()
+                doc.send_to_provider()
                 
                 # Update success counter
                 self.documents_success += 1
@@ -367,6 +314,45 @@ class FelDocumentSendWizard(models.TransientModel):
         }
 
 
+class FelPosSendWizard(models.TransientModel):
+    _name = 'fel.pos.send.wizard'  # Changed from 'fel.document.send.wizard'
+    _description = 'FEL POS Order Send Wizard'
+    
+    order_ids = fields.Many2many(
+        'pos.order',
+        string='POS Orders',
+        domain="[('requires_fel', '=', True)]",
+        help='Select POS orders to send to FEL'
+    )
+    
+    def action_send_orders(self):
+        """Send selected POS orders to FEL"""
+        self.ensure_one()
+        
+        if not self.order_ids:
+            raise ValidationError(_('No orders selected.'))
+        
+        # Create FEL documents for orders
+        fel_documents = self.env['fel.document']
+        
+        for order in self.order_ids:
+            if not order.fel_document_id:
+                fel_doc = order.action_create_fel_document()
+                fel_documents |= fel_doc
+        
+        # Open send wizard for the created documents
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Send Documents to FEL'),
+            'res_model': 'fel.document.send.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_document_ids': [(6, 0, fel_documents.ids)],
+            }
+        }
+
+
 class FelInvoiceSendWizard(models.TransientModel):
     _name = 'fel.invoice.send.wizard'
     _description = 'FEL Invoice Send Wizard'
@@ -391,45 +377,6 @@ class FelInvoiceSendWizard(models.TransientModel):
         for invoice in self.invoice_ids:
             if not invoice.fel_document_id:
                 fel_doc = invoice.action_create_fel_document()
-                fel_documents |= fel_doc
-        
-        # Open send wizard for the created documents
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Send Documents to FEL'),
-            'res_model': 'fel.document.send.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'default_document_ids': [(6, 0, fel_documents.ids)],
-            }
-        }
-
-
-class FelPosSendWizard(models.TransientModel):
-    _name = 'fel.document.send.wizard'
-    _description = 'FEL POS Order Send Wizard'
-    
-    order_ids = fields.Many2many(
-        'pos.order',
-        string='POS Orders',
-        domain="[('requires_fel', '=', True)]",
-        help='Select POS orders to send to FEL'
-    )
-    
-    def action_send_orders(self):
-        """Send selected POS orders to FEL"""
-        self.ensure_one()
-        
-        if not self.order_ids:
-            raise ValidationError(_('No orders selected.'))
-        
-        # Create FEL documents for orders
-        fel_documents = self.env['fel.document']
-        
-        for order in self.order_ids:
-            if not order.fel_document_id:
-                fel_doc = order.action_create_fel_document()
                 fel_documents |= fel_doc
         
         # Open send wizard for the created documents

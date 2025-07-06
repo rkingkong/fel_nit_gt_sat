@@ -41,3 +41,5 @@ access_fel_document_phrase_user,fel.document.phrase user,model_fel_document_phra
 access_fel_document_phrase_manager,fel.document.phrase manager,model_fel_document_phrase,fel_nit_gt_sat.group_fel_manager,1,1,1,1
 access_pos_config_fel_user,pos.config fel user,point_of_sale.model_pos_config,fel_nit_gt_sat.group_fel_user,1,0,0,0
 access_fel_authentication_service_all,fel.authentication.service all,model_fel_authentication_service,base.group_user,1,0,0,0
+access_fel_pos_send_wizard_manager,fel.pos.send.wizard manager,model_fel_pos_send_wizard,fel_nit_gt_sat.group_fel_manager,1,1,1,1
+access_fel_pos_send_wizard_user,fel.pos.send.wizard user,model_fel_pos_send_wizard,fel_nit_gt_sat.group_fel_restaurant_user,1,1,1,1

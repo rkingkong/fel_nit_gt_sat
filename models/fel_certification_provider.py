@@ -173,7 +173,7 @@ class FelCertificationProvider(models.Model):
     )
     
     # Status
-    is_active = fields.Boolean(
+    active = fields.Boolean(
         string='Active',
         default=True,
         help='Whether this provider is currently active',
@@ -266,14 +266,14 @@ class FelCertificationProvider(models.Model):
                 # API URLs
                 'test_api_url': 'https://certificador.test.infile.com.gt',
                 'production_api_url': 'https://certificador.feel.com.gt',
-                'is_active': True,
+                'active': True,
             })
         return provider
     
     @api.model
     def get_active_provider(self):
         """Get the first active provider"""
-        return self.search([('is_active', '=', True)], limit=1)
+        return self.search([('active', '=', True)], limit=1)
     
     def test_connection(self):
         """Test connection to the provider"""

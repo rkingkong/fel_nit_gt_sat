@@ -224,8 +224,7 @@
     
     <record id="action_fel_pos_send_wizard" model="ir.actions.act_window">
         <field name="name">Send POS Orders to FEL</field>
-        <field name="res_model">fel.document.send.wizard</field>
-
+        <field name="res_model">fel.pos.send.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
         <field name="context">{
