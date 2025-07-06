@@ -29,7 +29,7 @@
         * NCRE - Nota de Crédito
     """,
     'author': 'Kesiyos Restaurant Systems',
-    'website': 'https://github.com/rkingkong/factura_electronica_gt',
+    'website': 'https://github.com/rkingkong/fel_nit_gt_sat',
     'license': 'LGPL-3',
     'depends': [
         'base',

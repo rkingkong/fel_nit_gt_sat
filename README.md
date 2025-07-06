@@ -405,8 +405,8 @@ We welcome contributions! Please see our contributing guidelines:
 
 ```bash
 # Clone repository
-git clone https://github.com/rkingkong/factura_electronica_gt.git
-cd factura_electronica_gt
+git clone https://github.com/rkingkong/fel_nit_gt_sat.git
+cd fel_nit_gt_sat
 
 # Create development branch
 git checkout -b feature/your-feature-name
