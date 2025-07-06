@@ -12,7 +12,26 @@ class FelNitVerificationWizard(models.TransientModel):
 
     error_message = fields.Text(string="Error Message", readonly=True)
     is_verified = fields.Boolean(string="Is Verified", readonly=True)
-
+    verification_date = fields.Datetime(string="Verification Date", readonly=True)
+    verification_result = fields.Text(string="Verification Result", readonly=True)
+    fel_verification_status = fields.Selection([
+        ('valid', 'Valid'),
+        ('invalid', 'Invalid'),
+        ('error', 'Error'), 
+    ], string="FEL Verification Status", readonly=True, default='valid')
+    fel_verification_date = fields.Datetime(string="FEL Verification Date", readonly=True)
+    fel_verification_result = fields.Text(string="FEL Verification Result", readonly=True)
+    sat_name = fields.Char(string="SAT Name", readonly=True)
+    sat_address = fields.Text(string="SAT Address", readonly=True)
+    sat_status = fields.Char(string="SAT Status", readonly=True)
+    tax_regime_gt = fields.Selection([
+        ('general', 'Régimen General'),
+        ('pequeno', 'Pequeño Contribuyente'),
+        ('especial', 'Régimen Especial'),
+    ], string="Tax Regime", readonly=True, help="Tax regime as per SAT classification")
+    
+    nit_gt = fields.Char(string="NIT", readonly=True, help="NIT as per SAT classification")
+    
     
     # Input fields
     nit = fields.Char(string='NIT to Verify', required=True)
