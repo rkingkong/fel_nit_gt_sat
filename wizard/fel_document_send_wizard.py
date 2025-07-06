@@ -10,10 +10,21 @@ class FelDocumentSendWizard(models.TransientModel):
     _name = 'fel.document.send.wizard'
     _description = 'FEL Document Send Wizard'
     
+    invoice_ids = fields.Many2many(
+        'account.move',
+        string='Invoices',
+        domain="[('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted')]",
+        help='Select invoices to send to FEL'
+    )
     
     generate_pdf = fields.Boolean(string="Generate PDF", default=False)
+    
     date_from = fields.Date(string="Start Date")
+    
     date_to = fields.Date(string="End Date", help="End date for filtering documents")
+    
+    partner_ids = fields.Many2many('res.partner', string='Customers')
+    
     fel_provider = fields.Selection([
         ('sat', 'SAT'),
         ('other', 'Other Provider'),
