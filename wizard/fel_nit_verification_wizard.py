@@ -10,6 +10,10 @@ class FelNitVerificationWizard(models.TransientModel):
     _name = 'fel.nit.verification.wizard'
     _description = 'FEL NIT Verification Wizard'
 
+    error_message = fields.Text(string="Error Message", readonly=True)
+    is_verified = fields.Boolean(string="Is Verified", readonly=True)
+
+    
     # Input fields
     nit = fields.Char(string='NIT to Verify', required=True)
     partner_id = fields.Many2one('res.partner', string='Partner')
