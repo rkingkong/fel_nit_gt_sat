@@ -62,7 +62,7 @@
         'views/fel_document_type_views.xml',
         
         # Wizard files (also define actions)
-        'wizard/fel_nit_verification_views.xml',
+        'wizard/fel_nit_verification_wizard_views.xml',
         'wizard/fel_document_send_views.xml',
         
         # Menu file AFTER all actions are defined
