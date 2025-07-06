@@ -6,27 +6,26 @@
         <field name="model">pos.config</field>
         <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//sheet/notebook" position="inside">
-                <page string="FEL Integration" name="fel_integration">
-                    <group>
-                        <group string="FEL Settings">
-                            <field name="use_fel"/>
-                            <field name="fel_auto_generate" invisible="use_fel == False"/>
-                            <field name="fel_document_type_id" invisible="use_fel == False" required="use_fel == True"/>
-                        </group>
-                        <group string="Customer Settings">
-                            <field name="fel_require_customer" invisible="use_fel == False"/>
-                            <field name="fel_allow_cf" invisible="use_fel == False"/>
-                        </group>
+            <xpath expr="//div[@class='row mt16 o_settings_container'][not(@id='restaurant_on_create')]" position="after">
+                <div class="row mt16 o_settings_container" name="fel_integration_container">
+                    <group string="FEL Settings">
+                        <field name="use_fel"/>
+                        <field name="fel_auto_generate" attrs="{'invisible': [('use_fel', '=', False)]}"/>
+                        <field name="fel_document_type_id" attrs="{'invisible': [('use_fel', '=', False)], 'required': [('use_fel', '=', True)]}"/>
                     </group>
-                    <group string="Restaurant Settings" invisible="module_pos_restaurant == False">
+                    <group string="Customer Settings">
+                        <field name="fel_require_customer" attrs="{'invisible': [('use_fel', '=', False)]}"/>
+                        <field name="fel_allow_cf" attrs="{'invisible': [('use_fel', '=', False)]}"/>
+                    </group>
+                    <group string="Restaurant Settings" attrs="{'invisible': [('module_pos_restaurant', '=', False)]}">
                         <field name="is_restaurant"/>
-                        <field name="require_waiter" invisible="is_restaurant == False"/>
+                        <field name="require_waiter" attrs="{'invisible': [('is_restaurant', '=', False)]}"/>
                     </group>
-                </page>
+                </div>
             </xpath>
         </field>
     </record>
+
 
     <record id="action_pos_config_fel" model="ir.actions.act_window">
         <field name="name">POS FEL Configuration</field>
