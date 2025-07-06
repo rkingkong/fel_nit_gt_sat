@@ -99,7 +99,7 @@ class AccountMove(models.Model):
         help='Generated XML content for debugging'
     )
     
-    @api.depends('move_type', 'state', 'partner_id', 'partner_id.country_id')
+    @api.depends('move_type', 'state', 'partner_id', 'partner_id.country_id', 'company_id')
     def _compute_requires_fel(self):
         """Determine if invoice requires FEL processing"""
         for move in self:
@@ -108,7 +108,8 @@ class AccountMove(models.Model):
                 move.move_type in ['out_invoice', 'out_refund'] and
                 move.state == 'posted' and
                 move.partner_id and
-                move.partner_id.country_id.code == 'GT'  # Only for Guatemala
+                move.partner_id.country_id.code == 'GT' and  # Only for Guatemala
+                move.company_id.country_id.code == 'GT'
             )
     
     @api.depends('requires_fel', 'fel_status', 'partner_id.nit_gt')

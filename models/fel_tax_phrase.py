@@ -111,12 +111,6 @@ class FelTaxPhrase(models.Model):
         help='Order in which phrases are displayed'
     )
     
-    active = fields.Boolean(
-        string='Active',
-        default=True,
-        help='Whether this phrase is currently active'
-    )
-    
     company_id = fields.Many2one(
         'res.company',
         string='Company',

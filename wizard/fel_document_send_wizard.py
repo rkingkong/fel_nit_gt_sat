@@ -40,7 +40,7 @@ class FelDocumentSendWizard(models.TransientModel):
     
     invoice_ids = fields.Many2many(
         'account.move',
-        'fel_wizard_invoice_rel',  # 👈 unique name
+        'fel_send_wizard_invoice_rel', # 👈 unique name
         'wizard_id',
         'invoice_id',
         _description='Invoices to send to FEL',
@@ -233,7 +233,7 @@ class FelDocumentSendWizard(models.TransientModel):
 
     loaded_invoice_ids = fields.Many2many(
         'account.move',
-        'fel_wizard_loaded_invoice_rel',  # 👈 another unique name
+        'fel_send_wizard_loaded_inv_rel',  # 👈 another unique name
         'wizard_id',
         'invoice_id',
         string='Loaded Invoices',

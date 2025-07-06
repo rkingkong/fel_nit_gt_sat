@@ -40,3 +40,5 @@ access_fel_tax_phrase_manager,fel.tax.phrase manager,model_fel_tax_phrase,fel_ni
 access_fel_document_phrase_user,fel.document.phrase user,model_fel_document_phrase,fel_nit_gt_sat.group_fel_user,1,0,0,0
 access_fel_document_phrase_manager,fel.document.phrase manager,model_fel_document_phrase,fel_nit_gt_sat.group_fel_manager,1,1,1,1
 access_pos_config_fel_user,pos.config fel user,point_of_sale.model_pos_config,fel_nit_gt_sat.group_fel_user,1,0,0,0
+access_fel_authentication_manager,fel.authentication manager,model_fel_authentication,fel_nit_gt_sat.group_fel_manager,1,1,1,1
+access_fel_authentication_user,fel.authentication user,model_fel_authentication,fel_nit_gt_sat.group_fel_user,1,0,0,0

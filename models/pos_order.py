@@ -147,7 +147,10 @@ class PosOrder(models.Model):
             # Only paid orders in Guatemala require FEL
             order.requires_fel = (
                 order.state in ['paid', 'done', 'invoiced'] and
+                order.config_id and  # Add null check
                 order.config_id.use_fel and
+                order.company_id and  # Add null check
+                order.company_id.country_id and  # Add null check
                 order.company_id.country_id.code == 'GT'
             )
     
