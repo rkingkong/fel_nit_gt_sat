@@ -10,6 +10,9 @@ class FelDocumentSendWizard(models.TransientModel):
     _name = 'fel.document.send.wizard'
     _description = 'FEL Document Send Wizard'
     
+    
+    generate_pdf = fields.Boolean(string="Generate PDF", default=False)
+
     # Document Selection
     document_ids = fields.Many2many(
         'fel.document',
