@@ -123,9 +123,10 @@
     </record>
     
     <!-- POS Orders Bulk Send Wizard -->
-    <record id="view_fel_pos_send_wizard_form" model="ir.ui.view">
-        <field name="name">fel.pos.send.wizard.form</field>
-        <field name="model">fel.pos.send.wizard</field>
+    <record id="view_fel_document_send_pos_form" model="ir.ui.view">
+        <field name="name">fel.document.send.pos.form</field>
+        <field name="model">fel.document.send.wizard</field>
+
         <field name="arch" type="xml">
             <form string="Send POS Orders to FEL">
                 <header>
@@ -223,7 +224,8 @@
     
     <record id="action_fel_pos_send_wizard" model="ir.actions.act_window">
         <field name="name">Send POS Orders to FEL</field>
-        <field name="res_model">fel.pos.send.wizard</field>
+        <field name="res_model">fel.document.send.wizard</field>
+
         <field name="view_mode">form</field>
         <field name="target">new</field>
         <field name="context">{
@@ -265,7 +267,7 @@ action = {
 action = {
     'type': 'ir.actions.act_window',
     'name': 'Send POS Orders to FEL',
-    'res_model': 'fel.pos.send.wizard',
+    'res_model': 'fel.document.send.wizard',
     'view_mode': 'form',
     'target': 'new',
     'context': {

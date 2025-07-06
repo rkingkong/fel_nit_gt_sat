@@ -407,7 +407,7 @@ class FelInvoiceSendWizard(models.TransientModel):
 
 
 class FelPosSendWizard(models.TransientModel):
-    _name = 'fel.pos.send.wizard'
+    _name = 'fel.document.send.wizard'
     _description = 'FEL POS Order Send Wizard'
     
     order_ids = fields.Many2many(
