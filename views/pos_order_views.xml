@@ -10,13 +10,13 @@
             <!-- Add FEL fields to POS order form -->
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="customer_nit" placeholder="NIT or CF" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="customer_name" invisible="customer_nit != 'CF'" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="customer_name" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
             <!-- Add restaurant fields -->
             <xpath expr="//field[@name='session_id']" position="after">
-                <field name="table_number" invisible="session_id.config_id.is_restaurant == False" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="user_id" invisible="is_restaurant == False" readonly="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="table_number" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="user_id" readonly="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
             <!-- Add FEL status group after the last group in the form -->
@@ -25,24 +25,21 @@
                     <group>
                         <!-- Status and document -->
                         <field name="fel_status" widget="badge"/>
-                        <field name="fel_document_id" readonly="1" invisible="fel_document_id == False"/>
+                        <field name="fel_document_id" readonly="1"/>
                         
                         <!-- Error handling -->
                         <field name="fel_error_message" 
-                               readonly="1" 
-                               invisible="fel_error_message == False"
+                               readonly="1"
                                widget="text"/>
                     </group>
                     <group>
                         <!-- FEL UUID -->
                         <field name="fel_uuid" 
-                               readonly="1" 
-                               invisible="fel_uuid == False"/>
+                               readonly="1"/>
                         
                         <!-- Date fields -->
                         <field name="fel_certification_date" 
-                               readonly="1"
-                               invisible="fel_certification_date == False"/>
+                               readonly="1"/>
                     </group>
                 </group>
             </xpath>
@@ -53,16 +50,17 @@
                 <field name="requires_fel" invisible="1"/>
                 <field name="is_restaurant" invisible="1"/>
                 <field name="use_fel" invisible="1"/>
+                <field name="fel_status" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="fel_uuid" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
             <!-- Add FEL status alert at the top of the form -->
             <xpath expr="//sheet" position="before">
                 <div class="alert alert-success mb-0" role="alert" 
-                     invisible="fel_status != 'certified'">
+                     invisible="fel_status != 'certified'"
+                     groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <i class="fa fa-check-circle"/> FEL Certified - 
-                    <span invisible="fel_uuid == False">
-                        UUID: <field name="fel_uuid" readonly="1" nolabel="1"/>
-                    </span>
+                    UUID: <field name="fel_uuid" readonly="1" nolabel="1"/>
                 </div>
             </xpath>
             
@@ -78,11 +76,12 @@
             
             <!-- Add ALL hidden fields for conditions FIRST -->
             <xpath expr="//tree" position="inside">
-                <field name="can_send_fel" invisible="1"/>
-                <field name="requires_fel" invisible="1"/>
+                <field name="can_send_fel" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="requires_fel" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <field name="use_fel" invisible="1"/>
                 <field name="is_restaurant" invisible="1"/>
                 <field name="config_id" invisible="1"/>
+                <field name="fel_status" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
             <!-- Then add visible fields -->
@@ -102,10 +101,8 @@
             <!-- Add action buttons -->
             <xpath expr="//field[@name='state']" position="after">
                 <button name="action_send_fel" string="Send FEL" type="object" icon="fa-send"
-                        invisible="can_send_fel == False"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <button name="retry_fel" string="Retry" type="object" icon="fa-refresh"
-                        invisible="fel_status != 'error'"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
 
@@ -179,16 +176,15 @@
                     <group>
                         <group string="FEL Settings">
                             <field name="use_fel"/>
-                            <field name="fel_auto_generate" invisible="use_fel == False"/>
+                            <field name="fel_auto_generate"/>
                             <field name="fel_document_type_id" 
-                                   invisible="use_fel == False"
                                    domain="[('active', '=', True)]"
                                    options="{'no_create': True}"/>
-                            <field name="fel_allow_consumidor_final" invisible="use_fel == False"/>
+                            <field name="fel_allow_consumidor_final"/>
                         </group>
                         <group string="Restaurant Settings">
                             <field name="is_restaurant"/>
-                            <field name="require_waiter" invisible="is_restaurant == False"/>
+                            <field name="require_waiter"/>
                         </group>
                     </group>
                 </page>
