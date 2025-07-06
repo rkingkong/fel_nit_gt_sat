@@ -10,6 +10,14 @@ class FelDocumentSendWizard(models.TransientModel):
     _name = 'fel.document.send.wizard'
     _description = 'FEL Document Send Wizard'
     
+    valid_orders = fields.Integer(string="Valid Orders", readonly=True)
+    
+    invalid_orders = fields.Integer(string="Invalid Orders", readonly=True)
+    
+    loaded_order_ids = fields.Many2many(
+        'pos.order',
+        string='Loaded POS Orders'
+    )
     
     auto_verify_nits = fields.Boolean(
         string='Auto-Verify NITs',
@@ -41,13 +49,52 @@ class FelDocumentSendWizard(models.TransientModel):
         domain="[('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted')]",
     )
     
-    orders_without_customer = fields.Integer(string="Orders Without Customer")
+    orders_without_customer = fields.Integer(
+        string='Orders Without Customer',
+        readonly=True
+    )
     
-    orders_with_customer = fields.Integer(string="Orders With Customer")
-    orders_with_errors = fields.Integer(string="Orders With Errors")
-    orders_with_pos = fields.Integer(string="Orders with POS")
-    orders_with_fel_document = fields.Integer(string="Orders with FEL Document")
-    orders_with_fel_document_error = fields.Integer(string="Orders with FEL Document Error")
+    orders_with_customer = fields.Integer(string="Orders With Customer", readonly=True)
+    
+    orders_with_errors = fields.Integer(string="Orders With Errors", readonly=True)
+    orders_with_pos = fields.Integer(string="Orders with POS", readonly=True)
+    orders_with_fel_document = fields.Integer(string="Orders with FEL Document", readonly=True)
+    orders_with_fel_document_error = fields.Integer(string="Orders with FEL Document Error", readonly=True)
+    
+    orders_with_fel_document_sent = fields.Integer(string="Orders with FEL Document Sent", readonly=True)
+    
+    orders_with_fel_document_not_sent = fields.Integer(string="Orders with FEL Document Not Sent", readonly=True)
+    orders_with_fel_document_pending = fields.Integer(string="Orders with FEL Document Pending", readonly=True)
+    orders_with_fel_document_verified = fields.Integer(string="Orders with FEL Document Verified", readonly=True)
+    orders_with_fel_document_not_verified = fields.Integer(string="Orders with FEL Document Not Verified", readonly=True)
+    orders_with_fel_document_error_verified = fields.Integer(string="Orders with FEL Document Error Verified", readonly=True)
+    orders_with_fel_document_error_not_verified = fields.Integer(string="Orders with FEL Document Error Not Verified", readonly=True)
+    orders_with_fel_document_error_sent = fields.Integer(string="Orders with FEL Document Error Sent", readonly=True)
+    orders_with_fel_document_error_not_sent = fields.Integer(string="Orders with FEL Document Error Not Sent", readonly=True)
+    orders_with_fel_document_error_pending = fields.Integer(string="Orders with FEL Document Error Pending", readonly=True)
+    orders_with_fel_document_error_verified = fields.Integer(string="Orders with FEL Document Error Verified", readonly=True)
+    orders_with_fel_document_error_not_verified = fields.Integer(string="Orders with FEL Document Error Not Verified", readonly=True)
+    orders_with_fel_document_error_sent_verified = fields.Integer(string="Orders with FEL Document Error Sent Verified", readonly=True)
+    orders_with_fel_document_error_sent_not_verified = fields.Integer(string="Orders with FEL Document Error Sent Not Verified", readonly=True)
+    orders_with_fel_document_error_not_sent_verified = fields.Integer(string="Orders with FEL Document Error Not Sent Verified", readonly=True)
+    orders_with_fel_document_error_not_sent_not_verified = fields.Integer(string="Orders with FEL Document Error Not Sent Not Verified", readonly=True)
+    orders_with_fel_document_error_pending_verified = fields.Integer(string="Orders with FEL Document Error Pending Verified", readonly=True)
+    orders_with_fel_document_error_pending_not_verified = fields.Integer(string="Orders with FEL Document Error Pending Not Verified", readonly=True)
+    orders_with_fel_document_error_verified_sent = fields.Integer(string="Orders with FEL Document Error Verified Sent", readonly=True)
+    orders_with_fel_document_error_verified_not_sent = fields.Integer(string="Orders with FEL Document Error Verified Not Sent", readonly=True)
+    orders_with_fel_document_error_not_verified_sent = fields.Integer(string="Orders with FEL Document Error Not Verified Sent", readonly=True)
+    orders_with_fel_document_error_not_verified_not_sent = fields.Integer(string="Orders with FEL Document Error Not Verified Not Sent", readonly=True)
+    orders_with_fel_document_error_pending_sent = fields.Integer(string="Orders with FEL Document Error Pending Sent", readonly=True)
+    orders_with_fel_document_error_pending_not_sent = fields.Integer(string="Orders with FEL Document Error Pending Not Sent", readonly=True)
+    orders_with_fel_document_error_pending_verified = fields.Integer(string="Orders with FEL Document Error Pending Verified", readonly=True)
+    orders_with_fel_document_error_pending_not_verified = fields.Integer(string="Orders with FEL Document Error Pending Not Verified", readonly=True)
+    orders_with_fel_document_error_verified_pending = fields.Integer(string="Orders with FEL Document Error Verified Pending", readonly=True)
+    orders_with_fel_document_error_not_verified_pending = fields.Integer(string="Orders with FEL Document Error Not Verified Pending", readonly=True)
+    orders_with_fel_document_error_verified_sent_pending = fields.Integer(string="Orders with FEL Document Error Verified Sent Pending", readonly=True)
+    orders_with_fel_document_error_not_verified_sent_pending = fields.Integer(string="Orders with FEL Document Error Not Verified Sent Pending", readonly=True)
+    orders_with_fel_document_error_verified_not_sent_pending = fields.Integer(string="Orders with FEL Document Error Verified Not Sent Pending", readonly=True)
+    orders_with_fel_document_error_not_verified_not_sent_pending = fields.Integer(string="Orders with FEL Document Error Not Verified Not Sent Pending", readonly=True)
+    
     
     generate_pdf = fields.Boolean(string="Generate PDF", default=False)
     
