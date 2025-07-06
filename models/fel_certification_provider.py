@@ -18,6 +18,12 @@ class FelCertificationProvider(models.Model):
     help='General API URL for the certification provider'
     )
 
+    environment = fields.Selection(
+    selection=[('test', 'Test'), ('production', 'Production')],
+    string='Environment',
+    default='test',
+    required=True
+    )
     
     #check for active provider
     active = fields.Boolean(
