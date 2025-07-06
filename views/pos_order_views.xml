@@ -19,39 +19,44 @@
                 <field name="user_id" invisible="is_restaurant == False" readonly="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
-            <!-- Add FEL status group -->
-            <xpath expr="//group[@name='order_details']" position="after">
+            <!-- Add FEL status group after the last group in the form -->
+            <xpath expr="//sheet/group[last()]" position="after">
                 <group name="fel_details" string="FEL Information" groups="fel_nit_gt_sat.group_fel_restaurant_user">
-                    <!-- Status and document -->
-                    <field name="fel_status" widget="badge"/>
-                    <field name="fel_document_id" readonly="1" invisible="fel_document_id == False"/>
-                    
-                    <!-- Error handling -->
-                    <field name="fel_error_message" 
-                           readonly="1" 
-                           invisible="fel_error_message == False"
-                           widget="text"/>
-                    
-                    <!-- FEL UUID -->
-                    <field name="fel_uuid" 
-                           readonly="1" 
-                           invisible="fel_uuid == False"/>
-                    
-                    <!-- Date fields -->
-                    <field name="fel_certification_date" 
-                           readonly="1"
-                           invisible="fel_certification_date == False"/>
+                    <group>
+                        <!-- Status and document -->
+                        <field name="fel_status" widget="badge"/>
+                        <field name="fel_document_id" readonly="1" invisible="fel_document_id == False"/>
+                        
+                        <!-- Error handling -->
+                        <field name="fel_error_message" 
+                               readonly="1" 
+                               invisible="fel_error_message == False"
+                               widget="text"/>
+                    </group>
+                    <group>
+                        <!-- FEL UUID -->
+                        <field name="fel_uuid" 
+                               readonly="1" 
+                               invisible="fel_uuid == False"/>
+                        
+                        <!-- Date fields -->
+                        <field name="fel_certification_date" 
+                               readonly="1"
+                               invisible="fel_certification_date == False"/>
+                    </group>
                 </group>
             </xpath>
             
             <!-- Add computed fields (invisible) -->
-            <xpath expr="//field[@name='company_id']" position="after">
+            <xpath expr="//sheet" position="inside">
                 <field name="can_send_fel" invisible="1"/>
                 <field name="requires_fel" invisible="1"/>
+                <field name="is_restaurant" invisible="1"/>
+                <field name="use_fel" invisible="1"/>
             </xpath>
             
-            <!-- Add FEL status in header -->
-            <xpath expr="//div[@name='button_box']" position="after">
+            <!-- Add FEL status alert at the top of the form -->
+            <xpath expr="//sheet" position="before">
                 <div class="alert alert-success mb-0" role="alert" 
                      invisible="fel_status != 'certified'">
                     <i class="fa fa-check-circle"/> FEL Certified - 
