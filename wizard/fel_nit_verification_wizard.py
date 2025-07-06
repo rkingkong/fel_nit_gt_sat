@@ -32,7 +32,17 @@ class FelNitVerificationWizard(models.TransientModel):
     
     nit_gt = fields.Char(string="NIT", readonly=True, help="NIT as per SAT classification")
     tax_regime_description = fields.Text(string="Tax Regime Description", readonly=True)
-
+    
+    verification_state = fields.Selection([
+        ('draft', 'Ready to Verify'),   
+        ('verifying', 'Verifying...'),
+        ('verified', 'Verified'),
+        ('error', 'Error'),
+    ], default='draft', readonly=True, string="Verification State", help="Current state of the NIT verification process")
+    create_partner = fields.Boolean(string="Create Partner", default=False, help="Option to create a partner if not found")
+    update_partner = fields.Boolean(string="Update Partner", default=True, help="Option to update partner details if found")
+    
+    
     
     # Input fields
     nit = fields.Char(string='NIT to Verify', required=True)
@@ -45,7 +55,8 @@ class FelNitVerificationWizard(models.TransientModel):
         ('verified', 'Verified'),
         ('error', 'Error'),
     ], default='draft', readonly=True)
-    is_verified = fields.Boolean(readonly=True)
+
+
     verification_message = fields.Text(readonly=True)
 
     # SAT Info
