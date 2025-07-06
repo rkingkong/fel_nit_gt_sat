@@ -14,6 +14,26 @@ class FelDocumentType(models.Model):
     _order = 'sequence, name'
     
     
+    min_amount = fields.Monetary(
+        string="Minimum Amount",
+        help="Minimum amount for which this document type is valid.",
+    )
+    max_amount = fields.Monetary(
+        string="Maximum Amount",
+        help="Maximum amount for which this document type is valid.",
+    )
+    requires_customer = fields.Boolean(
+        string="Requires Customer",
+        help="Indicates if this document type requires customer information.",
+    )
+    currency_id = fields.Many2one(
+        'res.currency',
+        string="Currency",
+        required=True,
+        default=lambda self: self.env.company.currency_id.id
+    )
+
+    
     requires_reference_doc = fields.Boolean(
         string="Requires Reference Document",
         help="Indicates whether a reference document is required for this type (e.g., credit note, debit note)."
