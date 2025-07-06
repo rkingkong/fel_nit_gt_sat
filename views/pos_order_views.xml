@@ -7,61 +7,53 @@
         <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
         <field name="arch" type="xml">
             
-            <!-- Add FEL fields to POS order form -->
+            <!-- Add FEL fields after partner_id in the order_fields group -->
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="customer_nit" placeholder="NIT or CF" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <field name="customer_name" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
-            <!-- Add restaurant fields -->
-            <xpath expr="//field[@name='session_id']" position="after">
+            <!-- Add restaurant fields after user_id -->
+            <xpath expr="//field[@name='user_id']" position="after">
                 <field name="table_number" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="user_id" readonly="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
-            <!-- Add FEL status group after the last group in the form -->
-            <xpath expr="//sheet/group[last()]" position="after">
-                <group name="fel_details" string="FEL Information" groups="fel_nit_gt_sat.group_fel_restaurant_user">
+            <!-- Add FEL information page in the notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="FEL Information" name="fel_info" groups="fel_nit_gt_sat.group_fel_restaurant_user">
                     <group>
-                        <!-- Status and document -->
-                        <field name="fel_status" widget="badge"/>
-                        <field name="fel_document_id" readonly="1"/>
-                        
-                        <!-- Error handling -->
-                        <field name="fel_error_message" 
-                               readonly="1"
-                               widget="text"/>
+                        <group string="FEL Status">
+                            <field name="fel_status" widget="badge"/>
+                            <field name="fel_document_id" readonly="1"/>
+                            <field name="fel_uuid" readonly="1"/>
+                            <field name="fel_certification_date" readonly="1"/>
+                        </group>
+                        <group string="Restaurant Info">
+                            <field name="is_restaurant"/>
+                            <field name="use_fel"/>
+                            <field name="requires_fel"/>
+                            <field name="can_send_fel"/>
+                        </group>
                     </group>
-                    <group>
-                        <!-- FEL UUID -->
-                        <field name="fel_uuid" 
-                               readonly="1"/>
-                        
-                        <!-- Date fields -->
-                        <field name="fel_certification_date" 
-                               readonly="1"/>
+                    <group string="FEL Error" invisible="not fel_error_message">
+                        <field name="fel_error_message" readonly="1" nolabel="1" colspan="2"/>
                     </group>
-                </group>
+                </page>
             </xpath>
             
-            <!-- Add computed fields (invisible) -->
-            <xpath expr="//sheet" position="inside">
-                <field name="can_send_fel" invisible="1"/>
-                <field name="requires_fel" invisible="1"/>
-                <field name="is_restaurant" invisible="1"/>
-                <field name="use_fel" invisible="1"/>
-                <field name="fel_status" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="fel_uuid" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-            </xpath>
-            
-            <!-- Add FEL status alert at the top of the form -->
-            <xpath expr="//sheet" position="before">
+            <!-- Add FEL alert after the button_box div -->
+            <xpath expr="//div[@name='button_box']" position="after">
                 <div class="alert alert-success mb-0" role="alert" 
                      invisible="fel_status != 'certified'"
                      groups="fel_nit_gt_sat.group_fel_restaurant_user">
-                    <i class="fa fa-check-circle"/> FEL Certified - 
-                    UUID: <field name="fel_uuid" readonly="1" nolabel="1"/>
+                    <i class="fa fa-check-circle"/> FEL Certified - UUID: <field name="fel_uuid" readonly="1" nolabel="1"/>
                 </div>
+            </xpath>
+            
+            <!-- Hidden fields -->
+            <xpath expr="//sheet" position="inside">
+                <field name="fel_status" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="fel_uuid" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
         </field>
@@ -74,31 +66,21 @@
         <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
         <field name="arch" type="xml">
             
-            <!-- Add ALL hidden fields for conditions FIRST -->
+            <!-- Add fields at the end of tree -->
             <xpath expr="//tree" position="inside">
-                <field name="can_send_fel" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="requires_fel" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="table_number" optional="show" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="customer_nit" optional="show" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="fel_status" optional="show" widget="badge" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <field name="fel_uuid" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
+                <!-- Hidden fields for conditions -->
+                <field name="can_send_fel" invisible="1"/>
+                <field name="requires_fel" invisible="1"/>
                 <field name="use_fel" invisible="1"/>
                 <field name="is_restaurant" invisible="1"/>
                 <field name="config_id" invisible="1"/>
-                <field name="fel_status" invisible="1" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
-            <!-- Then add visible fields -->
-            <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="table_number" optional="show" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="user_id" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="customer_nit" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="fel_status" optional="show" widget="badge"
-                    decoration-success="fel_status=='certified'"
-                    decoration-danger="fel_status=='error'"
-                    decoration-warning="fel_status=='cancelled'"
-                    decoration-info="fel_status in ('sending', 'generating')"
-                    groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="fel_uuid" optional="hide" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-            </xpath>
-            
-            <!-- Add action buttons -->
+            <!-- Add action buttons after state field -->
             <xpath expr="//field[@name='state']" position="after">
                 <button name="action_send_fel" string="Send FEL" type="object" icon="fa-send"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
@@ -116,16 +98,11 @@
         <field name="inherit_id" ref="point_of_sale.view_pos_order_search"/>
         <field name="arch" type="xml">
             
-            <!-- Add FEL search fields -->
-            <xpath expr="//field[@name='name']" position="after">
+            <!-- Add search fields at the end -->
+            <xpath expr="//search" position="inside">
                 <field name="fel_uuid" string="FEL UUID" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <field name="customer_nit" string="Customer NIT" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <field name="table_number" string="Table" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <field name="user_id" string="POS User" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-            </xpath>
-            
-            <!-- Add FEL filters after the last filter in the search view -->
-            <xpath expr="//search" position="inside">
                 <separator groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="Requires FEL" name="requires_fel" 
                         domain="[('requires_fel', '=', True)]"
@@ -133,93 +110,21 @@
                 <filter string="FEL Certified" name="fel_certified" 
                         domain="[('fel_status', '=', 'certified')]"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <filter string="FEL Pending" name="fel_pending" 
-                        domain="[('requires_fel', '=', True), ('fel_status', 'in', ['draft', 'error'])]"
-                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
                 <filter string="FEL Errors" name="fel_errors" 
                         domain="[('fel_status', '=', 'error')]"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <separator groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <filter string="With Table" name="with_table" 
-                        domain="[('table_number', '!=', False)]"
-                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <filter string="Consumidor Final" name="consumidor_final" 
-                        domain="['|', ('customer_nit', '=', 'CF'), ('customer_nit', '=', False)]"
-                        groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-            </xpath>
-            
-            <!-- Add FEL grouping after the last element in search view -->
-            <xpath expr="//search" position="inside">
                 <separator/>
-                <filter string="FEL Status" name="group_fel_status" 
+                <filter string="Group by FEL Status" name="group_fel_status" 
                         context="{'group_by': 'fel_status'}"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <filter string="Table" name="group_table" 
+                <filter string="Group by Table" name="group_table" 
                         context="{'group_by': 'table_number'}"
                         groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
-                <filter string="User" name="group_user" context="{'group_by': 'user_id'}" groups="fel_nit_gt_sat.group_fel_restaurant_user"/>
             </xpath>
             
         </field>
     </record>
     
-    <!-- POS Config Form View Extension for FEL -->
-    <record id="view_pos_config_form_fel" model="ir.ui.view">
-        <field name="name">pos.config.form.fel</field>
-        <field name="model">pos.config</field>
-        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
-        <field name="arch" type="xml">
-            
-            <!-- Add FEL configuration section -->
-            <xpath expr="//notebook" position="inside">
-                <page string="FEL Configuration" name="fel_config" 
-                      groups="fel_nit_gt_sat.group_fel_restaurant_user">
-                    <group>
-                        <group string="FEL Settings">
-                            <field name="use_fel"/>
-                            <field name="fel_auto_generate"/>
-                            <field name="fel_document_type_id" 
-                                   domain="[('active', '=', True)]"
-                                   options="{'no_create': True}"/>
-                            <field name="fel_allow_consumidor_final"/>
-                        </group>
-                        <group string="Restaurant Settings">
-                            <field name="is_restaurant"/>
-                            <field name="require_waiter"/>
-                        </group>
-                    </group>
-                </page>
-            </xpath>
-            
-        </field>
-    </record>
-    
-    <!-- Action to send multiple POS orders to FEL -->
-    <record id="action_send_pos_orders_to_fel" model="ir.actions.server">
-        <field name="name">Send to FEL</field>
-        <field name="model_id" ref="point_of_sale.model_pos_order"/>
-        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('fel_nit_gt_sat.group_fel_restaurant_user'))]"/>
-        <field name="code">
-# Send selected POS orders to FEL
-sent_count = 0
-error_count = 0
-
-for order in records.filtered(lambda o: o.can_send_fel):
-    try:
-        order.action_send_fel()
-        if order.fel_status == 'certified':
-            sent_count += 1
-    except Exception as e:
-        error_count += 1
-        
-if sent_count > 0:
-    env.user.notify_success(f'Successfully sent {sent_count} orders to FEL')
-if error_count > 0:
-    env.user.notify_warning(f'{error_count} orders could not be sent to FEL')
-        </field>
-    </record>
+    <!-- Skip POS Config view for now - we'll add it separately if needed -->
 
 </odoo>
