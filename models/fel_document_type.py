@@ -19,7 +19,11 @@ class FelDocumentType(models.Model):
     help='Indicates if this document type is active'
     )
 
-    
+    sat_code = fields.Char(
+        string='SAT Code',
+        help='Código interno del documento según SAT'
+    )
+
     # Basic Information
     name = fields.Char(
         string='Document Name', 
