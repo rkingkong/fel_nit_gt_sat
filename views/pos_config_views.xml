@@ -6,7 +6,7 @@
         <field name="model">pos.config</field>
         <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
+            <xpath expr="//sheet/notebook" position="inside">
                 <page string="FEL Integration" name="fel_integration">
                     <group>
                         <group string="FEL Settings">
