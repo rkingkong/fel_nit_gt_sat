@@ -53,7 +53,22 @@ class FelCertificationProvider(models.Model):
         help='List of DTE types supported by this provider'
     )
 
-    
+    certificate_file = fields.Binary(
+        string='Certificate File',
+        attachment=True,
+        help='Upload the .pfx or .pem certificate file'
+    )
+
+    certificate_filename = fields.Char(
+        string='Certificate Filename',
+        help='Stores the name of the uploaded certificate file'
+    )
+
+    certificate_password = fields.Char(
+        string='Certificate Password',
+        help='Password to decrypt the certificate file'
+    )
+
     #check for active provider
     active = fields.Boolean(
         string="Active",
