@@ -13,53 +13,6 @@ class FelDocumentType(models.Model):
     _rec_name = 'name'
     _order = 'sequence, name'
     
-    
-    min_amount = fields.Monetary(
-        string="Minimum Amount",
-        help="Minimum amount for which this document type is valid.",
-    )
-    max_amount = fields.Monetary(
-        string="Maximum Amount",
-        help="Maximum amount for which this document type is valid.",
-    )
-    requires_customer = fields.Boolean(
-        string="Requires Customer",
-        help="Indicates if this document type requires customer information.",
-    )
-    currency_id = fields.Many2one(
-        'res.currency',
-        string="Currency",
-        required=True,
-        default=lambda self: self.env.company.currency_id.id
-    )
-
-    
-    requires_reference_doc = fields.Boolean(
-        string="Requires Reference Document",
-        help="Indicates whether a reference document is required for this type (e.g., credit note, debit note)."
-    )
-
-    
-    xml_template_name = fields.Char(
-        string="XML Template Name",
-        help="Technical name of the XML template to be used, e.g., 'fel_fact_template'"
-    )
-
-    active = fields.Boolean(
-    string='Active',
-    default=True,
-    help='Indicates if this document type is active'
-    )
-
-    sat_code = fields.Char(
-        string='SAT Code',
-        help='Código interno del documento según SAT'
-    )
-
-    is_other = fields.Boolean(string="Other Document Type", default=False)
-    usage_notes = fields.Text(string="Usage Notes", help="Add any specific notes about when and how to use this document type.")
-    
-    
     # Basic Information
     name = fields.Char(
         string='Document Name', 
@@ -83,6 +36,65 @@ class FelDocumentType(models.Model):
         string='Sequence',
         default=10,
         help='Order of display in lists'
+    )
+    
+    # Financial Fields
+    min_amount = fields.Monetary(
+        string="Minimum Amount",
+        help="Minimum amount for which this document type is valid.",
+    )
+    
+    max_amount = fields.Monetary(
+        string="Maximum Amount",
+        help="Maximum amount for which this document type is valid.",
+    )
+    
+    currency_id = fields.Many2one(
+        'res.currency',
+        string="Currency",
+        required=True,
+        default=lambda self: self.env.company.currency_id.id
+    )
+    
+    # Customer Requirements
+    requires_customer = fields.Boolean(
+        string="Requires Customer",
+        help="Indicates if this document type requires customer information.",
+    )
+    
+    # Document Requirements
+    requires_reference_document = fields.Boolean(
+        string="Requires Reference Document",
+        help="Indicates whether a reference document is required for this type (e.g., credit note, debit note)."
+    )
+    
+    # XML Configuration
+    xml_template_name = fields.Char(
+        string="XML Template Name",
+        help="Technical name of the XML template to be used, e.g., 'fel_fact_template'"
+    )
+    
+    xml_template = fields.Text(
+        string='XML Template',
+        help='XML template for generating documents of this type'
+    )
+    
+    # Status
+    active = fields.Boolean(
+        string='Active',
+        default=True,
+        help='Indicates if this document type is active'
+    )
+    
+    # Other fields
+    is_other = fields.Boolean(
+        string="Other Document Type", 
+        default=False
+    )
+    
+    usage_notes = fields.Text(
+        string="Usage Notes", 
+        help="Add any specific notes about when and how to use this document type."
     )
 
     # Tax Phrase Relations
@@ -144,26 +156,9 @@ class FelDocumentType(models.Model):
     )
     
     # Technical Configuration
-    xml_template = fields.Text(
-        string='XML Template',
-        help='XML template for generating documents of this type'
-    )
-    
-    requires_reference_document = fields.Boolean(
-        string='Requires Reference Document',
-        help='Check if this document type requires a reference to another document (e.g., credit notes)'
-    )
-    
     allows_negative_amounts = fields.Boolean(
         string='Allows Negative Amounts',
         help='Check if this document type can have negative line amounts'
-    )
-    
-    # Status
-    is_active = fields.Boolean(
-        string='Active',
-        default=True,
-        help='Whether this document type is currently available for use'
     )
     
     # Related Models
@@ -190,26 +185,26 @@ class FelDocumentType(models.Model):
     @api.model
     def get_document_type_by_code(self, code):
         """Get document type by SAT code"""
-        return self.search([('code', '=', code), ('is_active', '=', True)], limit=1)
+        return self.search([('code', '=', code), ('active', '=', True)], limit=1)
     
     @api.model
     def get_invoice_types(self):
         """Get all invoice document types"""
-        return self.search([('is_invoice', '=', True), ('is_active', '=', True)])
+        return self.search([('is_invoice', '=', True), ('active', '=', True)])
     
     @api.model
     def get_credit_note_types(self):
         """Get all credit note document types"""
-        return self.search([('is_credit_note', '=', True), ('is_active', '=', True)])
+        return self.search([('is_credit_note', '=', True), ('active', '=', True)])
     
     @api.model
     def get_debit_note_types(self):
         """Get all debit note document types"""
-        return self.search([('is_debit_note', '=', True), ('is_active', '=', True)])
+        return self.search([('is_debit_note', '=', True), ('active', '=', True)])
     
     def get_available_for_regime(self, tax_regime):
         """Get document types available for a specific tax regime"""
-        domain = [('is_active', '=', True)]
+        domain = [('active', '=', True)]
         
         if tax_regime == 'general':
             domain.append(('available_for_general', '=', True))

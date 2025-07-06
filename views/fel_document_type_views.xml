@@ -8,11 +8,11 @@
         <field name="arch" type="xml">
             <form string="FEL Document Type">
                 <header>
-                    <field name="is_active" widget="statusbar_toggle"/>
+                    <field name="active" widget="statusbar_toggle"/>
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" 
-                            invisible="is_active == True"/>
+                            invisible="active == True"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_documents" type="object" 
                                 class="oe_stat_button" icon="fa-file-text-o">
@@ -31,7 +31,7 @@
                     <group>
                         <group string="General Information">
                             <field name="description" placeholder="Brief description of this document type"/>
-                            <field name="sat_code" placeholder="SAT internal code"/>
+                            <field name="code" placeholder="SAT internal code"/>
                             <field name="sequence" widget="integer"/>
                         </group>
                         <group string="Classification">
@@ -60,7 +60,7 @@
                             <group>
                                 <group string="XML Configuration">
                                     <field name="xml_template_name" placeholder="e.g., fel_fact_template"/>
-                                    <field name="requires_reference_doc" invisible="not (is_credit_note or is_debit_note)"/>
+                                    <field name="requires_reference_document" invisible="not (is_credit_note or is_debit_note)"/>
                                 </group>
                                 <group string="Validation Rules">
                                     <field name="min_amount" widget="monetary"/>
@@ -96,7 +96,7 @@
                 <field name="available_for_pequeno" widget="boolean_toggle" string="Pequeño"/>
                 <field name="available_for_especial" widget="boolean_toggle" string="Especial"/>
                 <field name="document_count" string="# Docs"/>
-                <field name="is_active" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle"/>
                 <button name="action_view_documents" string="View" type="object" 
                         icon="fa-external-link" invisible="document_count == 0"/>
             </tree>
@@ -113,8 +113,8 @@
                 <field name="code"/>
                 <field name="description"/>
                 <separator/>
-                <filter string="Active" name="active" domain="[('is_active', '=', True)]"/>
-                <filter string="Inactive" name="inactive" domain="[('is_active', '=', False)]"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
                 <separator/>
                 <filter string="Invoices" name="invoices" domain="[('is_invoice', '=', True)]"/>
                 <filter string="Credit Notes" name="credit_notes" domain="[('is_credit_note', '=', True)]"/>
@@ -128,7 +128,7 @@
                     <filter string="Document Classification" name="group_classification" 
                             context="{'group_by': 'is_invoice'}"/>
                     <filter string="Active Status" name="group_active" 
-                            context="{'group_by': 'is_active'}"/>
+                            context="{'group_by': 'active'}"/>
                 </group>
             </search>
         </field>
@@ -143,7 +143,7 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="description"/>
-                <field name="is_active"/>
+                <field name="active"/>
                 <field name="is_invoice"/>
                 <field name="is_credit_note"/>
                 <field name="is_debit_note"/>
@@ -154,7 +154,7 @@
                 <field name="available_for_especial"/>
                 <templates>
                     <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_card #{record.is_active.raw_value ? 'oe_kanban_color_2' : 'oe_kanban_color_8'}">
+                        <div t-attf-class="oe_kanban_card #{record.active.raw_value ? 'oe_kanban_color_2' : 'oe_kanban_color_8'}">
                             <div class="oe_kanban_content">
                                 <div class="o_kanban_record_top">
                                     <div class="o_kanban_record_headings">
@@ -174,7 +174,7 @@
                                                 <a name="action_view_documents" type="object" class="dropdown-item">View Documents</a>
                                                 <div class="dropdown-divider"/>
                                                 <div class="dropdown-item-text">
-                                                    <field name="is_active" widget="boolean_toggle"/>
+                                                    <field name="active" widget="boolean_toggle"/>
                                                     Active
                                                 </div>
                                             </div>
