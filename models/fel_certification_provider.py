@@ -30,6 +30,29 @@ class FelCertificationProvider(models.Model):
     api_token = fields.Char(string='API Token')
     timeout = fields.Integer(string='Timeout')
     website = fields.Char(string='Website')
+    support_email = fields.Char(string='Support Email')
+    support_phone = fields.Char(string='Support Phone')
+    support_hours = fields.Char(string='Support Hours')
+    
+    daily_dte_limit = fields.Integer(
+        string='Daily DTE Limit',
+        help='Maximum number of DTEs allowed per day'
+    )
+
+    credit_days = fields.Integer(
+        string='Credit Days',
+        help='Number of credit days allowed before payment is due'
+    )
+
+    supported_document_types = fields.Many2many(
+        'fel.document.type',
+        'fel_cert_provider_doc_type_rel',
+        'provider_id',
+        'doc_type_id',
+        string='Supported Document Types',
+        help='List of DTE types supported by this provider'
+    )
+
     
     #check for active provider
     active = fields.Boolean(
