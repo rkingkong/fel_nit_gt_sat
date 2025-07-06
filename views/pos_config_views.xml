@@ -10,16 +10,16 @@
                 <div class="row mt16 o_settings_container" name="fel_integration_container">
                     <group string="FEL Settings">
                         <field name="use_fel"/>
-                        <field name="fel_auto_generate" attrs="{'invisible': [('use_fel', '=', False)]}"/>
-                        <field name="fel_document_type_id" attrs="{'invisible': [('use_fel', '=', False)], 'required': [('use_fel', '=', True)]}"/>
+                            <field name="fel_auto_generate" invisible="not use_fel"/>
+                            <field name="fel_document_type_id" invisible="not use_fel" required="use_fel"/>
                     </group>
                     <group string="Customer Settings">
-                        <field name="fel_require_customer" attrs="{'invisible': [('use_fel', '=', False)]}"/>
-                        <field name="fel_allow_cf" attrs="{'invisible': [('use_fel', '=', False)]}"/>
+                        <field name="fel_require_customer" invisible="not use_fel"/>
+                        <field name="fel_allow_cf" invisible="not use_fel"/>
                     </group>
-                    <group string="Restaurant Settings" attrs="{'invisible': [('module_pos_restaurant', '=', False)]}">
+                    <group string="Restaurant Settings" invisible="not module_pos_restaurant">
                         <field name="is_restaurant"/>
-                        <field name="require_waiter" attrs="{'invisible': [('is_restaurant', '=', False)]}"/>
+                        <field name="require_waiter" invisible="not is_restaurant"/>
                     </group>
                 </div>
             </xpath>
