@@ -125,7 +125,7 @@
     <!-- POS Orders Bulk Send Wizard -->
     <record id="view_fel_document_send_pos_form" model="ir.ui.view">
         <field name="name">fel.document.send.pos.form</field>
-        <field name="model">fel.document.send.wizard</field>
+        <field name="model">fel.pos.send.wizard</field>
 
         <field name="arch" type="xml">
             <form string="Send POS Orders to FEL">
