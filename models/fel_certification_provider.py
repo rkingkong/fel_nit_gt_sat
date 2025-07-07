@@ -187,25 +187,25 @@ class FelCertificationProvider(models.Model):
         required=True
     )
     
-    setup_cost = fields.Monetary(
+    setup_cost = fields.Float(
         string='Setup Cost',
         currency_field='currency_id',
         help='One-time setup cost'
     )
     
-    monthly_cost = fields.Monetary(
+    monthly_cost = fields.Float(
         string='Monthly Cost',
         currency_field='currency_id',
         help='Monthly subscription cost'
     )
     
-    annual_cost = fields.Monetary(
+    annual_cost = fields.Float(
         string='Annual Cost',
         currency_field='currency_id',
         help='Annual subscription cost'
     )
     
-    cost_per_dte = fields.Monetary(
+    cost_per_dte = fields.Float(
         string='Cost per DTE',
         currency_field='currency_id',
         help='Cost per electronic document'
