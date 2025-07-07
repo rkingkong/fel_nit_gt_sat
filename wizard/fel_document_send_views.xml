@@ -137,14 +137,15 @@
                         <h1>Send POS Orders to FEL</h1>
                     </div>
                     
-                    <!-- Warnings -->
+                    <!-- Warnings 
                     <div class="alert alert-warning" role="alert" 
                          invisible="orders_without_customer == 0">
-                        <strong>⚠️ Warning:</strong> 
+                         <strong>⚠️ Warning:</strong> 
                         <field name="orders_without_customer" readonly="1" nolabel="1"/> orders don't have customer information.
                         These will be processed as "Consumidor Final" (CF).
+
                     </div>
-                    
+                    -->
                     <!-- Summary -->
                     <group>
                         <group string="Order Summary">
