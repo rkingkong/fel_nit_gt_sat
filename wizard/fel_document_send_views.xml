@@ -130,9 +130,7 @@
         <field name="arch" type="xml">
             <form string="Send POS Orders to FEL">
                 <header>
-                    <button name="action_send_order" string="Send Orders" type="object" 
-                            class="btn-primary" invisible="valid_orders == 0"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button name="action_send_orders" string="Send Orders" type="object" class="btn-primary" invisible="valid_orders == 0"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
