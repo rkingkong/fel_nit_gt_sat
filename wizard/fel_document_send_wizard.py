@@ -10,11 +10,23 @@ class FelDocumentSendWizard(models.TransientModel):
     _name = 'fel.document.send.wizard'
     _description = 'FEL Document Send Wizard'
     
-    # All the existing fields remain the same...
+    # Document selection
     document_ids = fields.Many2many(
         'fel.document',
         string='Documents to Send',
         help='Select documents to send to FEL'
+    )
+    
+    # Processing mode
+    send_mode = fields.Selection([
+        ('single', 'One at a time'),
+        ('batch', 'Batch processing')
+    ], string='Send Mode', default='batch', required=True)
+    
+    generate_pdf = fields.Boolean(
+        string='Generate PDF',
+        default=True,
+        help='Generate PDF document after certification'
     )
     
     total_documents = fields.Integer(
@@ -88,27 +100,6 @@ class FelDocumentSendWizard(models.TransientModel):
         help='Continue processing if individual documents fail'
     )
     
-    date_from = fields.Date(string="Start Date")
-    date_to = fields.Date(string="End Date")
-    partner_ids = fields.Many2many('res.partner', string='Customers')
-    
-    invoice_ids = fields.Many2many(
-        'account.move',
-        'fel_send_wizard_invoice_rel',
-        'wizard_id',
-        'invoice_id',
-        string='Invoices to send to FEL',
-        domain="[('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted')]"
-    )
-    
-    loaded_invoice_ids = fields.Many2many(
-        'account.move',
-        'fel_send_wizard_loaded_invoice_rel',
-        'wizard_id',
-        'invoice_id',
-        string='Loaded Invoices'
-    )
-    
     @api.depends('document_ids')
     def _compute_document_summary(self):
         """Compute document summary statistics"""
@@ -155,21 +146,6 @@ class FelDocumentSendWizard(models.TransientModel):
                 wizard.processing_progress = (wizard.documents_processed / wizard.total_documents) * 100
             else:
                 wizard.processing_progress = 0
-    
-    def action_load_invoices(self):
-        """Load invoices based on filters"""
-        self.ensure_one()
-        
-        domain = [('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted')]
-        if self.date_from:
-            domain.append(('invoice_date', '>=', self.date_from))
-        if self.date_to:
-            domain.append(('invoice_date', '<=', self.date_to))
-        if self.partner_ids:
-            domain.append(('partner_id', 'in', self.partner_ids.ids))
-
-        invoices = self.env['account.move'].search(domain)
-        self.loaded_invoice_ids = [(6, 0, invoices.ids)]
     
     def action_send_documents(self):
         """Send selected documents to FEL"""
@@ -268,7 +244,7 @@ class FelPosSendWizard(models.TransientModel):
         help='Filter by specific POS sessions'
     )
     
-    # Summary fields - THESE WERE MISSING!
+    # Summary fields
     total_orders = fields.Integer(
         string='Total Orders',
         compute='_compute_order_summary',
@@ -323,21 +299,17 @@ class FelPosSendWizard(models.TransientModel):
             without_customer = 0
             
             for order in wizard.loaded_order_ids:
-                # Check if order is valid for FEL
                 if order.partner_id and order.partner_id.nit_gt:
-                    # Has customer with NIT
                     if order.state in ('paid', 'done', 'invoiced'):
                         valid_count += 1
                     else:
                         invalid_count += 1
                 elif not order.partner_id:
-                    # No customer assigned
                     without_customer += 1
                     invalid_count += 1
                 else:
-                    # Customer without NIT
                     if order.state in ('paid', 'done', 'invoiced'):
-                        valid_count += 1  # Can use CF
+                        valid_count += 1
                     else:
                         invalid_count += 1
             
@@ -372,7 +344,6 @@ class FelPosSendWizard(models.TransientModel):
         if not self.loaded_order_ids:
             raise ValidationError(_('No orders loaded. Please load orders first.'))
         
-        # Filter valid orders
         valid_orders = self.loaded_order_ids.filtered(
             lambda o: o.state in ('paid', 'done', 'invoiced') and 
                      o.fel_status in ('draft', 'error')
@@ -381,29 +352,24 @@ class FelPosSendWizard(models.TransientModel):
         if not valid_orders:
             raise ValidationError(_('No valid orders to send. Orders must be paid and not already sent to FEL.'))
         
-        # Process orders
         success_count = 0
         error_count = 0
         errors = []
         
         for order in valid_orders:
             try:
-                # Ensure customer info
                 if not order.partner_id:
                     if self.create_missing_partners:
-                        # Create CF partner
                         order.partner_id = self.env.ref('l10n_gt.consumidor_final_gt')
                     else:
                         raise ValidationError(_('Order %s has no customer') % order.name)
                 
-                # Verify NIT if enabled
                 if self.auto_verify_nits and order.partner_id.nit_gt and order.partner_id.nit_gt != 'CF':
                     if not order.partner_id.nit_verified:
                         order.partner_id.action_verify_nit()
                         if not order.partner_id.nit_verified and self.skip_verified_only:
                             raise ValidationError(_('NIT not verified for %s') % order.partner_id.name)
                 
-                # Send to FEL
                 order.action_send_to_fel()
                 success_count += 1
                 
@@ -412,10 +378,9 @@ class FelPosSendWizard(models.TransientModel):
                 errors.append(f"{order.name}: {str(e)}")
                 _logger.error(f"Error sending POS order {order.name} to FEL: {str(e)}")
         
-        # Show results
         message = _('Processing completed: %d successful, %d failed') % (success_count, error_count)
         if errors:
-            message += '\n\nErrors:\n' + '\n'.join(errors[:5])  # Show first 5 errors
+            message += '\n\nErrors:\n' + '\n'.join(errors[:5])
             if len(errors) > 5:
                 message += f'\n... and {len(errors) - 5} more errors'
         
@@ -436,7 +401,6 @@ class FelPosSendWizard(models.TransientModel):
         
         cf_partner = self.env.ref('l10n_gt.consumidor_final_gt', raise_if_not_found=False)
         if not cf_partner:
-            # Create CF partner if not exists
             cf_partner = self.env['res.partner'].create({
                 'name': 'Consumidor Final',
                 'nit_gt': 'CF',
@@ -447,7 +411,6 @@ class FelPosSendWizard(models.TransientModel):
         orders_without_customer = self.loaded_order_ids.filtered(lambda o: not o.partner_id)
         orders_without_customer.write({'partner_id': cf_partner.id})
         
-        # Reload summary
         self._compute_order_summary()
         
         return {
@@ -456,6 +419,160 @@ class FelPosSendWizard(models.TransientModel):
             'params': {
                 'title': _('Customers Updated'),
                 'message': _('%d orders set to Consumidor Final') % len(orders_without_customer),
+                'type': 'success',
+            }
+        }
+
+
+class FelInvoiceSendWizard(models.TransientModel):
+    _name = 'fel.invoice.send.wizard'
+    _description = 'FEL Invoice Send Wizard'
+    
+    invoice_ids = fields.Many2many(
+        'account.move',
+        string='Invoices',
+        domain="[('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted')]",
+        help='Select invoices to send to FEL'
+    )
+    
+    loaded_invoice_ids = fields.Many2many(
+        'account.move',
+        'fel_invoice_wizard_loaded_invoice_rel',
+        'wizard_id',
+        'invoice_id',
+        string='Loaded Invoices'
+    )
+    
+    # Date filters
+    date_from = fields.Date(string="Start Date")
+    date_to = fields.Date(string="End Date")
+    
+    # Partner filter
+    partner_ids = fields.Many2many(
+        'res.partner',
+        string='Customers',
+        help='Filter by specific customers'
+    )
+    
+    # Processing options
+    auto_verify_nits = fields.Boolean(
+        string='Auto-Verify NITs',
+        default=False,
+        help='Automatically verify NITs before sending.'
+    )
+    
+    skip_verified_only = fields.Boolean(
+        string='Skip Verified Only',
+        default=True,
+        help='Only send documents for verified partners.'
+    )
+    
+    create_missing_partners = fields.Boolean(
+        string='Create Missing Partners',
+        default=True,
+        help='Automatically create partners if they are missing.'
+    )
+    
+    def action_load_invoices(self):
+        """Load invoices based on filters"""
+        self.ensure_one()
+        
+        domain = [('move_type', 'in', ['out_invoice', 'out_refund']), ('state', '=', 'posted')]
+        if self.date_from:
+            domain.append(('invoice_date', '>=', self.date_from))
+        if self.date_to:
+            domain.append(('invoice_date', '<=', self.date_to))
+        if self.partner_ids:
+            domain.append(('partner_id', 'in', self.partner_ids.ids))
+
+        invoices = self.env['account.move'].search(domain)
+        self.loaded_invoice_ids = [(6, 0, invoices.ids)]
+        
+        return {
+            'type': 'ir.actions.do_nothing',
+        }
+    
+    def action_send_invoices(self):
+        """Send selected invoices to FEL"""
+        self.ensure_one()
+        
+        if not self.invoice_ids and not self.loaded_invoice_ids:
+            raise ValidationError(_('No invoices selected or loaded.'))
+        
+        invoices = self.invoice_ids or self.loaded_invoice_ids
+        
+        # Create FEL documents for invoices
+        fel_documents = self.env['fel.document']
+        
+        for invoice in invoices:
+            if not invoice.fel_document_id:
+                fel_doc = invoice.action_create_fel_document()
+                fel_documents |= fel_doc
+        
+        # Open send wizard for the created documents
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Send Documents to FEL'),
+            'res_model': 'fel.document.send.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_document_ids': [(6, 0, fel_documents.ids)],
+            }
+        }
+
+
+# Optional: Daily processing wizard
+class FelDailyProcessingWizard(models.TransientModel):
+    _name = 'fel.daily.processing.wizard'
+    _description = 'FEL Daily Processing Wizard'
+    
+    date = fields.Date(
+        string='Processing Date',
+        default=fields.Date.context_today,
+        required=True
+    )
+    
+    process_invoices = fields.Boolean(
+        string='Process Invoices',
+        default=True
+    )
+    
+    process_pos_orders = fields.Boolean(
+        string='Process POS Orders',
+        default=True
+    )
+    
+    def action_process_daily(self):
+        """Process all pending FEL documents for the day"""
+        self.ensure_one()
+        
+        if self.process_invoices:
+            # Process invoices
+            wizard = self.env['fel.invoice.send.wizard'].create({
+                'date_from': self.date,
+                'date_to': self.date,
+            })
+            wizard.action_load_invoices()
+            if wizard.loaded_invoice_ids:
+                wizard.action_send_invoices()
+        
+        if self.process_pos_orders:
+            # Process POS orders
+            wizard = self.env['fel.pos.send.wizard'].create({
+                'date_from': self.date,
+                'date_to': self.date,
+            })
+            wizard.action_load_orders()
+            if wizard.loaded_order_ids:
+                wizard.action_send_orders()
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Daily Processing Complete'),
+                'message': _('All FEL documents for %s have been processed.') % self.date,
                 'type': 'success',
             }
         }
