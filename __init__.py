@@ -2,6 +2,7 @@
 
 from . import models
 from . import wizard
+from . import reports
 
 def post_init_hook(cr, registry):
     """Post installation hook to setup default data"""

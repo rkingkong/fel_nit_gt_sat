@@ -43,3 +43,6 @@ access_pos_config_fel_user,pos.config fel user,point_of_sale.model_pos_config,fe
 access_fel_authentication_service_all,fel.authentication.service all,model_fel_authentication_service,base.group_user,1,0,0,0
 access_fel_pos_send_wizard_manager,fel.pos.send.wizard manager,model_fel_pos_send_wizard,fel_nit_gt_sat.group_fel_manager,1,1,1,1
 access_fel_pos_send_wizard_user,fel.pos.send.wizard user,model_fel_pos_send_wizard,fel_nit_gt_sat.group_fel_restaurant_user,1,1,1,1
+access_fel_certification_provider_user,fel.certification.provider.user,model_fel_certification_provider,fel_nit_gt_sat.group_fel_restaurant_user,1,0,0,0
+access_fel_certification_provider_manager,fel.certification.provider.manager,model_fel_certification_provider,fel_nit_gt_sat.group_fel_manager,1,1,1,1
+access_fel_certification_provider_admin,fel.certification.provider.admin,model_fel_certification_provider,fel_nit_gt_sat.group_fel_admin,1,1,1,1

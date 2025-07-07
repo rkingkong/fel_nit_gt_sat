@@ -3,6 +3,8 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 import logging
+import timedelta
+import time
 
 _logger = logging.getLogger(__name__)
 
@@ -409,3 +411,43 @@ class PosOrder(models.Model):
             self.customer_name = self.partner_id.name
         else:
             raise UserError(_('Please select a customer first.'))
+        
+    # Add to pos_order.py
+    def sync_offline_fel_documents(self):
+        """Sync FEL documents created while POS was offline"""
+        offline_orders = self.search([
+            ('fel_status', '=', 'pending_offline'),
+            ('create_date', '>=', fields.Datetime.now() - timedelta(days=1))
+        ])
+        
+        for order in offline_orders:
+            order.with_delay(priority=5).send_to_fel()
+            
+    def send_to_fel_with_metrics(self):
+        start_time = time.time()
+        try:
+            result = self.send_to_fel()
+            duration = time.time() - start_time
+            
+            # Log performance metrics
+            _logger.info(
+                "FEL document sent successfully",
+                extra={
+                    'fel_doc_type': self.document_type_id.code,
+                    'duration': duration,
+                    'restaurant_id': self.pos_order_id.config_id.id,
+                    'table': self.pos_order_id.table_id.name,
+                }
+            )
+            return result
+        except Exception as e:
+            duration = time.time() - start_time
+            _logger.error(
+                "FEL document failed",
+                extra={
+                    'duration': duration,
+                    'error': str(e),
+                    'restaurant_id': self.pos_order_id.config_id.id,
+                }
+            )
+            raise

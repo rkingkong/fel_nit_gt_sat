@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 import requests
 import logging
+import time
 
 _logger = logging.getLogger(__name__)
 
@@ -710,3 +711,27 @@ class FelDocument(models.Model):
             if record.state == 'certified':
                 raise ValidationError(_('Cannot delete certified FEL documents. Cancel them first if needed.'))
         return super().unlink()
+
+    # Add to fel_document.py
+    def process_pos_order_batch(self, pos_orders):
+        """Process multiple POS orders for FEL with retry logic"""
+        failed_orders = []
+        for order in pos_orders:
+            retry_count = 0
+            max_retries = 3
+            
+            while retry_count < max_retries:
+                try:
+                    self.process_single_order(order)
+                    break
+                except Exception as e:
+                    retry_count += 1
+                    if retry_count >= max_retries:
+                        failed_orders.append({
+                            'order': order,
+                            'error': str(e)
+                        })
+                    else:
+                        time.sleep(2 ** retry_count)  # Exponential backoff
+        
+        return failed_orders
