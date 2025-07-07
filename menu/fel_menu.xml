@@ -139,6 +139,39 @@
               sequence="30"/>
     
     <!-- Configuration Section (Manager Only) -->
+    <!-- Configuration Section (Manager Only) -->
+    <menuitem id="menu_fel_config_section" 
+            name="Configuration" 
+            parent="menu_fel_main" 
+            sequence="90"
+            groups="fel_nit_gt_sat.group_fel_manager"/>
+
+    <menuitem id="menu_fel_config_main" 
+            name="FEL Configuration" 
+            parent="menu_fel_config_section" 
+            action="action_fel_config" 
+            sequence="10"/>
+
+    <menuitem id="menu_fel_providers" 
+            name="Certification Providers" 
+            parent="menu_fel_config_section" 
+            action="action_fel_certification_provider" 
+            sequence="20"/>
+
+    <menuitem id="menu_fel_document_types" 
+            name="Document Types" 
+            parent="menu_fel_config_section" 
+            action="action_fel_document_type" 
+            sequence="30"/>
+
+<!-- ADD THIS -->
+    <menuitem id="menu_fel_tax_phrases"
+            name="Tax Phrases"
+            parent="menu_fel_config_section"
+            action="action_fel_tax_phrases"
+            sequence="40"
+            groups="fel_nit_gt_sat.group_fel_manager"/>
+    
     <menuitem id="menu_fel_config_section" 
               name="Configuration" 
               parent="menu_fel_main" 
