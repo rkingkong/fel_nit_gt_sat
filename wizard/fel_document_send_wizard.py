@@ -312,10 +312,9 @@ class FelDocumentSendWizard(models.TransientModel):
                 'type': 'success' if self.documents_failed == 0 else 'warning',
             }
         }
-
-
+    
 class FelPosSendWizard(models.TransientModel):
-    _name = 'fel.pos.send.wizard'  # Changed from 'fel.document.send.wizard'
+    _name = 'fel.pos.send.wizard'
     _description = 'FEL POS Order Send Wizard'
     
     order_ids = fields.Many2many(
@@ -324,6 +323,134 @@ class FelPosSendWizard(models.TransientModel):
         domain="[('requires_fel', '=', True)]",
         help='Select POS orders to send to FEL'
     )
+    
+    # Add these missing fields:
+    
+    # Summary fields
+    total_orders = fields.Integer(
+        string='Total Orders',
+        compute='_compute_order_summary',
+        help='Total number of orders selected'
+    )
+    
+    valid_orders = fields.Integer(
+        string='Valid Orders',
+        compute='_compute_order_summary',
+        help='Number of orders ready to send'
+    )
+    
+    invalid_orders = fields.Integer(
+        string='Invalid Orders',
+        compute='_compute_order_summary',
+        help='Number of orders with errors'
+    )
+    
+    orders_without_customer = fields.Integer(
+        string='Orders Without Customer',
+        compute='_compute_order_summary',
+        help='Orders that will be processed as CF'
+    )
+    
+    # Date filters
+    date_from = fields.Date(
+        string='From Date',
+        help='Start date for filtering orders'
+    )
+    
+    date_to = fields.Date(
+        string='To Date',
+        help='End date for filtering orders'
+    )
+    
+    session_ids = fields.Many2many(
+        'pos.session',
+        string='POS Sessions',
+        help='Filter by specific POS sessions'
+    )
+    
+    loaded_order_ids = fields.Many2many(
+        'pos.order',
+        'fel_pos_wizard_loaded_order_rel',
+        'wizard_id',
+        'order_id',
+        string='Loaded Orders',
+        help='Orders loaded based on filters'
+    )
+    
+    @api.depends('order_ids')
+    def _compute_order_summary(self):
+        """Compute order summary statistics"""
+        for wizard in self:
+            wizard.total_orders = len(wizard.order_ids)
+            
+            valid = 0
+            invalid = 0
+            without_customer = 0
+            
+            for order in wizard.order_ids:
+                if not order.partner_id and not order.customer_nit:
+                    without_customer += 1
+                
+                if order.can_send_fel:
+                    valid += 1
+                else:
+                    invalid += 1
+            
+            wizard.valid_orders = valid
+            wizard.invalid_orders = invalid
+            wizard.orders_without_customer = without_customer
+    
+    def action_load_orders(self):
+        """Load orders based on date filters"""
+        self.ensure_one()
+        
+        domain = [('requires_fel', '=', True)]
+        
+        if self.date_from:
+            domain.append(('date_order', '>=', self.date_from))
+        if self.date_to:
+            domain.append(('date_order', '<=', self.date_to))
+        if self.session_ids:
+            domain.append(('session_id', 'in', self.session_ids.ids))
+        
+        orders = self.env['pos.order'].search(domain)
+        self.loaded_order_ids = [(6, 0, orders.ids)]
+        self.order_ids = [(6, 0, orders.ids)]
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
+    
+    def action_send_orders(self):
+        """Send selected POS orders to FEL"""
+        self.ensure_one()
+        
+        if not self.order_ids:
+            raise ValidationError(_('No orders selected.'))
+        
+        # Create FEL documents for orders
+        fel_documents = self.env['fel.document']
+        
+        for order in self.order_ids:
+            if not order.fel_document_id:
+                fel_doc = order.action_create_fel_document()
+                fel_documents |= fel_doc
+        
+        # Open send wizard for the created documents
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Send Documents to FEL'),
+            'res_model': 'fel.document.send.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_document_ids': [(6, 0, fel_documents.ids)],
+            }
+        }
     
     def action_send_orders(self):
         """Send selected POS orders to FEL"""
