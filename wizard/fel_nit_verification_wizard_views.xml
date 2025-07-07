@@ -113,12 +113,13 @@
                                     <field name="tax_regime" readonly="1" invisible="not tax_regime"/>
                                 </group>
                             </group>
-                            
+                            <!-- 
                             <separator string="Tax Regime Details" invisible="not tax_regime_description"/>
                             <div class="alert alert-info" role="alert" 
                                  invisible="not tax_regime_description">
                                 <field name="tax_regime_description" widget="text" readonly="1" nolabel="1"/>
                             </div>
+                            -->
                         </page>
                         
                         <page string="Partner Management" name="partner_mgmt">
