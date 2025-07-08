@@ -4,7 +4,7 @@
     <!-- FEL Document Send Wizard -->
     <record id="view_fel_document_send_wizard_form" model="ir.ui.view">
         <field name="name">fel.document.send.wizard.form</field>
-        <field name="model">fel.document.send.wizard</field>
+        <field name="model">fel.invoice.send.wizard</field>
         <field name="arch" type="xml">
             <form string="Send FEL Documents">
                 <header>
@@ -69,7 +69,7 @@
     <!-- Invoice Bulk Send Wizard -->
     <record id="view_fel_invoice_send_wizard_form" model="ir.ui.view">
         <field name="name">fel.invoice.send.wizard.form</field>
-        <field name="model">fel.invoice.send.wizard.form</field>
+        <field name="model">fel.invoice.send.wizard</field>
         <field name="arch" type="xml">
             <form string="Send Invoices to FEL">
                 <sheet>
@@ -244,7 +244,7 @@
 action = {
     'type': 'ir.actions.act_window',
     'name': 'Send Invoices to FEL',
-    'res_model': 'fel.invoice.send.wizard',
+    'res_model': 'fel.pos.send.wizard',
     'view_mode': 'form',
     'target': 'new',
     'context': {
