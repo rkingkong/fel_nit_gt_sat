@@ -57,7 +57,7 @@
     <menuitem id="menu_fel_invoices_all" 
               name="FEL Invoices" 
               parent="menu_fel_invoices_section" 
-              action="action_fel_invoice_dashboard" 
+              action="action_fel_dashboard" 
               sequence="10"/>
     
     <menuitem id="menu_fel_invoices_pending" 
