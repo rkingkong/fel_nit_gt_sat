@@ -177,11 +177,9 @@
                     
                     <!-- Processing Options -->
                     <group string="Processing Options">
-                        <field name="auto_create_customers"/>
-                        <field name="verify_nits"/>
-                        <field name="use_default_customer" invisible="not auto_create_customers"/>
-                        <field name="default_customer_id" invisible="not use_default_customer" 
-                               required="use_default_customer == True"/>
+                        <field name="create_missing_partners"/>
+                        <field name="auto_verify_nits"/>
+                        <field name="skip_verified_only"/>
                     </group>
                     
                     <div class="alert alert-info" role="alert">
