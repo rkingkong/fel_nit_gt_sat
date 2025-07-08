@@ -279,12 +279,12 @@
                                     </div>
                                     <div class="row mt-2" t-if="record.contact_name.raw_value">
                                         <div class="col-12">
-                                            <i class="fa fa-user"/> <span t-esc="record.contact_name.value"/>
+                                            <i class="fa fa-user" title="Contact"/> <span t-esc="record.contact_name.value"/>
                                         </div>
                                     </div>
                                     <div class="row mt-1" t-if="record.contact_phone.raw_value">
                                         <div class="col-12">
-                                            <i class="fa fa-phone"/> <span t-esc="record.contact_phone.value"/>
+                                            <i class="fa fa-phone" title="Phone"/> <span t-esc="record.contact_phone.value"/>
                                         </div>
                                     </div>
                                     <div class="row mt-3">

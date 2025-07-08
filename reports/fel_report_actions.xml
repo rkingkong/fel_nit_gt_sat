@@ -125,7 +125,7 @@
         <field name="name">fel.document.report.search</field>
         <field name="model">fel.document</field>
         <field name="mode">primary</field>
-        <field name="inherit_id" ref="fel_document_search"/>
+        <field name="inherit_id" ref="view_fel_document_search"/>
         <field name="arch" type="xml">
             <!-- Add report-specific filters -->
             <xpath expr="//search" position="inside">
