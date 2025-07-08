@@ -25,6 +25,11 @@ class FelDocument(models.Model):
         help='Document name for display'
     )
     
+    error_code = fields.Char(
+    string='Error Code',
+    help='SAT error code if certification failed',
+    readonly=True,
+    )
     # Document Information
     document_type_id = fields.Many2one(
         'fel.document.type',
