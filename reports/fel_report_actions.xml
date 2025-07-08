@@ -9,7 +9,7 @@
         <field name="context">{
             'search_default_group_by_month': 1,
             'search_default_last_month': 1,
-            'pivot_measures': ['__count', 'total_amount'],
+            'pivot_measures': ['__count', 'amount_total'],
             'pivot_row_groupby': ['document_type_id', 'state'],
             'pivot_column_groupby': ['create_date:month'],
         }</field>
@@ -89,7 +89,7 @@
         <field name="view_mode">tree,pivot</field>
         <field name="context">{
             'search_default_today': 1,
-            'pivot_measures': ['__count', 'total_amount'],
+            'pivot_measures': ['__count', 'amount_total'],
             'pivot_row_groupby': ['document_type_id'],
             'pivot_column_groupby': ['state'],
         }</field>
@@ -114,7 +114,7 @@
         <field name="view_mode">pivot,graph</field>
         <field name="domain">[('state', '=', 'certified')]</field>
         <field name="context">{
-            'pivot_measures': ['total_amount', 'tax_amount'],
+            'pivot_measures': ['amount_total', 'amount_tax'],
             'pivot_row_groupby': ['document_type_id'],
             'pivot_column_groupby': ['create_date:month'],
         }</field>
@@ -172,7 +172,7 @@
         <field name="arch" type="xml">
             <graph string="FEL Analysis" type="bar" stacked="True">
                 <field name="document_type_id" type="row"/>
-                <field name="total_amount" type="measure"/>
+                <field name="amount_total" type="measure"/>
             </graph>
         </field>
     </record>
@@ -185,8 +185,8 @@
             <pivot string="FEL Analysis" display_quantity="true">
                 <field name="document_type_id" type="row"/>
                 <field name="state" type="col"/>
-                <field name="total_amount" type="measure"/>
-                <field name="tax_amount" type="measure"/>
+                <field name="amount_total" type="measure"/>
+                <field name="amount_tax" type="measure"/>
             </pivot>
         </field>
     </record>
