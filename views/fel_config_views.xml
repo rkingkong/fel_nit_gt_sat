@@ -8,15 +8,14 @@
         <field name="arch" type="xml">
             <form string="FEL Configuration">
                 <header>
-                    <button name="test_api_connection" string="Test Connection" type="object" class="btn-primary"/>
-                    <button name="action_sync_providers" string="Sync Providers" type="object" class="btn-secondary" groups="fel_nit_gt_sat.group_fel_manager"/>
+                    <button name="test_connection" string="Test Connection" type="object" class="btn-primary"/>
                     <button name="action_check_signature_expiry" string="Check Signature Expiry" type="object" class="btn-secondary" invisible="llave_firma_expiry == False"/>
                     <field name="is_active" widget="boolean_toggle"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_documents" type="object" class="oe_stat_button" icon="fa-file-text-o">
-                            <field name="fel_document_count" widget="statinfo" string="Documents"/>
+                            <field name="annual_dte_count" widget="statinfo" string="Documents"/>
                         </button>
                         <button name="action_view_monthly_stats" type="object" class="oe_stat_button" icon="fa-bar-chart">
                             <div class="o_field_widget o_stat_info">
@@ -57,9 +56,10 @@
                         <page string="API Configuration" name="api_config">
                             <group>
                                 <group string="Credentials">
-                                    <field name="api_username" placeholder="Your API username"/>
-                                    <field name="api_password" password="True" placeholder="Your API password"/>
-                                    <field name="api_token" password="True" placeholder="API Token (if required)"/>
+                                    <field name="usuario_api" placeholder="Your API username"/>
+                                    <field name="llave_api" password="True" placeholder="Your API password"/>
+                                    <field name="usuario_firma" placeholder="Your signature username"/>
+                                    <field name="llave_firma" password="True" placeholder="Your signature key"/>
                                 </group>
                                 
                                 <group string="Endpoints">
@@ -72,19 +72,16 @@
                             </group>
                             
                             <group string="Digital Signature" name="signature_group">
-                                <field name="llave_firma" placeholder="Upload your .p12 certificate file" filename="llave_firma_filename"/>
-                                <field name="llave_firma_filename" invisible="1"/>
-                                <field name="llave_password" password="True" placeholder="Certificate password" required="llave_firma != False"/>
-                                <field name="llave_firma_expiry" readonly="1" invisible="llave_firma == False"/>
+                                <field name="llave_firma_expiry" invisible="llave_firma == False"/>
                             </group>
                         </page>
                         
                         <page string="Company Data" name="company_data">
                             <group>
                                 <group string="Company Information">
-                                    <field name="company_nit" required="1" placeholder="12345678"/>
+                                    <field name="nit" required="1" placeholder="12345678"/>
                                     <field name="establishment_code" placeholder="1" help="Establishment number from SAT"/>
-                                    <field name="establishment_address" placeholder="Complete address" widget="text"/>
+                                    <field name="address_line" placeholder="Complete address" widget="text"/>
                                     <field name="postal_code" placeholder="01001"/>
                                 </group>
                                 
