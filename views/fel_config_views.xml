@@ -31,7 +31,7 @@
                     
                     <div class="oe_title">
                         <h1>
-                            <field name="name" placeholder="FEL Configuration Name"/>
+                            <field name="company_id" readonly="1" options="{'no_create': True}"/>
                         </h1>
                     </div>
                     
@@ -170,7 +170,6 @@
         <field name="model">fel.config</field>
         <field name="arch" type="xml">
             <tree string="FEL Configurations">
-                <field name="name"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="provider_id"/>
                 <field name="environment"/>
@@ -186,9 +185,8 @@
         <field name="model">fel.config</field>
         <field name="arch" type="xml">
             <search string="Search FEL Configuration">
-                <field name="name"/>
+                <field name="company_id"/>
                 <field name="provider_id"/>
-                <field name="company_id" groups="base.group_multi_company"/>
                 
                 <filter string="Active" name="active" domain="[('is_active', '=', True)]"/>
                 <filter string="Test Mode" name="test_mode" domain="[('test_mode', '=', True)]"/>
