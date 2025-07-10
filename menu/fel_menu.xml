@@ -67,6 +67,19 @@
               sequence="20"
               groups="fel_nit_gt_sat.group_fel_manager"/>
     
+        <!-- Configuration Section -->
+    <menuitem id="menu_fel_config_section" 
+              name="Configuration" 
+              parent="menu_fel_main" 
+              sequence="90"
+              groups="fel_nit_gt_sat.group_fel_manager"/>
+    
+    <menuitem id="menu_fel_config_main" 
+              name="FEL Configuration" 
+              parent="menu_fel_config_section" 
+              action="action_fel_config" 
+              sequence="10"/>
+
     <!-- Integration with existing Odoo menus -->
     
     <!-- Add FEL submenu to Accounting -->
