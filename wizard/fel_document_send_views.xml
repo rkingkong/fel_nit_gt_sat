@@ -203,7 +203,7 @@
         <field name="view_mode">form</field>
         <field name="target">new</field>
         <field name="context">{
-            'default_document_ids': active_ids,
+            'default_document_ids': active_ids if active_ids else [],
             'active_model': 'fel.document'
         }</field>
     </record>
