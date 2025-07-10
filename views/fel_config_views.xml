@@ -12,7 +12,7 @@
                             invisible="api_url == False"/>
                     <button name="action_check_signature_expiry" string="Check Signature Expiry" type="object" 
                             class="btn-secondary" invisible="llave_firma_expiry == False"/>
-                    <field name="is_active" widget="boolean_toggle"/>
+                    <field name="active" widget="boolean_toggle"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
