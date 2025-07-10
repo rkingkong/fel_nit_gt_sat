@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
+    
     <!-- FEL Configuration Form View -->
     <record id="view_fel_config_form" model="ir.ui.view">
         <field name="name">fel.config.form</field>
@@ -8,148 +8,156 @@
         <field name="arch" type="xml">
             <form string="FEL Configuration">
                 <header>
-                    <button name="test_connection" string="Test Connection" type="object" class="btn-primary" 
-                            invisible="api_url == False"/>
-                    <button name="action_check_signature_expiry" string="Check Signature Expiry" type="object" 
-                            class="btn-secondary" invisible="llave_firma_expiry == False"/>
-                    <field name="active" widget="boolean_toggle"/>
+                    <button name="test_api_connection" string="Test Connection" type="object" class="btn-primary"/>
+                    <button name="action_sync_providers" string="Sync Providers" type="object" class="btn-secondary" groups="fel_nit_gt_sat.group_fel_manager"/>
+                    <button name="action_check_signature_expiry" string="Check Signature Expiry" type="object" class="btn-secondary" invisible="llave_firma_expiry == False"/>
+                    <field name="is_active" widget="boolean_toggle"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_documents" type="object" class="oe_stat_button" icon="fa-file-text-o">
-                            <field name="annual_dte_count" widget="statinfo" string="DTEs This Year"/>
+                            <field name="fel_document_count" widget="statinfo" string="Documents"/>
                         </button>
-                        <button name="action_view_monthly_stats" type="object" class="oe_stat_button" icon="fa-calendar">
-                            <field name="monthly_dte_count" widget="statinfo" string="DTEs This Month"/>
+                        <button name="action_view_monthly_stats" type="object" class="oe_stat_button" icon="fa-bar-chart">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="monthly_dte_count"/> / <field name="monthly_dte_limit"/>
+                                </span>
+                                <span class="o_stat_text">Monthly DTEs</span>
+                            </div>
                         </button>
                     </div>
-
+                    
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="is_active"/>
+                    
                     <div class="oe_title">
                         <h1>
-                            <field name="company_id" readonly="1" options="{'no_create': True}"/>
+                            <field name="name" placeholder="FEL Configuration Name"/>
                         </h1>
-                        <h3>
-                            <field name="provider_id" placeholder="Select FEL Provider..." options="{'no_create_edit': True}"/>
-                        </h3>
                     </div>
-
+                    
                     <group>
-                        <group string="Company Information">
-                            <field name="nit" placeholder="e.g. 12345678-9"/>
-                            <field name="tax_regime"/>
-                            <field name="commercial_name" placeholder="Commercial name for documents"/>
-                            <field name="establishment_code" placeholder="1"/>
-                            <field name="establishment_name" placeholder="e.g. FUSIÓN GATRONÓMICA"/>
-                            <field name="establishment_classification" placeholder="e.g. 885 for restaurants"/>
-                            <field name="establishment_type" placeholder="e.g. 888"/>
-                        </group>
-
-                        <group string="Environment">
+                        <group string="General">
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                            <field name="tax_regime" required="1"/>
+                            <field name="provider_id" required="1" options="{'no_create': True}"/>
                             <field name="environment" widget="radio"/>
                             <field name="test_mode" invisible="environment == 'production'"/>
-                            <field name="last_sync" readonly="1"/>
-                            <field name="health_status" 
-                                   decoration-success="health_status=='healthy'"
-                                   decoration-warning="health_status=='warning'"
-                                   decoration-danger="health_status in ('error','critical')"/>
+                        </group>
+                        
+                        <group string="Provider Info">
+                            <field name="setup_cost" widget="monetary" readonly="1"/>
+                            <field name="annual_cost" widget="monetary" readonly="1"/>
+                            <field name="dte_cost" widget="monetary" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
-
+                    
                     <notebook>
-                        <page string="INFILE Configuration" name="infile_config">
+                        <page string="API Configuration" name="api_config">
                             <group>
-                                <group string="Authentication Credentials">
-                                    <field name="usuario_firma" placeholder="Your INFILE username/prefix"/>
-                                    <field name="llave_firma" password="True" placeholder="Token signer from SAT"/>
-                                    <field name="usuario_api" placeholder="Usually same as Usuario Firma"/>
-                                    <field name="llave_api" password="True" placeholder="API key from INFILE"/>
-                                    <field name="llave_firma_expiry" placeholder="Signature key expiry date"/>
+                                <group string="Credentials">
+                                    <field name="api_username" placeholder="Your API username"/>
+                                    <field name="api_password" password="True" placeholder="Your API password"/>
+                                    <field name="api_token" password="True" placeholder="API Token (if required)"/>
                                 </group>
-
-                                <group string="API Endpoints">
+                                
+                                <group string="Endpoints">
                                     <field name="api_url" readonly="1"/>
-                                    <field name="certification_url" invisible="provider_id == False"/>
-                                    <field name="nit_verification_url" invisible="provider_id == False"/>
+                                    <field name="certification_url" groups="fel_nit_gt_sat.group_fel_manager"/>
+                                    <field name="nit_verification_url" groups="fel_nit_gt_sat.group_fel_manager"/>
+                                    <field name="cui_verification_url" groups="fel_nit_gt_sat.group_fel_manager" invisible="provider_id.code != 'infile'"/>
+                                    <field name="cui_login_url" groups="fel_nit_gt_sat.group_fel_manager" invisible="provider_id.code != 'infile'"/>
                                 </group>
                             </group>
+                            
+                            <group string="Digital Signature" name="signature_group">
+                                <field name="llave_firma" placeholder="Upload your .p12 certificate file" filename="llave_firma_filename"/>
+                                <field name="llave_firma_filename" invisible="1"/>
+                                <field name="llave_password" password="True" placeholder="Certificate password" required="llave_firma != False"/>
+                                <field name="llave_firma_expiry" readonly="1" invisible="llave_firma == False"/>
+                            </group>
                         </page>
-
-                        <page string="Address Information" name="address">
+                        
+                        <page string="Company Data" name="company_data">
                             <group>
-                                <group string="Company Address">
-                                    <field name="address_line" placeholder="Company address for FEL documents"/>
+                                <group string="Company Information">
+                                    <field name="company_nit" required="1" placeholder="12345678"/>
+                                    <field name="establishment_code" placeholder="1" help="Establishment number from SAT"/>
+                                    <field name="establishment_address" placeholder="Complete address" widget="text"/>
                                     <field name="postal_code" placeholder="01001"/>
+                                </group>
+                                
+                                <group string="Location">
                                     <field name="municipality" placeholder="Guatemala"/>
                                     <field name="department" placeholder="Guatemala"/>
-                                    <field name="country_code" placeholder="GT"/>
+                                    <field name="country_code" readonly="1"/>
                                 </group>
                             </group>
                         </page>
-
-                        <page string="Usage &amp; Limits" name="usage">
+                        
+                        <page string="Automation" name="automation">
                             <group>
-                                <group string="DTE Limits &amp; Usage">
-                                    <field name="annual_dte_limit" placeholder="1200"/>
-                                    <field name="annual_dte_count" readonly="1"/>
-                                    <field name="dte_usage_percentage"/>
-                                    <field name="monthly_dte_limit" placeholder="100"/>
-                                    <field name="monthly_dte_count" readonly="1"/>
-                                </group>
-
-                                <group string="Costs &amp; Pricing">
-                                    <field name="setup_cost" widget="monetary"/>
-                                    <field name="annual_cost" widget="monetary"/>
-                                    <field name="dte_cost" widget="monetary"/>
-                                </group>
-                            </group>
-
-                            <group string="Daily Limits">
-                                <field name="daily_limit" readonly="1"/>
-                                <field name="daily_counter" readonly="1"/>
-                                <field name="daily_errors" readonly="1"/>
-                                <field name="last_counter_reset" readonly="1"/>
-                            </group>
-                        </page>
-
-                        <page string="Auto-Send Settings" name="auto_send">
-                            <group>
-                                <group string="Automatic FEL Generation">
+                                <group string="Auto-send Documents">
                                     <field name="auto_send_invoices"/>
                                     <field name="auto_send_credit_notes"/>
                                     <field name="auto_send_pos_orders"/>
                                 </group>
-
-                                <group string="Retry Configuration">
-                                    <field name="max_retry_attempts"/>
-                                    <field name="retry_delay_seconds"/>
-                                    <field name="retry_on_timeout"/>
-                                    <field name="retry_on_connection_error"/>
+                                
+                                <group string="Document Numbering">
+                                    <field name="use_provider_numbering"/>
+                                    <field name="last_internal_number" readonly="1" invisible="use_provider_numbering"/>
                                 </group>
                             </group>
-
-                            <div class="alert alert-info" role="alert">
-                                <strong>Info:</strong> When enabled, FEL documents will be automatically generated and sent when invoices are posted or POS orders are completed.
-                            </div>
+                            
+                            <group string="Usage Limits">
+                                <group>
+                                    <label for="annual_dte_count" string="Annual Usage"/>
+                                    <div class="o_row">
+                                        <field name="annual_dte_count" readonly="1" class="oe_inline"/> / 
+                                        <field name="annual_dte_limit" class="oe_inline"/>
+                                        <span class="oe_inline"> DTEs</span>
+                                    </div>
+                                    <field name="dte_usage_percentage" widget="progressbar"/>
+                                </group>
+                                
+                                <group>
+                                    <label for="daily_counter" string="Daily Usage"/>
+                                    <div class="o_row">
+                                        <field name="daily_counter" readonly="1" class="oe_inline"/> / 
+                                        <field name="daily_limit" class="oe_inline"/>
+                                        <span class="oe_inline"> transactions</span>
+                                    </div>
+                                    <field name="last_counter_reset" readonly="1"/>
+                                </group>
+                            </group>
                         </page>
-
-                        <page string="Status &amp; Errors" name="status">
+                        
+                        <page string="Health Status" name="health">
                             <group>
-                                <group string="Transaction History">
-                                    <field name="last_successful_transaction" readonly="1"/>
-                                    <field name="last_dte_date" readonly="1"/>
+                                <field name="health_status" widget="badge" decoration-success="health_status == 'healthy'" decoration-warning="health_status == 'warning'" decoration-danger="health_status in ['error', 'critical']"/>
+                                <field name="health_message" readonly="1" widget="text"/>
+                            </group>
+                            
+                            <group string="Error Tracking">
+                                <group>
                                     <field name="consecutive_errors" readonly="1"/>
-                                </group>
-
-                                <group string="Last Error">
+                                    <field name="daily_errors" readonly="1"/>
                                     <field name="last_error_date" readonly="1"/>
-                                    <field name="last_error_message" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="last_sync" readonly="1"/>
+                                    <field name="last_successful_transaction" readonly="1"/>
                                 </group>
                             </group>
-
-                            <field name="health_message" readonly="1" placeholder="No issues detected"/>
+                            
+                            <group string="Last Error Details" invisible="not last_error_message">
+                                <field name="last_error_message" readonly="1" widget="text" nolabel="1"/>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
+                
                 <div class="oe_chatter">
                     <field name="message_follower_ids" groups="base.group_user"/>
                     <field name="activity_ids"/>
@@ -158,8 +166,53 @@
             </form>
         </field>
     </record>
-
-    <!-- In fel_config_views.xml, add: -->
+    
+    <!-- Tree View -->
+    <record id="view_fel_config_tree" model="ir.ui.view">
+        <field name="name">fel.config.tree</field>
+        <field name="model">fel.config</field>
+        <field name="arch" type="xml">
+            <tree string="FEL Configurations">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="provider_id"/>
+                <field name="environment"/>
+                <field name="is_active" widget="boolean_toggle"/>
+                <field name="health_status" widget="badge" decoration-success="health_status == 'healthy'" decoration-warning="health_status == 'warning'" decoration-danger="health_status in ['error', 'critical']"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="view_fel_config_search" model="ir.ui.view">
+        <field name="name">fel.config.search</field>
+        <field name="model">fel.config</field>
+        <field name="arch" type="xml">
+            <search string="Search FEL Configuration">
+                <field name="name"/>
+                <field name="provider_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                
+                <filter string="Active" name="active" domain="[('is_active', '=', True)]"/>
+                <filter string="Test Mode" name="test_mode" domain="[('test_mode', '=', True)]"/>
+                <filter string="Production" name="production" domain="[('environment', '=', 'production')]"/>
+                
+                <separator/>
+                
+                <filter string="Healthy" name="healthy" domain="[('health_status', '=', 'healthy')]"/>
+                <filter string="Has Errors" name="has_errors" domain="[('health_status', 'in', ['warning', 'error', 'critical'])]"/>
+                
+                <group expand="0" string="Group By">
+                    <filter string="Company" name="group_by_company" domain="[]" context="{'group_by': 'company_id'}"/>
+                    <filter string="Provider" name="group_by_provider" domain="[]" context="{'group_by': 'provider_id'}"/>
+                    <filter string="Environment" name="group_by_environment" domain="[]" context="{'group_by': 'environment'}"/>
+                    <filter string="Status" name="group_by_status" domain="[]" context="{'group_by': 'health_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action -->
     <record id="action_fel_config" model="ir.actions.act_window">
         <field name="name">FEL Configuration</field>
         <field name="res_model">fel.config</field>
