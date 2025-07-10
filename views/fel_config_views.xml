@@ -194,14 +194,12 @@
                 
                 <separator/>
                 
-                <filter string="Healthy" name="healthy" domain="[('health_status', '=', 'healthy')]"/>
-                <filter string="Has Errors" name="has_errors" domain="[('health_status', 'in', ['warning', 'error', 'critical'])]"/>
+                <filter string="Has Errors Today" name="has_errors_today" domain="[('daily_errors', '>', 0)]"/>
                 
                 <group expand="0" string="Group By">
                     <filter string="Company" name="group_by_company" domain="[]" context="{'group_by': 'company_id'}"/>
                     <filter string="Provider" name="group_by_provider" domain="[]" context="{'group_by': 'provider_id'}"/>
                     <filter string="Environment" name="group_by_environment" domain="[]" context="{'group_by': 'environment'}"/>
-                    <filter string="Status" name="group_by_status" domain="[]" context="{'group_by': 'health_status'}"/>
                 </group>
             </search>
         </field>
