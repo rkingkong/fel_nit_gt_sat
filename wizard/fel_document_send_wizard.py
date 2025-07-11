@@ -100,6 +100,10 @@ class FelDocumentSendWizard(models.TransientModel):
         help='Continue processing if individual documents fail'
     )
     
+    def action_close(self):
+        """Close the wizard window"""
+        return {'type': 'ir.actions.act_window_close'}
+    
     @api.depends('document_ids')
     def _compute_document_summary(self):
         """Compute document summary statistics"""

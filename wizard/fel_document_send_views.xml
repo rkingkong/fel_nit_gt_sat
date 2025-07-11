@@ -7,51 +7,57 @@
         <field name="arch" type="xml">
             <form string="Send Documents to FEL">
                 <sheet>
-                    <group>
-                        <group string="Documents">
+                    <!-- Hidden field used in invisible condition -->
+                    <field name="has_pos_orders" invisible="1"/>
+                    
+                    <group string="Document Summary" invisible="total_documents == 0">
+                        <group>
                             <field name="total_documents"/>
-                            <field name="valid_documents" style="color: green;"/>
-                            <field name="invalid_documents" style="color: red;"/>
+                            <field name="valid_documents" class="text-success"/>
+                            <field name="invalid_documents" class="text-danger"/>
                         </group>
-                        <group string="Options">
-                            <field name="send_mode" widget="radio"/>
-                            <field name="generate_pdf"/>
+                        <group>
+                            <field name="cost_per_dte" widget="monetary"/>
+                            <field name="estimated_cost" widget="monetary" class="font-weight-bold"/>
                         </group>
                     </group>
                     
-                    <notebook>
-                        <page string="Documents to Send" name="documents">
-                            <field name="document_ids">
-                                <tree string="FEL Documents" create="false" delete="false">
-                                    <field name="name"/>
-                                    <field name="partner_id"/>
-                                    <field name="document_type_id"/>
-                                    <field name="amount_total"/>
-                                    <field name="state" widget="badge"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Progress" name="progress" invisible="documents_processed == 0">
-                            <group>
-                                <field name="documents_processed"/>
-                                <field name="documents_success" style="color: green;"/>
-                                <field name="documents_failed" style="color: red;"/>
-                            </group>
-                            <separator string="Processing Log"/>
-                            <field name="processing_log" readonly="1" widget="text" nolabel="1"/>
-                        </page>
-                    </notebook>
+                    <group string="Processing Options">
+                        <field name="send_mode"/>
+                        <field name="generate_pdf"/>
+                        <field name="ignore_errors"/>
+                    </group>
                     
-                    <div class="alert alert-warning" role="alert" invisible="not has_pos_orders">
-                        <strong>⚠️ Restaurant Orders Detected</strong>
-                        <p>Some documents are from POS orders. Make sure customer information is complete.</p>
+                    <group string="Documents to Send" invisible="not document_ids">
+                        <field name="document_ids" nolabel="1">
+                            <tree string="FEL Documents" create="false" delete="false">
+                                <field name="name"/>
+                                <field name="document_type_id"/>
+                                <field name="partner_id"/>
+                                <field name="amount_total" widget="monetary"/>
+                                <field name="state" widget="badge"/>
+                            </tree>
+                        </field>
+                    </group>
+                    
+                    <group string="Processing Progress" invisible="documents_processed == 0">
+                        <field name="processing_progress" widget="progressbar"/>
+                        <field name="documents_processed"/>
+                        <field name="documents_success" class="text-success"/>
+                        <field name="documents_failed" class="text-danger"/>
+                    </group>
+                    
+                    <div class="alert alert-info" invisible="not has_pos_orders">
+                        <p><strong>Restaurant Orders Detected!</strong><br/>
+                        Orders without customer info will be sent as "Consumidor Final" (CF).<br/>
+                        Make sure customer information is complete.</p>
                     </div>
                 </sheet>
                 <footer>
                     <button name="action_send_documents" string="Send to FEL" type="object" class="btn-primary" invisible="documents_processed > 0"/>
                     <button name="action_send_documents" string="Continue Sending" type="object" class="btn-primary" invisible="documents_processed == 0" confirm="Continue sending remaining documents?"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
-                    <button string="Close" class="btn-primary" special="cancel" invisible="documents_processed == 0"/>
+                    <button name="action_close" string="Close" type="object" class="btn-primary" invisible="documents_processed == 0"/>
                 </footer>
             </form>
         </field>
@@ -116,27 +122,37 @@
         <field name="arch" type="xml">
             <form string="Send POS Orders to FEL">
                 <sheet>
+                    <!-- Hidden field used in invisible condition -->
+                    <field name="orders_without_customer" invisible="1"/>
+                    
                     <group>
                         <group string="Filter Options">
                             <field name="date_from"/>
                             <field name="date_to"/>
                             <field name="session_ids" widget="many2many_tags"/>
                         </group>
-                        <group string="Processing Options">
-                            <field name="auto_verify_nits"/>
-                            <field name="skip_verified_only"/>
-                            <field name="create_missing_partners"/>
+                        <group string="Summary">
+                            <field name="total_orders"/>
+                            <field name="valid_orders" class="text-success"/>
+                            <field name="invalid_orders" class="text-danger"/>
+                            <field name="orders_without_customer" class="text-warning" invisible="orders_without_customer == 0"/>
                         </group>
+                    </group>
+                    
+                    <group string="Processing Options">
+                        <field name="auto_verify_nits"/>
+                        <field name="skip_verified_only"/>
+                        <field name="create_missing_partners"/>
                     </group>
                     
                     <group string="Selected Orders" invisible="not order_ids">
                         <field name="order_ids" readonly="1">
                             <tree string="POS Orders" create="false" delete="false">
                                 <field name="name"/>
-                                <field name="partner_id"/>
-                                <field name="customer_name"/>
                                 <field name="customer_nit"/>
-                                <field name="amount_total"/>
+                                <field name="customer_name"/>
+                                <field name="table_number"/>
+                                <field name="amount_total" widget="monetary"/>
                                 <field name="fel_status" widget="badge"/>
                             </tree>
                         </field>
@@ -146,17 +162,17 @@
                         <field name="loaded_order_ids" readonly="1">
                             <tree string="POS Orders" create="false" delete="false">
                                 <field name="name"/>
-                                <field name="partner_id"/>
-                                <field name="customer_name"/>
                                 <field name="customer_nit"/>
-                                <field name="amount_total"/>
+                                <field name="customer_name"/>
+                                <field name="table_number"/>
+                                <field name="amount_total" widget="monetary"/>
                                 <field name="fel_status" widget="badge"/>
                             </tree>
                         </field>
                     </group>
                     
-                    <div class="alert alert-info" role="alert">
-                        <strong>🍴 Restaurant POS Processing:</strong>
+                    <div class="alert alert-info">
+                        <p><strong>Restaurant Order Processing Notes:</strong></p>
                         <ul class="mb-0">
                             <li>Orders without customers will use "CF" (Consumidor Final)</li>
                             <li>Table and waiter information will be preserved</li>
