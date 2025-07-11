@@ -51,7 +51,7 @@
                     <button name="action_send_documents" string="Send to FEL" type="object" class="btn-primary" invisible="documents_processed > 0"/>
                     <button name="action_send_documents" string="Continue Sending" type="object" class="btn-primary" invisible="documents_processed == 0" confirm="Continue sending remaining documents?"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
-                    <button name="action_close" string="Close" type="object" class="btn-primary" invisible="documents_processed == 0"/>
+                    <button string="Close" class="btn-primary" special="cancel" invisible="documents_processed == 0"/>
                 </footer>
             </form>
         </field>
