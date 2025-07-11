@@ -35,7 +35,7 @@
                             <group>
                                 <field name="documents_processed"/>
                                 <field name="documents_success" style="color: green;"/>
-                                <field name="documents_error" style="color: red;"/>
+                                <field name="documents_failed" style="color: red;"/>
                             </group>
                             <separator string="Processing Log"/>
                             <field name="processing_log" readonly="1" widget="text" nolabel="1"/>
@@ -120,12 +120,12 @@
                         <group string="Filter Options">
                             <field name="date_from"/>
                             <field name="date_to"/>
-                            <field name="config_ids" widget="many2many_tags"/>
-                            <field name="session_ids" widget="many2many_tags" domain="[('config_id', 'in', config_ids)]"/>
+                            <field name="session_ids" widget="many2many_tags"/>
                         </group>
                         <group string="Processing Options">
-                            <field name="use_consumidor_final"/>
-                            <field name="skip_without_nit"/>
+                            <field name="auto_verify_nits"/>
+                            <field name="skip_verified_only"/>
+                            <field name="create_missing_partners"/>
                         </group>
                     </group>
                     
